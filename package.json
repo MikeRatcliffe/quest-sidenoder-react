@@ -1,5 +1,9 @@
 {
-  "description": "A foundation for scalable desktop apps",
+  "name": "quest-sidenoder",
+  "version": "1.0.0",
+  "description": "SideNoder - Tool for the Meta Quest (1, 2 and Pro) used for sideloading, device tweaks, application management etc.",
+  "repository": "https://github.com/MikeRatcliffe/quest-sidenoder/",
+  "main": "./src/main/main.js",
   "keywords": [
     "electron",
     "boilerplate",
@@ -8,28 +12,10 @@
     "hot",
     "reload"
   ],
-  "homepage": "https://github.com/MikeRatcliffe/electron-react-boilerplate-without-ts-or-sass#readme",
-  "bugs": {
-    "url": "https://github.com/MikeRatcliffe/electron-react-boilerplate-without-ts-or-sass/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MikeRatcliffe/electron-react-boilerplate-without-ts-or-sass.git"
-  },
+  "author": "Mike Ratcliffe <michael@ratcliffefamily.org> (https://github.com/MikeRatcliffe/quest-sidenoder/)",
+  "bugs": "https://github.com/MikeRatcliffe/quest-sidenoder/issues",
+  "homepage": "https://github.com/MikeRatcliffe/quest-sidenoder#readme",
   "license": "MIT",
-  "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
-  },
-  "contributors": [
-    {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    }
-  ],
-  "main": "./src/main/main.js",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.js",
@@ -93,13 +79,24 @@
   },
   "dependencies": {
     "@babel/preset-react": "^7.22.5",
+    "@devicefarmer/adbkit": "^3.2.5",
+    "@electron/remote": "^2.0.10",
+    "adbkit-apkreader": "^3.2.0",
     "babel-loader": "^9.1.3",
+    "command-exists": "^1.2.9",
+    "compare-versions": "^6.0.0",
     "electron-debug": "^3.2.0",
+    "electron-find": "^1.0.7",
     "electron-log": "^4.4.8",
     "electron-updater": "^5.3.0",
+    "fix-path": "3.0.0",
+    "jquery": "^3.7.0",
+    "node-fetch": "^2.6.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.11.2"
+    "react-router-dom": "^6.11.2",
+    "socks-proxy-agent": "^8.0.1",
+    "web-auto-extractor": "^1.0.17"
   },
   "devDependencies": {
     "@electron/notarize": "^1.2.3",
@@ -154,8 +151,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "QuestSidenoder",
+    "appId": "com.vrp.sidenoder",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -213,12 +210,9 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "quest-sidenoder",
+      "repo": "quest-sidenoder"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",
