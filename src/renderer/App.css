@@ -55,7 +55,7 @@ a:hover {
   text-decoration: none;
 }
 
-.Hello {
+.app-container {
   display: flex;
   justify-content: center;
   align-items: center;
