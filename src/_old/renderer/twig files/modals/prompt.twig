@@ -1,0 +1,88 @@
+<div
+  class="modal fade"
+  id="promptModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="promptModalLabel"
+  data-backdrop="static"
+  data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="promptModalLabel"></h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="promptModalMessage"></div>
+        <div class="input-group">
+          <input class="form-control ml-3" id="promptModalInput" />
+          <a class="btn btn-info mr-3" id="promptModalBrowse">
+            <i class="fa fa-folder-open" title="Browse..."></i
+          ></a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          No
+        </button>
+        <button type="button" id="promptModalButton" class="btn btn-primary">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /*eslint no-unused-vars: ["error", {
+    "varsIgnorePattern": "promptDialog"
+  }]*/
+  id("promptModalBrowse").onclick = async () => {
+    const input = id("promptModalInput");
+    const res = await dialog.showOpenDialog(null, {
+      properties: ["openDirectory"],
+      title: "Browse directory",
+      // message: 'Browse directory',
+      defaultPath: input.value,
+    });
+    console.log(res);
+    if (res.canceled) {
+      return;
+    }
+
+    input.value = res.filePaths[0];
+  };
+
+  async function promptDialog(title, message, inputValue, dir = false) {
+    id("promptModalLabel").innerHTML = title;
+    id("promptModalMessage").innerHTML = message;
+    const input = id("promptModalInput");
+    input.value = inputValue;
+
+    const browse = $id("promptModalBrowse");
+    if (dir) {
+      browse.show();
+    } else {
+      browse.hide();
+    }
+
+    const modal = $id("promptModal");
+    modal.modal("show");
+
+    return new Promise((res) => {
+      id("promptModalButton").onclick = () => {
+        res(input.value);
+        modal.modal("hide");
+      };
+      modal.on("hide.bs.modal", () => {
+        return res(null);
+      });
+    });
+  }
+</script>

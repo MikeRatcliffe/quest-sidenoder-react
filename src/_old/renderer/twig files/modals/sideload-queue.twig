@@ -1,0 +1,632 @@
+<!-- Modal -->
+<div
+  class="modal fade modal-right"
+  id="sideloadQueueModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="sideloadQueueModalLabel"
+  data-backdrop="static"
+  data-keyboard="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sideloadModalLabel">
+          <i id="sideloadRefresh" class="fa fa-refresh"></i> Sideload queue
+        </h5>
+        <!-- fa-spin -->
+        <small id="sideload_transfer_state" class="text-right"></small>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table
+          class="table table-striped table-hover table-fixed-header text-center">
+          <thead>
+            <th>Name:</th>
+            <th>Active process</th>
+            <th>Process status:</th>
+            <th>Action:</th>
+          </thead>
+          <tbody id="sideloadQueue">
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-success"
+                  ><i class="fa fa-check-circle-o"></i
+                ></span>
+                TestfdsfsdfsdfsTestfdsfsdfsdfsTestfdsfsdfsdfs
+                TestfdsfsdfsdfsTestfdsfsdfsdfsTest fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-warning"
+                  ><i class="fa fa-refresh fa-spin"></i
+                ></span>
+                Testfdsfsdfsdfs TestfdsfsdfsdfsTestfdsfsdfsdfsTest fds fs dfs
+                dfs.apk
+              </td>
+              <td>
+                <span class="processText">Download APK</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-success">success</span>
+              </td>
+              <td></td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-danger"
+                  ><i class="fa fa-times-circle"></i
+                ></span>
+                Test fds fs dfs dfsTestfdsfsdfsdfs.apk
+              </td>
+              <td>
+                <span class="processText">Package info</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-danger">fail</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-danger" title="retry"
+                  ><i class="fa fa-refresh"></i
+                ></a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary">...</span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check if installed</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Restore Appdata</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Copy OBB's</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+            <tr id="queue-1gdfvd3">
+              <td>
+                <span class="btn-sm btn-secondary"
+                  ><i class="fa fa-refresh"></i
+                ></span>
+                Test fds fs dfs dfs.apk
+              </td>
+              <td>
+                <span class="processText">Check device</span>
+              </td>
+              <td>
+                <span class="processBadge badge badge-warning">pending</span>
+              </td>
+              <td>
+                <a class="actionBadge btn-sm btn-primary" title="remove">x</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary"
+          ><i class="fa fa-refresh"></i> Clear not in progress</a
+        >
+        <a class="btn btn-success"
+          ><i class="fa fa-refresh"></i> Clear success</a
+        >
+        <a class="btn btn-danger"><i class="fa fa-refresh"></i> Retry failed</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a class="btn btn-info btn-floating btn-lg" id="showQueue" onclick="showQueue()"
+  >1</a
+>
+<script>
+  /*eslint no-unused-vars: ["error", {
+    "varsIgnorePattern": "showQueue"
+  }]*/
+
+  $id("showQueue").show(100);
+
+  function showQueue() {
+    $id("sideloadQueueModal").modal("show");
+  }
+
+  function hash(s) {
+    const r = s
+      .split("")
+      .reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)
+      .toString(18);
+    return r < 0 ? "m" + Math.abs(r) : r;
+  }
+
+  ipcRenderer.removeAllListeners("sideload_add_queue");
+  ipcRenderer.on("sideload_add_queue", (event, data) => {
+    console.log("sideload_add_queue received", data);
+    for (const item of data) {
+      sideloadAddQueue(item);
+    }
+
+    if (data.length) {
+      const sideloadQueue = $("#sideloadQueue tr").length;
+      $id("showQueue").text(sideloadQueue);
+      $id("showQueue").show();
+    }
+  });
+
+  ipcRenderer.removeAllListeners("process_data");
+  ipcRenderer.on("process_data", (event, data) => {
+    console.log("process_data received", data);
+    if (!data) {
+      return (id("sideload_transfer_state").innerHTML = "");
+    }
+
+    let line = `${data.cmd}: ${formatBytes(data.bytes)}`;
+    if (data.size) {
+      line += ` of ${formatBytes(data.size)} (${data.percentage}%)`;
+    }
+
+    if (data.speedAvg) {
+      line += ` - ${formatBytes(data.speedAvg)}/s (${formatEta(data.eta)})`;
+    }
+
+    const name = data.name.split("/").pop();
+    id("sideload_transfer_state").innerHTML = `${line}<br/> ${name}`;
+  });
+
+  ipcRenderer.removeAllListeners("start_sideload");
+  ipcRenderer.on("start_sideload", (event, arg) => {
+    console.log("start_sideload msg arrived:", arg);
+    const { success, path } = arg;
+    if (!success) {
+      return;
+    }
+
+    const lastslashindex = path.lastIndexOf("/");
+    const file = path.substring(lastslashindex + 1);
+
+    $id("sideloadModal").modal("show");
+    id("sideloadText").innerHTML = "pending: <br/><b>" + file + "</b>";
+  });
+
+  ipcRenderer.removeAllListeners("sideload_process");
+  ipcRenderer.on("sideload_process", (event, arg) => {
+    console.log("sideload_process", arg);
+    const job = $id("queue" + hash(arg.path));
+
+    if (arg.device) {
+      badgeState(job.find(".deviceBadge"), arg.device);
+    }
+
+    if (arg.aapt) {
+      badgeState(job.find(".aaptDoneBadge"), arg.aapt);
+    }
+
+    if (arg.check) {
+      badgeState(job.find(".checkDoneBadge"), arg.check);
+    }
+
+    if (arg.backup) {
+      badgeState(job.find(".backupDoneBadge"), arg.backup);
+    }
+
+    if (arg.uninstall) {
+      badgeState(job.find(".uninstallDoneBadge"), arg.uninstall);
+    }
+
+    if (arg.restore) {
+      badgeState(job.find(".restoreDoneBadge"), arg.restore);
+    }
+
+    if (arg.download) {
+      badgeState(job.find(".downloadDoneBadge"), arg.download);
+    }
+
+    if (arg.apk) {
+      badgeState(job.find(".apkDoneBadge"), arg.apk);
+    }
+
+    if (arg.remove_obb) {
+      badgeState(job.find(".removeObbDoneBadge"), arg.remove_obb);
+    }
+
+    if (arg.download_obb) {
+      badgeState(job.find(".downloadObbDoneBadge"), arg.download_obb);
+    }
+
+    if (arg.push_obb) {
+      badgeState(job.find(".copyObbDoneBadge"), arg.push_obb);
+    }
+
+    remote
+      .getGlobal("win")
+      .setProgressBar($(".badge-warning").length / $(".badge").length);
+
+    if (arg.done) {
+      badgeState(job.find(".sideloadDoneBadge"), arg.done);
+
+      $id("sideloadDoneBtn")
+        .removeClass("disabled")
+        .removeClass("btn-primary")
+        .addClass("btn-success")
+        .html("Done");
+      $id("sideloadRefresh")
+        .removeClass("fa-refresh")
+        .removeClass("fa-spin")
+        .addClass("fa-check-circle-o");
+
+      if (!arg.error) {
+        const notify = remote.getGlobal("notify");
+        notify("Successfully sideloaded", arg.location, "low");
+      }
+    }
+
+    if (arg.update) {
+      getUpdates();
+    }
+
+    if (arg.error) {
+      $id("sideloadError").text(arg.error);
+      $id("sideloadErrorArea").show();
+      remote.getGlobal("notify")("Sideload Failed", arg.location);
+    }
+  });
+
+  function sideloadAddQueue() {}
+
+  function badgeState(badge, text) {
+    badge.text(text);
+    if (!badge.hasClass("badge-warning")) {
+      return;
+    }
+
+    let state = "";
+    if (text === "done") {
+      state = "success";
+    } else if (text === "skip") {
+      state = "secondary";
+    } else if (text === "fail") {
+      state = "danger";
+    } else if (text.includes("/")) {
+      const parts = text.split("/");
+
+      if (parts[0] === parts[1]) {
+        state = "success";
+      } else {
+        return;
+      }
+    } else {
+      return;
+    }
+
+    badge.removeClass("badge-warning").addClass("badge-" + state);
+  }
+
+  $id("sideloadDoneBtn").on("click", function () {
+    remote.getGlobal("win").setProgressBar(0);
+    $id("sideloadModal").modal("hide");
+    // $('.modal-backdrop').remove();
+  });
+</script>
