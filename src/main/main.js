@@ -17,6 +17,8 @@ const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 const MenuBuilder = require('./menu');
 const resolveHtmlPath = require('./util');
+const installExtension = require('electron-devtools-installer').default;
+const { REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 class AppUpdater {
   constructor() {
@@ -26,7 +28,20 @@ class AppUpdater {
   }
 }
 
-let mainWindow = null;
+let win = null;
+let dev = false;
+
+// Broken:
+// if (process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath)) {
+//   dev = true
+// }
+
+if (
+  process.env.NODE_ENV !== undefined &&
+  process.env.NODE_ENV === 'development'
+) {
+  dev = true;
+}
 
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong) => `IPC test: ${pingPong}`;
@@ -72,40 +87,57 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
+  win = new BrowserWindow({
+    width: 1000,
+    minWidth: 920,
+    height: 800,
     icon: getAssetPath('icon.png'),
+    minHeight: 500,
+    title: 'Quest Sidenoder',
     webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: true,
+      webView: true,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  global.win = win;
+  require('@electron/remote/main').initialize();
+  require('@electron/remote/main').enable(win.webContents);
 
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
+  win.setMenu(null);
+  win.maximize(true);
+
+  win.loadURL(resolveHtmlPath('index.html'));
+
+  win.on('ready-to-show', () => {
+    if (!win) {
       throw new Error('"mainWindow" is not defined');
     }
     if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
+      win.minimize();
     } else {
-      mainWindow.show();
+      win.show();
+    }
+    // Open the DevTools automatically if developing
+    if (dev) {
+      win.webContents.openDevTools();
     }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  win.on('closed', () => {
+    win = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
+  const menuBuilder = new MenuBuilder(win);
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
+  win.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -119,6 +151,20 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
+app.on('activate', () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (win === null) {
+    createWindow();
+  }
+});
+
+app.on('ready', async () => {
+  await installExtension(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
+});
+
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
@@ -127,14 +173,30 @@ app.on('window-all-closed', () => {
   }
 });
 
-app
-  .whenReady()
-  .then(() => {
+async function startApp() {
+  // try {
+  //   await tools.reloadConfig();
+  // } catch (e) {
+  //   console.error("reloadConfig", e);
+  //   // tools.returnError('Could not (re)load config file.');
+  // }
+
+  // DEFAULT
+  await app.whenReady();
+
+  createWindow();
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length !== 0) {
+      return;
+    }
     createWindow();
-    app.on('activate', () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
-    });
-  })
-  .catch(console.log);
+  });
+  app.on('window-all-closed', () => {
+    console.log('quit');
+    if (global.platform !== 'mac') {
+      app.quit();
+    }
+  });
+}
+
+startApp();
