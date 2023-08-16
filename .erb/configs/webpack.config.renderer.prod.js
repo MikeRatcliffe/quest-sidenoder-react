@@ -25,7 +25,7 @@ const configuration = {
 
   target: ['web', 'electron-renderer'],
 
-  entry: [path.join(webpackPaths.srcRendererPath, 'index.jsx')],
+  entry: [path.join(webpackPaths.srcRendererPath, 'index.js')],
 
   output: {
     path: webpackPaths.distRendererPath,
@@ -73,7 +73,10 @@ const configuration = {
         ],
       },
       {
-        test: /\.(js|jsx)$/,
+        test: /\.jsx?$/,
+        resolve: {
+          extensions: ['.js', '.jsx'],
+        },
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
         options: {

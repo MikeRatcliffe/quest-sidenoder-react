@@ -49,7 +49,7 @@ const configuration = {
   entry: [
     `webpack-dev-server/client?http://localhost:${port}/dist`,
     'webpack/hot/only-dev-server',
-    path.join(webpackPaths.srcRendererPath, 'index.jsx'),
+    path.join(webpackPaths.srcRendererPath, 'index.js'),
   ],
 
   output: {
@@ -98,7 +98,10 @@ const configuration = {
         ],
       },
       {
-        test: /\.(js|jsx)$/,
+        test: /\.jsx?$/,
+        resolve: {
+          extensions: ['.js', '.jsx'],
+        },
         exclude: /(node_modules|bower_components)/,
         loader: 'babel-loader',
         options: {
@@ -179,17 +182,10 @@ const configuration = {
       publicPath: '/',
     },
     historyApiFallback: {
+      disableDotRule: true,
       verbose: true,
     },
     setupMiddlewares(middlewares) {
-      console.log('Starting preload.js builder...');
-      const preloadProcess = spawn('npm', ['run', 'start:preload'], {
-        shell: true,
-        stdio: 'inherit',
-      })
-        .on('close', (code) => process.exit(code))
-        .on('error', (spawnError) => console.error(spawnError));
-
       console.log('Starting Main Process...');
       let args = ['run', 'start:main'];
       if (process.env.MAIN_ARGS) {
@@ -202,7 +198,6 @@ const configuration = {
         stdio: 'inherit',
       })
         .on('close', (code) => {
-          preloadProcess.kill();
           process.exit(code);
         })
         .on('error', (spawnError) => console.error(spawnError));

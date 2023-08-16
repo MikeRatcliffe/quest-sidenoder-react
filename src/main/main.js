@@ -1,5 +1,3 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -9,76 +7,91 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 const path = require('path');
-const { app } = require('electron');
-const { BrowserWindow } = require('electron');
-const { shell } = require('electron');
-const { ipcMain } = require('electron');
+const { app, BrowserWindow, shell, Notification } = require('electron');
+const { EOL, platform, arch, homedir, tmpdir } = require('os');
 const { autoUpdater } = require('electron-updater');
-const log = require('electron-log');
-const MenuBuilder = require('./menu');
-const resolveHtmlPath = require('./util');
+const log = require('electron-log/main');
+
+const isDev =
+  process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development';
+const isProd = process.env.NODE_ENV === 'production';
+const isDebug = isDev || process.env.DEBUG_PROD === 'true';
+const startMinimized = process.env.START_MINIMIZED;
+
+let win = null;
+
 const installExtension = require('electron-devtools-installer').default;
 const { REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
+const MenuBuilder = require('./utils/menu');
+const resolveHtmlPath = require('./utils/utils');
+
 class AppUpdater {
   constructor() {
-    log.transports.file.level = 'info';
     autoUpdater.logger = log;
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
 
-let win = null;
-let dev = false;
+app.disableHardwareAcceleration();
 
-// Broken:
-// if (process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath)) {
-//   dev = true
-// }
+global.adbDevice = false;
+global.arch = arch();
+global.close = false;
+global.currentConfiguration = {};
+global.endOfLine = EOL;
+global.hash_alg = 'sha256';
+global.homedir = homedir().replace(/\\/g, '/');
+global.installedApps = [];
+global.locale = 'en-US';
+global.logLevel = isDev ? 'silly' : 'error';
+global.mounted = false;
+global.notify = (title, body, urgency = 'normal') => {
+  const notification = new Notification({
+    title,
+    body,
+    // icon: 'build/icon.png',
+    urgency, // 'normal' | 'critical' | 'low'
+  });
+  notification.show();
+};
+global.platform = platform().replace('32', '').replace('64', '');
+global.rcloneSections = [];
+global.repository = 'https://github.com/MikeRatcliffe/quest-sidenoder-react';
+global.repositoryapi = 'https://api.github.com/repos/MikeRatcliffe';
+global.repositoryraw = 'https://raw.githubusercontent.com/MikeRatcliffe';
+global.sidenoderHome = path
+  .join(global.homedir, 'sidenoder')
+  .replace(/\\/g, '/');
+global.tmpdir = tmpdir().replace(/\\/g, '/');
+global.mountFolder = path.join(global.tmpdir, 'mnt').replace(/\\/g, '/');
+global.updateAvailable = false;
 
-if (
-  process.env.NODE_ENV !== undefined &&
-  process.env.NODE_ENV === 'development'
-) {
-  dev = true;
+if (global.platform === 'darwin') {
+  global.platform = 'mac';
 }
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
+// This group of requires need access to at least one `global.<somevar>`, which
+// are assigned above.
+const { checkVersion } = require('./utils/versioncheck');
+const tools = require('./utils/tools');
+const { addIPCMainListeners } = require('./utils/addIPCMainListeners');
+addIPCMainListeners();
 
-if (process.env.NODE_ENV === 'production') {
+// Clear console on startup... useful for debugging
+// process.stdout.write('\u001b[3J\u001b[1J');
+// console.clear();
+
+if (isProd) {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
-
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
 }
 
-const installExtensions = async () => {
-  const installer = require('electron-devtools-installer');
-  const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
-
-  return installer
-    .default(
-      extensions.map((name) => installer[name]),
-      forceDownload,
-    )
-    .catch(console.log);
-};
-
 const createWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
-  }
-
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
@@ -97,11 +110,8 @@ const createWindow = async () => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-      contextIsolation: true,
-      webView: true,
-      preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
-        : path.join(__dirname, '../../.erb/dll/preload.js'),
+      contextIsolation: false,
+      sandbox: false,
     },
   });
 
@@ -109,22 +119,33 @@ const createWindow = async () => {
   require('@electron/remote/main').initialize();
   require('@electron/remote/main').enable(win.webContents);
 
-  win.setMenu(null);
   win.maximize(true);
 
+  try {
+    await tools.getDeviceSync();
+  } catch (e) {
+    console.error('tools.getDeviceSync() failed', e);
+  }
+
   win.loadURL(resolveHtmlPath('index.html'));
+
+  if (process.argv[2] === '--dev') {
+    win.webContents.openDevTools();
+  }
+
+  setTimeout(checkVersion, 3000);
 
   win.on('ready-to-show', () => {
     if (!win) {
       throw new Error('"mainWindow" is not defined');
     }
-    if (process.env.START_MINIMIZED) {
+    if (startMinimized) {
       win.minimize();
     } else {
       win.show();
     }
     // Open the DevTools automatically if developing
-    if (dev) {
+    if (isDev) {
       win.webContents.openDevTools();
     }
   });
@@ -152,6 +173,7 @@ const createWindow = async () => {
  */
 
 app.on('activate', () => {
+  console.log(`app.on('activate') fired`);
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (win === null) {
@@ -160,12 +182,16 @@ app.on('activate', () => {
 });
 
 app.on('ready', async () => {
-  await installExtension(REACT_DEVELOPER_TOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+  console.log(`app.on('ready') fired`);
+  if (isDebug) {
+    await installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
+  }
 });
 
 app.on('window-all-closed', () => {
+  console.log(`app.on('window-all-closed') fired`);
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   if (process.platform !== 'darwin') {
@@ -173,30 +199,16 @@ app.on('window-all-closed', () => {
   }
 });
 
-async function startApp() {
-  // try {
-  //   await tools.reloadConfig();
-  // } catch (e) {
-  //   console.error("reloadConfig", e);
-  //   // tools.returnError('Could not (re)load config file.');
-  // }
+// eslint-disable-next-line no-floating-promise/no-floating-promise
+(async function startApp() {
+  try {
+    await tools.reloadConfig();
+  } catch (e) {
+    console.error('tools.reloadConfig() failed', e);
+  }
 
   // DEFAULT
   await app.whenReady();
-
-  createWindow();
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length !== 0) {
-      return;
-    }
-    createWindow();
-  });
-  app.on('window-all-closed', () => {
-    console.log('quit');
-    if (global.platform !== 'mac') {
-      app.quit();
-    }
-  });
-}
-
-startApp();
+  global.locale = app.getLocale();
+  await createWindow();
+})();

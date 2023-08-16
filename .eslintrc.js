@@ -8,15 +8,16 @@ module.exports = {
     'eslint:recommended',
     'plugin:import/recommended',
     'plugin:jest/recommended',
+    'plugin:json/recommended',
     'plugin:jsx-a11y/recommended',
     'plugin:promise/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
   ],
-  plugins: ['html', 'prettier'],
+  plugins: ['html', 'prettier', 'no-floating-promise'],
   rules: {
-    // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
+    'no-floating-promise/no-floating-promise': 'error',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': 'off',
     'import/extensions': 'off',

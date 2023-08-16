@@ -1,0 +1,3 @@
+*.min.js
+modernizr.custom.js
+**/twig files
