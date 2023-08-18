@@ -7,7 +7,7 @@ global.version = pkg.version;
 async function checkVersion() {
   try {
     const res = await fetch(
-      `${global.repositoryapi}/quest-sidenoder-react/releases/latest`,
+      `${global.repositoryapi}/quest-sidenoder-react/releases/latest`
     );
     if (res.status !== 200) {
       return;

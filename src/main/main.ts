@@ -6,11 +6,25 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-const path = require('path');
-const { app, BrowserWindow, shell, Notification } = require('electron');
-const { EOL, platform, arch, homedir, tmpdir } = require('os');
-const { autoUpdater } = require('electron-updater');
-const log = require('electron-log/main');
+import path from 'path';
+import { EOL, platform, arch, homedir, tmpdir } from 'os';
+import * as remoteMain from '@electron/remote/main';
+import {
+  app,
+  BrowserWindow,
+  Notification,
+  NotificationConstructorOptions,
+  shell,
+} from 'electron';
+import { autoUpdater } from 'electron-updater';
+import log from 'electron-log';
+import installExtension, {
+  REACT_DEVELOPER_TOOLS,
+} from 'electron-devtools-installer';
+import sourceMapSupport from 'source-map-support';
+import electronDebug from 'electron-debug';
+import MenuBuilder from './utils/menu';
+import { resolveHtmlPath } from './utils/utils';
 
 const isDev =
   process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development';
@@ -18,13 +32,7 @@ const isProd = process.env.NODE_ENV === 'production';
 const isDebug = isDev || process.env.DEBUG_PROD === 'true';
 const startMinimized = process.env.START_MINIMIZED;
 
-let win = null;
-
-const installExtension = require('electron-devtools-installer').default;
-const { REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
-
-const MenuBuilder = require('./utils/menu');
-const resolveHtmlPath = require('./utils/utils');
+let mainWindow: BrowserWindow | null = null;
 
 class AppUpdater {
   constructor() {
@@ -37,7 +45,7 @@ app.disableHardwareAcceleration();
 
 global.adbDevice = false;
 global.arch = arch();
-global.close = false;
+// global.close = false;
 global.currentConfiguration = {};
 global.endOfLine = EOL;
 global.hash_alg = 'sha256';
@@ -46,13 +54,17 @@ global.installedApps = [];
 global.locale = 'en-US';
 global.logLevel = isDev ? 'silly' : 'error';
 global.mounted = false;
-global.notify = (title, body, urgency = 'normal') => {
-  const notification = new Notification({
+global.notify = (
+  title: string,
+  body: string,
+  urgency: 'normal' | 'critical' | 'low' = 'normal'
+) => {
+  const options: NotificationConstructorOptions = {
     title,
     body,
-    // icon: 'build/icon.png',
     urgency, // 'normal' | 'critical' | 'low'
-  });
+  };
+  const notification = new Notification(options);
   notification.show();
 };
 global.platform = platform().replace('32', '').replace('64', '');
@@ -71,11 +83,15 @@ if (global.platform === 'darwin') {
   global.platform = 'mac';
 }
 
+/* eslint-disable import/first */
 // This group of requires need access to at least one `global.<somevar>`, which
 // are assigned above.
-const { checkVersion } = require('./utils/versioncheck');
-const tools = require('./utils/tools');
+import { checkVersion } from './utils/versioncheck';
+import * as tools from './utils/tools';
+/* eslint-enable import/first */
+
 const { addIPCMainListeners } = require('./utils/addIPCMainListeners');
+
 addIPCMainListeners();
 
 // Clear console on startup... useful for debugging
@@ -83,12 +99,11 @@ addIPCMainListeners();
 // console.clear();
 
 if (isProd) {
-  const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
 
 if (isDebug) {
-  require('electron-debug')();
+  electronDebug();
 }
 
 const createWindow = async () => {
@@ -96,11 +111,11 @@ const createWindow = async () => {
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../../assets');
 
-  const getAssetPath = (...paths) => {
+  const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1000,
     minWidth: 920,
     height: 800,
@@ -109,17 +124,17 @@ const createWindow = async () => {
     title: 'Quest Sidenoder',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true,
       contextIsolation: false,
       sandbox: false,
     },
   });
 
-  global.win = win;
-  require('@electron/remote/main').initialize();
-  require('@electron/remote/main').enable(win.webContents);
+  global.win = mainWindow;
 
-  win.maximize(true);
+  remoteMain.initialize();
+  remoteMain.enable(mainWindow.webContents);
+
+  mainWindow.maximize();
 
   try {
     await tools.getDeviceSync();
@@ -127,38 +142,38 @@ const createWindow = async () => {
     console.error('tools.getDeviceSync() failed', e);
   }
 
-  win.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   if (process.argv[2] === '--dev') {
-    win.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
   }
 
   setTimeout(checkVersion, 3000);
 
-  win.on('ready-to-show', () => {
-    if (!win) {
+  mainWindow.on('ready-to-show', () => {
+    if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
     if (startMinimized) {
-      win.minimize();
+      mainWindow.minimize();
     } else {
-      win.show();
+      mainWindow.show();
     }
     // Open the DevTools automatically if developing
     if (isDev) {
-      win.webContents.openDevTools();
+      mainWindow.webContents.openDevTools();
     }
   });
 
-  win.on('closed', () => {
-    win = null;
+  mainWindow.on('closed', () => {
+    mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(win);
+  const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
   // Open urls in the user's browser
-  win.webContents.setWindowOpenHandler((edata) => {
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -176,7 +191,7 @@ app.on('activate', () => {
   console.log(`app.on('activate') fired`);
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
+  if (mainWindow === null) {
     createWindow();
   }
 });

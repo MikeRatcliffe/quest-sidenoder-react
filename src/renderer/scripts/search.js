@@ -2,6 +2,8 @@
   "varsIgnorePattern": "sortItems"
 }] */
 
+const remote = window.require('@electron/remote');
+
 const { FindInPage } = require('electron-find');
 let search = false;
 

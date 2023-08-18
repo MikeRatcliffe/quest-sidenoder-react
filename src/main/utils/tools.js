@@ -1,30 +1,31 @@
 const { exec } = require('child_process');
 const fs = require('fs');
-const fsp = fs.promises;
-const log = require('electron-log/main');
-const { maxDepth, toJSON } = require('electron-log/src/main/transforms/object');
 const path = require('path');
 const crypto = require('crypto');
+const { maxDepth, toJSON } = require('electron-log/src/main/transforms/object');
+const log = require('electron-log/main');
 const commandExists = require('command-exists');
 const chalk = require('chalk');
 const ApkReader = require('adbkit-apkreader');
 const adbkit = require('@devicefarmer/adbkit').default;
-const adb = adbkit.createClient();
 const fetch = require('node-fetch');
 const WAE = require('web-auto-extractor').default;
 // const HttpProxyAgent = require('https-proxy-agent'); // TODO add https proxy support
 const { SocksProxyAgent } = require('socks-proxy-agent');
 // const ApkReader = require('node-apk-parser');
 
+const fsp = fs.promises;
+const adb = adbkit.createClient();
+
 require('fix-path')();
 // adb.kill();
 
-const pkg = require('../../../package.json');
-const _sec = 1000;
-const _min = 60 * _sec;
+const pkgJson = require('../../../package.json');
 
-const CHECK_META_PERIOD = 2 * _min;
-const l = 32;
+const SEC = 1000;
+const MIN = 60 * SEC;
+
+const CHECK_META_PERIOD = 2 * MIN;
 const configLocationOld = path.join(global.homedir, 'sidenoder-config.json');
 const configLocation = path.join(global.sidenoderHome, 'config.json');
 
@@ -201,63 +202,63 @@ async function deviceTweaksGet(arg) {
 async function deviceTweaksSet(arg) {
   console.log('deviceTweaksSet()', arg);
   const res = { cmd: 'set' };
-  if (typeof arg.mp_name != 'undefined') {
+  if (typeof arg.mp_name !== 'undefined') {
     res.mp_name = await adbShell(`settings put global username ${arg.mp_name}`);
   }
 
-  if (typeof arg.guardian_pause != 'undefined') {
+  if (typeof arg.guardian_pause !== 'undefined') {
     const guardianPaused = arg.guardian_pause ? '1' : '0';
     res.guardian_pause = await adbShell(
-      `setprop debug.oculus.guardian_pause ${guardianPaused}`,
+      `setprop debug.oculus.guardian_pause ${guardianPaused}`
     );
   }
-  if (typeof arg.frc != 'undefined') {
+  if (typeof arg.frc !== 'undefined') {
     const fullRateCapture = arg.frc ? '1' : '0';
     res.frc = await adbShell(
-      `setprop debug.oculus.fullRateCapture ${fullRateCapture}`,
+      `setprop debug.oculus.fullRateCapture ${fullRateCapture}`
     );
   }
 
-  if (typeof arg.gRR != 'undefined') {
+  if (typeof arg.gRR !== 'undefined') {
     res.gRR = await adbShell(`setprop debug.oculus.refreshRate ${arg.gRR}`);
   }
 
-  if (typeof arg.gCA != 'undefined') {
+  if (typeof arg.gCA !== 'undefined') {
     res.gCA = await adbShell(`setprop debug.oculus.forceChroma ${arg.gCA}`);
   }
 
-  if (typeof arg.gFFR != 'undefined') {
+  if (typeof arg.gFFR !== 'undefined') {
     res.gFFR = await adbShell(
-      `setprop debug.oculus.foveation.level ${arg.gFFR}`,
+      `setprop debug.oculus.foveation.level ${arg.gFFR}`
     );
   }
 
-  if (typeof arg.CPU != 'undefined') {
+  if (typeof arg.CPU !== 'undefined') {
     res.CPU = await adbShell(`setprop debug.oculus.cpuLevel ${arg.CPU}`);
   }
 
-  if (typeof arg.GPU != 'undefined') {
+  if (typeof arg.GPU !== 'undefined') {
     res.GPU = await adbShell(`setprop debug.oculus.gpuLevel ${arg.GPU}`);
   }
 
-  if (typeof arg.vres != 'undefined') {
+  if (typeof arg.vres !== 'undefined') {
     res.vres = await adbShell(
-      `setprop debug.oculus.videoResolution ${arg.vres}`,
+      `setprop debug.oculus.videoResolution ${arg.vres}`
     );
   }
 
-  if (typeof arg.cres != 'undefined') {
+  if (typeof arg.cres !== 'undefined') {
     const [width, height] = arg.cres.split('x');
     await adbShell(`setprop debug.oculus.capture.width ${width}`);
     res.cres = await adbShell(`setprop debug.oculus.capture.height ${height}`);
   }
 
-  if (typeof arg.gSSO != 'undefined') {
+  if (typeof arg.gSSO !== 'undefined') {
     const [width, height] = arg.gSSO.split('x');
     await adbShell(`setprop debug.oculus.textureWidth ${width}`);
     await adbShell(`setprop debug.oculus.textureHeight ${height}`);
     res.gSSO = await adbShell(
-      'settings put system font_scale 0.85 && settings put system font_scale 1.0',
+      'settings put system font_scale 0.85 && settings put system font_scale 1.0'
     );
   }
 
@@ -296,7 +297,7 @@ async function getStorageInfo() {
 async function getLaunchActivity(pkg) {
   console.log('startApp()', pkg);
   const activity = await adbShell(
-    `dumpsys package ${pkg} | grep -A 1 'filter' | head -n 1 | cut -d ' ' -f 10`,
+    `dumpsys package ${pkg} | grep -A 1 'filter' | head -n 1 | cut -d ' ' -f 10`
   );
   return startActivity(activity);
 }
@@ -305,7 +306,7 @@ async function getActivities(pkg) {
   console.log('getActivities()', pkg);
 
   let activities = await adbShell(
-    `dumpsys package | grep -Eo '^[[:space:]]+[0-9a-f]+[[:space:]]+${pkg}/[^[:space:]]+' | grep -oE '[^[:space:]]+$'`,
+    `dumpsys package | grep -Eo '^[[:space:]]+[0-9a-f]+[[:space:]]+${pkg}/[^[:space:]]+' | grep -oE '[^[:space:]]+$'`
   );
   if (!activities) {
     return false;
@@ -332,16 +333,16 @@ async function devOpenUrl(url) {
   console.log('devOpenUrl', url);
   await wakeUp();
   const result = await adbShell(
-    `am start -a android.intent.action.VIEW -d "${url}"`,
+    `am start -a android.intent.action.VIEW -d "${url}"`
   ); // TODO activity selection
 
   console.log('devOpenUrl', url, result);
   return result;
 }
 
-async function readAppCfg(pkg) {
+async function readAppCfg(appPkg) {
   let config = await adbShell(
-    `cat /sdcard/Android/data/${pkg}/private/config.json 1>&1 2> /dev/null`,
+    `cat /sdcard/Android/data/${appPkg}/private/config.json 1>&1 2> /dev/null`
   );
   try {
     config = config && JSON.parse(config);
@@ -392,8 +393,8 @@ async function changeAppConfig(pkg, key, val) {
     config = Object.assign(config, { [key]: val });
     await adbShell(
       `echo '${JSON.stringify(
-        config,
-      )}' > "/sdcard/Android/data/${pkg}/private/config.json"`,
+        config
+      )}' > "/sdcard/Android/data/${pkg}/private/config.json"`
     );
     config = await readAppCfg(pkg);
     res.val = config && config[key];
@@ -418,9 +419,9 @@ async function getDeviceIp() {
 
   // Method 1
   let ip = null;
-  let res = await adbShell(`ip -o route get to 8.8.8.8`);
-  let matches = res.match(
-    /src\s([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/,
+  const res = await adbShell(`ip -o route get to 8.8.8.8`);
+  const matches = res.match(
+    /src\s([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})/
   );
 
   if (matches) {
@@ -431,7 +432,7 @@ async function getDeviceIp() {
 
   // Method 2
   ip = await adbShell(
-    `ip addr show wlan0  | grep 'inet ' | cut -d ' ' -f 6 | cut -d / -f 1`,
+    `ip addr show wlan0  | grep 'inet ' | cut -d ' ' -f 6 | cut -d / -f 1`
   );
   console.log({ ip });
   if (ip) {
@@ -522,7 +523,7 @@ async function isWireless() {
       if (device.type === 'unauthorized') {
         global.win.webContents.send(
           'alert',
-          'Please authorize adb access on your device',
+          'Please authorize adb access on your device'
         );
         continue;
       }
@@ -627,8 +628,8 @@ async function rebootBootloader() {
   console.log('rebootBootloader', { res });
   return res;
 }
-async function sideloadFile(path) {
-  const res = await execShellCommand(`"${adbCmd}" sideload "${path}"`);
+async function sideloadFile(filePath) {
+  const res = await execShellCommand(`"${adbCmd}" sideload "${filePath}"`);
   console.log('sideloadFile', { res });
   return res;
 }
@@ -648,7 +649,7 @@ async function getDeviceSync() {
         console.log(`Device type ${device.type}... skipping`);
         global.win.webContents.send(
           'alert',
-          'Please authorize adb access on your device',
+          'Please authorize adb access on your device'
         );
         continue;
       }
@@ -747,8 +748,8 @@ function parceOutOptions(line) {
 }
 
 // on empty directory return false
-async function adbFileExists(path) {
-  const r = await adbShell(`ls "${path}" 1>&1 2> /dev/null`);
+async function adbFileExists(filePath) {
+  const r = await adbShell(`ls "${filePath}" 1>&1 2> /dev/null`);
   return r;
 }
 
@@ -829,8 +830,8 @@ async function adbPush(orig, dest, sync = false) {
   const transfer = sync
     ? await sync.pushFile(orig, dest)
     : await adb.getDevice(global.adbDevice).push(orig, dest);
-  const stats = await fsp.lstat(orig);
-  const { size } = stats;
+  const fsStats = await fsp.lstat(orig);
+  const { size } = fsStats;
 
   return new Promise((resolve, reject) => {
     let c = 0;
@@ -1007,7 +1008,7 @@ async function appInfo(args) {
             'Accept-Language': `${global.locale},ru;q=0.8,en-US;q=0.5,en;q=0.3`,
           },
           agent: agentSteam,
-        },
+        }
       );
       const json = await resp.json();
       // console.log({ json });
@@ -1038,7 +1039,7 @@ async function appInfo(args) {
             Origin: 'https://www.oculus.com',
           },
           agent: agentOculus,
-        },
+        }
       );
       try {
         const json = await resp.json();
@@ -1186,10 +1187,10 @@ async function appInfo(args) {
               'Mozilla/5.0 (X11; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0',
           },
           agent: agentSQ,
-        },
+        }
       );
       const jsonImg = await respImg.json();
-      for (const id in jsonImg.data) {
+      for (const id of Object.keys(jsonImg.data)) {
         data.screenshots.push({
           id,
           path_thumbnail: jsonImg.data[id].image_url,
@@ -1228,7 +1229,7 @@ async function appInfoEvents(args) {
             'Accept-Language': `${global.locale},ru;q=0.8,en-US;q=0.5,en;q=0.3`,
           },
           agent: agentSteam,
-        },
+        }
       );
       const json = await resp.json();
       // console.log({ json });
@@ -1238,7 +1239,7 @@ async function appInfoEvents(args) {
         const event = {
           title: e.title,
           url: e.url,
-          date: new Date(e.date * _sec).toLocaleString(),
+          date: new Date(e.date * SEC).toLocaleString(),
           // author: e.author,
         };
 
@@ -1251,7 +1252,7 @@ async function appInfoEvents(args) {
           .join('" /></center>')
           .split('{STEAM_CLAN_IMAGE}')
           .join(
-            'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans',
+            'https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans'
           )
           .split('[list]')
           .join('<ul>')
@@ -1290,7 +1291,7 @@ async function appInfoEvents(args) {
             Origin: 'https://www.oculus.com',
           },
           agent: agentOculus,
-        },
+        }
       );
       try {
         const json = await resp.json();
@@ -1323,7 +1324,7 @@ async function appInfoEvents(args) {
       }
 
       resp = await fetch(
-        `https://computerelite.github.io/tools/Oculus/OlderAppVersions/${oculus.id}.json`,
+        `https://computerelite.github.io/tools/Oculus/OlderAppVersions/${oculus.id}.json`
       );
       const json = await resp.json();
       // console.log({ json });
@@ -1336,9 +1337,7 @@ async function appInfoEvents(args) {
             continue;
           }
 
-          data.events[i].date = new Date(
-            e.created_date * _sec,
-          ).toLocaleString();
+          data.events[i].date = new Date(e.created_date * SEC).toLocaleString();
           found = true;
           break;
         }
@@ -1349,7 +1348,7 @@ async function appInfoEvents(args) {
         const event = {
           id: e.id,
           title: `${e.version} (versionCode: ${e.version_code})`,
-          date: new Date(e.created_date * _sec).toLocaleString(),
+          date: new Date(e.created_date * SEC).toLocaleString(),
           contents: e.change_log.split('\n').join('<br/>'),
           // url: '',
           // author: '',
@@ -1382,7 +1381,7 @@ async function appInfoEvents(args) {
                 'Mozilla/5.0 (X11; Linux x86_64; rv:92.0) Gecko/20100101 Firefox/92.0',
             },
             agent: agentSQ,
-          },
+          }
         );
         const json = await resp.json();
         // console.log({ json });
@@ -1391,7 +1390,7 @@ async function appInfoEvents(args) {
             id: e.events_id,
             title: e.event_name,
             url: e.event_url,
-            date: new Date(e.start_time * _sec).toLocaleString(),
+            date: new Date(e.start_time * SEC).toLocaleString(),
             contents: '',
             // author: '',
           };
@@ -1426,7 +1425,7 @@ async function checkMount(attempt = 0) {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           checkMount(attempt).then(resolve).catch(reject);
-        }, _sec);
+        }, SEC);
       });
     }
 
@@ -1496,7 +1495,7 @@ async function checkDeps(arg) {
     if (arg === 'zip') {
       res[arg].cmd = await fetchBinary('7za');
       res[arg].version = await execShellCommand(
-        `"${res[arg].cmd}" --help ${grepCmd} "7-Zip"`,
+        `"${res[arg].cmd}" --help ${grepCmd} "7-Zip"`
       );
       console.log(res[arg].version);
     }
@@ -1507,7 +1506,7 @@ async function checkDeps(arg) {
         (await commandExists('scrcpy'));
       try {
         res[arg].version = await execShellCommand(
-          `"${res[arg].cmd}" --version`,
+          `"${res[arg].cmd}" --version`
         );
         res[arg].version = res[arg].version.replace(/\n\n/, '\n');
       } catch (err) {
@@ -1609,13 +1608,13 @@ async function parseRcloneSections(newCfg = false) {
   try {
     const rcloneCmd = global.currentConfiguration.rclonePath;
     const out = await execShellCommand(
-      `"${rcloneCmd}" --config="${global.currentConfiguration.rcloneConf}" listremotes`,
+      `"${rcloneCmd}" --config="${global.currentConfiguration.rcloneConf}" listremotes`
     );
     if (!out || out.includes('not found')) {
       return console.error(
         'rclone config is empty',
         global.currentConfiguration.rcloneConf,
-        out,
+        out
       );
     }
 
@@ -1627,7 +1626,7 @@ async function parseRcloneSections(newCfg = false) {
       return console.error(
         'rclone config sections not found',
         global.currentConfiguration.rcloneConf,
-        { out, sections },
+        { out, sections }
       );
     }
 
@@ -1635,20 +1634,20 @@ async function parseRcloneSections(newCfg = false) {
   } catch (err) {
     const cfg = await fsp.readFile(
       global.currentConfiguration.rcloneConf,
-      'utf8',
+      'utf8'
     );
 
     if (!cfg) {
       return console.error(
         'rclone config is empty',
-        global.currentConfiguration.rcloneConf,
+        global.currentConfiguration.rcloneConf
       );
     }
 
     const lines = cfg.split('\n');
     const sections = [];
     for (const line of lines) {
-      if (line[0] !== '[') {
+      if (!line[0].startsWith('[')) {
         continue;
       }
       const section = line.match(/\[(.*?)\]/)[1];
@@ -1733,7 +1732,7 @@ async function mount() {
       }
 
       console.log('rclone stdout:', stdout);
-    },
+    }
   );
 }
 
@@ -1887,7 +1886,7 @@ async function getDir(folder) {
               // Only do this if this is a folder containing an apk file.
               if (info.isDirectory()) {
                 const dirCont = await fsp.readdir(path.join(folder, fileName));
-                const isGameFolder =
+                isGameFolder =
                   dirCont.filter((file) => {
                     return /.*\.apk/.test(file);
                   }).length > 0;
@@ -2025,7 +2024,7 @@ async function getDir(folder) {
           createdAt: new Date(info.mtimeMs),
           filePath: path.join(folder, fileName).replace(/\\/g, '/'),
         };
-      }),
+      })
     );
     // console.log({ fileNames });
 
@@ -2087,7 +2086,7 @@ async function getDirListing(folder) {
   const fileNames = await Promise.all(
     files.map(async (file) => {
       return path.join(folder, file).replace(/\\/g, '/');
-    }),
+    })
   );
 
   return fileNames;
@@ -2126,14 +2125,14 @@ async function backupApp({ location, pkg }) {
 const backupPrefsPath = '/sdcard/Download/backup/data/data';
 async function backupAppData(
   packageName,
-  backupPath = path.join(global.sidenoderHome, 'backup_data'),
+  backupPath = path.join(global.sidenoderHome, 'backup_data')
 ) {
   console.log('backupAppData()', packageName);
   backupPath = path.join(backupPath, packageName);
   if (await adbFileExists(`/sdcard/Android/data/${packageName}`)) {
     await adbPullFolder(
       `/sdcard/Android/data/${packageName}`,
-      path.join(backupPath, 'Android', packageName),
+      path.join(backupPath, 'Android', packageName)
     );
   } else {
     console.log(`skip backup Android/data/${packageName}`);
@@ -2142,7 +2141,7 @@ async function backupAppData(
   await copyAppPrefs(packageName);
   await adbPullFolder(
     `${backupPrefsPath}/${packageName}`,
-    path.join(backupPath, 'data', packageName),
+    path.join(backupPath, 'data', packageName)
   );
   await adbShell(`rm -r "${backupPrefsPath}/${packageName}"`);
 
@@ -2152,7 +2151,7 @@ async function backupAppData(
 
 async function restoreAppData(
   packageName,
-  backupPath = path.join(global.sidenoderHome, 'backup_data'),
+  backupPath = path.join(global.sidenoderHome, 'backup_data')
 ) {
   console.log('restoreAppData()', packageName);
   backupPath = path.join(backupPath, packageName);
@@ -2162,11 +2161,11 @@ async function restoreAppData(
 
   await adbPushFolder(
     path.join(backupPath, 'Android', packageName),
-    `/sdcard/Android/data/${packageName}`,
+    `/sdcard/Android/data/${packageName}`
   );
   await adbPushFolder(
     path.join(backupPath, 'data', packageName),
-    `${backupPrefsPath}/${packageName}`,
+    `${backupPrefsPath}/${packageName}`
   );
   await restoreAppPrefs(packageName);
   return true;
@@ -2176,7 +2175,7 @@ async function copyAppPrefs(packageName, removeAfter = false) {
   const cmd = removeAfter ? 'mv -f' : 'cp -rf';
   await adbShell(`mkdir -p "${backupPrefsPath}"`);
   return await adbShell(
-    `run-as ${packageName} ${cmd} "/data/data/${packageName}" "${backupPrefsPath}/"`,
+    `run-as ${packageName} ${cmd} "/data/data/${packageName}" "${backupPrefsPath}/"`
   );
 }
 
@@ -2188,7 +2187,7 @@ async function restoreAppPrefs(packageName, removeAfter = true) {
   }
 
   return await adbShell(
-    `run-as ${packageName} ${cmd} "${backupPath}" "/data/data/"`,
+    `run-as ${packageName} ${cmd} "${backupPath}" "/data/data/"`
   );
 }
 
@@ -2322,7 +2321,7 @@ async function sideloadFolder(arg) {
     try {
       await adbShell(`mkdir -p "${backupPath}"`);
       await adbShell(
-        `mv "/sdcard/Android/data/${packageName}" "${backupPath}"`,
+        `mv "/sdcard/Android/data/${packageName}" "${backupPath}"`
       );
       await copyAppPrefs(packageName);
       // await backupAppData(packageName, backup_path);
@@ -2380,7 +2379,7 @@ async function sideloadFolder(arg) {
     try {
       // await restoreAppData(packageName, backup_path);
       await adbShell(
-        `mv "${backupPath}${packageName}" "/sdcard/Android/data/"`,
+        `mv "${backupPath}${packageName}" "/sdcard/Android/data/"`
       );
       await restoreAppPrefs(packageName);
       res.restore = 'done';
@@ -2566,7 +2565,7 @@ async function getInstalledApps(obj = false) {
 async function getInstalledAppsWithUpdates() {
   const remotePath = path.join(
     global.mountFolder,
-    global.currentConfiguration.mntGamePath,
+    global.currentConfiguration.mntGamePath
   ); // TODO: folder path to config
   const list = await getDir(remotePath);
   const remotePackages = {};
@@ -2636,7 +2635,7 @@ async function getInstalledAppsWithUpdates() {
 async function detectNoteTxt(files, folder) {
   // TODO: check .meta/notes
 
-  if (typeof files == 'string') {
+  if (typeof files === 'string') {
     folder = files;
     files = false;
   }
@@ -2653,7 +2652,7 @@ async function detectNoteTxt(files, folder) {
 }
 
 async function detectInstallTxt(files, folder) {
-  if (typeof files == 'string') {
+  if (typeof files === 'string') {
     folder = files;
     files = false;
   }
@@ -2747,9 +2746,11 @@ async function init() {
 }
 
 async function loadMeta() {
+  const length = 32;
+
   try {
     const res = await fetch(
-      `${global.repositoryraw}/quest_icons/master/version?${Date.now()}`,
+      `${global.repositoryraw}/quest_icons/master/version?${Date.now()}`
     );
 
     const questIconsVersion = await res.text();
@@ -2765,7 +2766,7 @@ async function loadMeta() {
 
   try {
     const res = await fetch(
-      `${global.repositoryraw}/quest_icons/master/list.json?${Date.now()}`,
+      `${global.repositoryraw}/quest_icons/master/list.json?${Date.now()}`
     );
     QUEST_ICONS = await res.json();
     console.log('icons list loaded');
@@ -2775,20 +2776,20 @@ async function loadMeta() {
 
   try {
     const res = await fetch(
-      `${global.repositoryraw}/quest_icons/master/.e?${Date.now()}`,
+      `${global.repositoryraw}/quest_icons/master/.e?${Date.now()}`
     );
     const text = await res.text();
-    const iv = Buffer.from(text.substring(0, l), 'hex');
-    const author = pkg.author.match(/^\w+\s?\w+/)[0].replace(' ', '');
+    const iv = Buffer.from(text.substring(0, length), 'hex');
+    const author = pkgJson.author.match(/^\w+\s?\w+/)[0].replace(' ', '');
     const secret = crypto
       .createHash(global.hash_alg)
       .update(author.repeat(2))
       .digest('base64')
-      .substr(0, l);
+      .substr(0, length);
     const decipher = crypto.createDecipheriv('aes-256-cbc', secret, iv);
-    const encrypted = text.substring(l);
+    const encrypted = text.substring(length);
     KMETAS = JSON.parse(
-      decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8'),
+      decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
     );
     for (const pkg of Object.keys(KMETAS)) {
       KMETAS2[escString(KMETAS[pkg].simpleName)] = pkg;
@@ -2834,7 +2835,7 @@ async function initLogs() {
 
     // Clone message and data because they are shared by the different
     // transports.
-    const newMessage = Object.assign({}, message);
+    const newMessage = { ...message };
     const { data, date, level } = newMessage;
     const dataClone = [...data];
 
@@ -2860,7 +2861,7 @@ async function initLogs() {
 
     // Build strings ready for output
     const colorize = color[level];
-    const lvl = ('[' + level + ']').padStart(9, ' ');
+    const lvl = `[${level}]`.padStart(9, ' ');
     const formattedTime = date.toTimeString().substring(0, 8);
 
     // Tag entries with their process type:
@@ -2931,7 +2932,7 @@ async function reloadConfig() {
     console.log(`Config exists, using "${configLocation}"`);
     global.currentConfiguration = Object.assign(
       defaultConfig,
-      require(configLocation),
+      require(configLocation)
     );
   } else {
     console.log(`Config doesn't exist, creating "${configLocation}"`);
@@ -2984,9 +2985,9 @@ async function changeConfig(key, value) {
   return value;
 }
 
-async function fileExists(path) {
+async function fileExists(filePath) {
   try {
-    await fs.promises.stat(path);
+    await fs.promises.stat(filePath);
     return true;
   } catch {
     return false;

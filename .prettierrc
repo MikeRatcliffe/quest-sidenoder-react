@@ -1,6 +1,6 @@
 {
   "arrowParens": "always",
-  "bracketSameLine": true,
+  "bracketSameLine": false,
   "bracketSpacing": true,
   "embeddedLanguageFormatting": "auto",
   "endOfLine": "lf",
@@ -13,9 +13,26 @@
   "requirePragma": false,
   "semi": true,
   "singleAttributePerLine": false,
-  "singleQuote": false,
   "tabWidth": 2,
-  "trailingComma": "all",
+  "trailingComma": "es5",
   "useTabs": false,
-  "vueIndentScriptAndStyle": false
+  "vueIndentScriptAndStyle": false,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": ["**/*.json", "**/*.html"],
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": [".prettierrc"],
+      "options": {
+        "parser": "json",
+        "options": {
+          "singleQuote": false
+        }
+      }
+    }
+  ]
 }

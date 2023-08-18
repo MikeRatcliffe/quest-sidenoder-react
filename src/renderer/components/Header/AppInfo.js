@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { Col, Row } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import { Battery } from './Battery';
-import { Icon } from '../shared/icon';
+import Battery from './Battery';
+import Icon from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { ipcRenderer } = window.require('electron');
@@ -30,17 +30,24 @@ function AppInfo() {
 
         timer = setTimeout(
           () => ipcRenderer.send('get_device_info', ''),
-          30000,
+          30000
         );
 
-        const { storage, user, fw, battery, wifi, ip } = deviceInfo;
+        const {
+          storage: devStorage,
+          user: devUser,
+          fw: devFw,
+          battery,
+          wifi: devWifi,
+          ip: devIp,
+        } = deviceInfo;
 
         const dev = remote.getGlobal('adbDevice');
 
         setBatCharge(!dev && 'unknown');
-        setStorage(storage);
-        setUser(user);
-        setFw((fw && fw.version) || 'v.XX');
+        setStorage(devStorage);
+        setUser(devUser);
+        setFw((devFw && devFw.version) || 'v.XX');
 
         if (battery) {
           const {
@@ -75,23 +82,23 @@ function AppInfo() {
                   temperature / 10
                 }°C\nMax Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
                   current * voltage
-                }W`,
+                }W`
               );
             } else {
               setBatNote(
                 `Max Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
                   current * voltage
-                }W`,
+                }W`
               );
             }
           }
         }
 
-        setWifi(wifi ? 'On' : 'Off');
+        setWifi(devWifi ? 'On' : 'Off');
         setIp(
-          (wifi && ip) ||
+          (devWifi && devIp) ||
             remote.getGlobal('currentConfiguration').lastIp ||
-            'X.X.X.X',
+            'X.X.X.X'
         );
       });
       ipcRenderer.send('get_device_info', '');
@@ -172,17 +179,21 @@ function StorageDiv({ storage }) {
             aria-valuenow={percent}
             aria-valuemin="0"
             aria-valuemax="100"
-          ></div>
+          />
         </div>
       </>
     );
-  } else {
-    return 'Can`t get storage status';
   }
+  return 'Can`t get storage status';
 }
 
 StorageDiv.propTypes = {
-  storage: PropTypes.object,
+  storage: PropTypes.shape({
+    percent: PropTypes.string,
+    used: PropTypes.string,
+    size: PropTypes.string,
+    free: PropTypes.string,
+  }),
 };
 
-export { AppInfo };
+export default AppInfo;

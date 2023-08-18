@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Icon } from '../shared/icon';
+import Icon from '../shared/icon';
 
 function Battery({ level, chargeMethod }) {
   if (chargeMethod === 'AC' || chargeMethod === 'USB') {
@@ -29,4 +29,4 @@ Battery.propTypes = {
   chargeMethod: PropTypes.oneOf(['AC', 'AIR', 'USB', 'unknown']),
 };
 
-export { Battery };
+export default Battery;

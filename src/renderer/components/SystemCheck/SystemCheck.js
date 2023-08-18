@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Table } from 'react-bootstrap';
-import { AdbBlock } from './AdbBlock';
-import { RcloneBlock } from './RcloneBlock';
-import { ScrCpyBlock } from './ScrCpyBlock';
-import { ZipBlock } from './ZipBlock';
-import { Icon } from '../shared/icon';
+import AdbBlock from './AdbBlock';
+import RcloneBlock from './RcloneBlock';
+import ScrCpyBlock from './ScrCpyBlock';
+import ZipBlock from './ZipBlock';
+import Icon from '../shared/icon';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -28,17 +28,23 @@ function SystemCheck() {
       console.log('ONLOAD SYSTEMCHECK START');
       console.log('sending check_deps');
 
-      const { adb } = await ipcRenderer.invoke('check_deps', 'adb');
-      setAdb(adb);
+      const { adb: adbResult } = await ipcRenderer.invoke('check_deps', 'adb');
+      setAdb(adbResult);
 
-      const { rclone } = await ipcRenderer.invoke('check_deps', 'rclone');
-      setRclone(rclone);
+      const { rclone: rcloneResult } = await ipcRenderer.invoke(
+        'check_deps',
+        'rclone'
+      );
+      setRclone(rcloneResult);
 
-      const { zip } = await ipcRenderer.invoke('check_deps', 'zip');
-      setZip(zip);
+      const { zip: zipResult } = await ipcRenderer.invoke('check_deps', 'zip');
+      setZip(zipResult);
 
-      const { scrcpy } = await ipcRenderer.invoke('check_deps', 'scrcpy');
-      setScrcpy(scrcpy);
+      const { scrcpy: scrcpyResult } = await ipcRenderer.invoke(
+        'check_deps',
+        'scrcpy'
+      );
+      setScrcpy(scrcpyResult);
 
       console.log('ONLOAD SYSTEMCHECK END');
     })();
@@ -90,4 +96,4 @@ function SystemCheck() {
   );
 }
 
-export { SystemCheck };
+export default SystemCheck;

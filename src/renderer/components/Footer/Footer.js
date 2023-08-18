@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { Icon } from '../shared/icon';
+import Icon from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -59,4 +59,4 @@ function Footer() {
   );
 }
 
-export { Footer };
+export default Footer;

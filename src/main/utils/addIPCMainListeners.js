@@ -30,7 +30,6 @@ const addIPCMainListeners = () => {
     const res = await tools.getDeviceInfo();
 
     event.reply('get_device_info', res);
-    return;
   }
 
   ipcMain.on('connect_wireless', async (event) => {

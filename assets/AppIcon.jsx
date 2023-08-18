@@ -40,4 +40,4 @@ AppIcon.propTypes = {
   mode: PropTypes.oneOf(['light', 'dark']),
 };
 
-export { AppIcon };
+export default AppIcon;

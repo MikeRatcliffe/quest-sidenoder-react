@@ -2,6 +2,8 @@
   "varsIgnorePattern": "appTools|getUpdates|startApp|uninstall|update"
 }] */
 
+import { ipcRenderer } from 'electron';
+
 console.log('ONLOAD INSTALLED');
 
 ipcRenderer.on('get_installed', (event, arg) => {

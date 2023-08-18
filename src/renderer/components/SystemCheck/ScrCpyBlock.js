@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { Icon } from '../shared/icon';
+import Icon from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -27,40 +27,44 @@ function ScrCpyBlock({ scrcpy }) {
         <pre style={{ fontSize: 'x-small' }}>{scrcpy.version}</pre>
       </Alert>
     );
-  } else {
-    const tag = platform.replace('win', 'windows').replace('mac', 'macos');
-
-    return (
-      <Alert variant="danger" className="fs-6 p-1">
-        <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find SCRCPY
-        <br />
-        Install the{' '}
-        <Button
-          variant="link"
-          size="lg"
-          className="p-0 border-0 fs-inherit link-light fw-normal system-check-link"
-          onClick={() =>
-            shell.openExternal(
-              `https://github.com/Genymobile/scrcpy/blob/master/doc/${tag}.md`,
-            )
-          }
-        >
-          latest version
-        </Button>
-        , set a custom location in settings and try again
-        {scrcpy.error && (
-          <>
-            <br />
-            <pre style={{ fontSize: 'x-small' }}>error: \n{scrcpy.error}</pre>
-          </>
-        )}
-      </Alert>
-    );
   }
+
+  const tag = platform.replace('win', 'windows').replace('mac', 'macos');
+
+  return (
+    <Alert variant="danger" className="fs-6 p-1">
+      <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find SCRCPY
+      <br />
+      Install the{' '}
+      <Button
+        variant="link"
+        size="lg"
+        className="p-0 border-0 fs-inherit link-light fw-normal system-check-link"
+        onClick={() =>
+          shell.openExternal(
+            `https://github.com/Genymobile/scrcpy/blob/master/doc/${tag}.md`
+          )
+        }
+      >
+        latest version
+      </Button>
+      , set a custom location in settings and try again
+      {scrcpy.error && (
+        <>
+          <br />
+          <pre style={{ fontSize: 'x-small' }}>error: \n{scrcpy.error}</pre>
+        </>
+      )}
+    </Alert>
+  );
 }
 
 ScrCpyBlock.propTypes = {
-  scrcpy: PropTypes.object,
+  scrcpy: PropTypes.shape({
+    cmd: PropTypes.string,
+    error: PropTypes.string,
+    version: PropTypes.string,
+  }),
 };
 
-export { ScrCpyBlock };
+export default ScrCpyBlock;

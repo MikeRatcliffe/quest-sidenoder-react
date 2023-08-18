@@ -2,30 +2,30 @@
  * Build config for electron renderer process
  */
 
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const { merge } = require('webpack-merge');
-const TerserPlugin = require('terser-webpack-plugin');
-const baseConfig = require('./webpack.config.base');
-const webpackPaths = require('./webpack.paths');
-const checkNodeEnv = require('../scripts/check-node-env');
-const deleteSourceMaps = require('../scripts/delete-source-maps');
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import { merge } from 'webpack-merge';
+import TerserPlugin from 'terser-webpack-plugin';
+import baseConfig from './webpack.config.base';
+import webpackPaths from './webpack.paths';
+import checkNodeEnv from '../scripts/check-node-env';
+import deleteSourceMaps from '../scripts/delete-source-maps';
 
 checkNodeEnv('production');
 deleteSourceMaps();
 
-const configuration = {
+const configuration: webpack.Configuration = {
   devtool: 'source-map',
 
   mode: 'production',
 
   target: ['web', 'electron-renderer'],
 
-  entry: [path.join(webpackPaths.srcRendererPath, 'index.js')],
+  entry: [path.join(webpackPaths.srcRendererPath, 'index.tsx')],
 
   output: {
     path: webpackPaths.distRendererPath,
@@ -72,25 +72,6 @@ const configuration = {
           'file-loader',
         ],
       },
-      {
-        test: /\.jsx?$/,
-        resolve: {
-          extensions: ['.js', '.jsx'],
-        },
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            '@babel/env',
-            [
-              '@babel/preset-react',
-              {
-                runtime: 'automatic',
-              },
-            ],
-          ],
-        },
-      },
     ],
   },
 
@@ -125,7 +106,7 @@ const configuration = {
 
     new HtmlWebpackPlugin({
       filename: 'index.html',
-      template: path.join(webpackPaths.srcRendererPath, 'index.html'),
+      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
@@ -141,4 +122,4 @@ const configuration = {
   ],
 };
 
-module.exports = merge(baseConfig, configuration);
+export default merge(baseConfig, configuration);

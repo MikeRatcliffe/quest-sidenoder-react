@@ -1,16 +1,15 @@
-require('webpack-dev-server');
-const path = require('path');
-const fs = require('fs');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const chalk = require('chalk');
-const { merge } = require('webpack-merge');
-const { execSync } = require('child_process');
-const { spawn } = require('child_process');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const baseConfig = require('./webpack.config.base');
-const webpackPaths = require('./webpack.paths');
-const checkNodeEnv = require('../scripts/check-node-env');
+import 'webpack-dev-server';
+import path from 'path';
+import fs from 'fs';
+import { execSync, spawn } from 'child_process';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import chalk from 'chalk';
+import { merge } from 'webpack-merge';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import baseConfig from './webpack.config.base';
+import webpackPaths from './webpack.paths';
+import checkNodeEnv from '../scripts/check-node-env';
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
@@ -33,13 +32,13 @@ if (
 ) {
   console.log(
     chalk.black.bgYellow.bold(
-      'The DLL files are missing. Sit back while we build them for you with "npm run build-dll"',
-    ),
+      'The DLL files are missing. Sit back while we build them for you with "npm run build-dll"'
+    )
   );
   execSync('npm run postinstall');
 }
 
-const configuration = {
+const configuration: webpack.Configuration = {
   devtool: 'inline-source-map',
 
   mode: 'development',
@@ -49,7 +48,7 @@ const configuration = {
   entry: [
     `webpack-dev-server/client?http://localhost:${port}/dist`,
     'webpack/hot/only-dev-server',
-    path.join(webpackPaths.srcRendererPath, 'index.js'),
+    path.join(webpackPaths.srcRendererPath, 'index.tsx'),
   ],
 
   output: {
@@ -97,25 +96,6 @@ const configuration = {
           'file-loader',
         ],
       },
-      {
-        test: /\.jsx?$/,
-        resolve: {
-          extensions: ['.js', '.jsx'],
-        },
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel-loader',
-        options: {
-          presets: [
-            '@babel/env',
-            [
-              '@babel/preset-react',
-              {
-                runtime: 'automatic',
-              },
-            ],
-          ],
-        },
-      },
     ],
   },
   plugins: [
@@ -155,7 +135,7 @@ const configuration = {
 
     new HtmlWebpackPlugin({
       filename: path.join('index.html'),
-      template: path.join(webpackPaths.srcRendererPath, 'index.html'),
+      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
@@ -182,7 +162,6 @@ const configuration = {
       publicPath: '/',
     },
     historyApiFallback: {
-      disableDotRule: true,
       verbose: true,
     },
     setupMiddlewares(middlewares) {
@@ -190,15 +169,15 @@ const configuration = {
       let args = ['run', 'start:main'];
       if (process.env.MAIN_ARGS) {
         args = args.concat(
-          ['--', ...process.env.MAIN_ARGS.matchAll(/"[^"]+"|[^\s"]+/g)].flat(),
+          ['--', ...process.env.MAIN_ARGS.matchAll(/"[^"]+"|[^\s"]+/g)].flat()
         );
       }
       spawn('npm', args, {
         shell: true,
         stdio: 'inherit',
       })
-        .on('close', (code) => {
-          process.exit(code);
+        .on('close', (code: number) => {
+          process.exit(code!);
         })
         .on('error', (spawnError) => console.error(spawnError));
       return middlewares;
@@ -206,4 +185,4 @@ const configuration = {
   },
 };
 
-module.exports = merge(baseConfig, configuration);
+export default merge(baseConfig, configuration);

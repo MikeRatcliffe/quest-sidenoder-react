@@ -2,19 +2,19 @@
  * Builds the DLL for development electron renderer process
  */
 
-const webpack = require('webpack');
-const path = require('path');
-const { merge } = require('webpack-merge');
-const baseConfig = require('./webpack.config.base');
-const webpackPaths = require('./webpack.paths');
-const { dependencies } = require('../../package.json');
-const checkNodeEnv = require('../scripts/check-node-env');
+import path from 'path';
+import webpack from 'webpack';
+import { merge } from 'webpack-merge';
+import baseConfig from './webpack.config.base';
+import webpackPaths from './webpack.paths';
+import { dependencies } from '../../package.json';
+import checkNodeEnv from '../scripts/check-node-env';
 
 checkNodeEnv('development');
 
 const dist = webpackPaths.dllPath;
 
-const configuration = {
+const configuration: webpack.Configuration = {
   context: webpackPaths.rootPath,
 
   devtool: 'eval',
@@ -28,7 +28,7 @@ const configuration = {
   /**
    * Use `module` from `webpack.config.renderer.dev.js`
    */
-  module: require('./webpack.config.renderer.dev').module,
+  module: require('./webpack.config.renderer.dev').default.module,
 
   entry: {
     renderer: Object.keys(dependencies || {}),
@@ -74,4 +74,4 @@ const configuration = {
   ],
 };
 
-module.exports = merge(baseConfig, configuration);
+export default merge(baseConfig, configuration);

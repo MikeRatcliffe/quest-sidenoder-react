@@ -31,3 +31,5 @@ npm-debug.log.*
 
 *.min.js
 modernizr.custom.js
+
+*.d.ts

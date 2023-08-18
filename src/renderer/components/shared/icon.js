@@ -46,4 +46,4 @@ function Icon({
   }
 }
 
-export { Icon };
+export default Icon;

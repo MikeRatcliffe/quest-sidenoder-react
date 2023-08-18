@@ -1,10 +1,10 @@
 // import { useEffect } from 'react';
 import React from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import { Header } from './components/Header/Header';
-import { Footer } from './components/Footer/Footer';
-import { SystemCheck } from './components/SystemCheck/SystemCheck';
-import './utils/logger';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import SystemCheck from './components/SystemCheck/SystemCheck';
+import log from './utils/logger';
 
 // import { dialog, ipcRenderer, shell } from 'electron';
 import './css/bootstrap-slate.css';

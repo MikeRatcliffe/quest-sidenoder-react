@@ -1,8 +1,8 @@
 /* eslint import/prefer-default-export: off */
-const { URL } = require('url');
-const path = require('path');
+import { URL } from 'url';
+import path from 'path';
 
-module.exports = function resolveHtmlPath(htmlFileName) {
+export function resolveHtmlPath(htmlFileName: string) {
   if (process.env.NODE_ENV === 'development') {
     const port = process.env.PORT || 1212;
     const url = new URL(`http://localhost:${port}`);
@@ -10,4 +10,4 @@ module.exports = function resolveHtmlPath(htmlFileName) {
     return url.href;
   }
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
-};
+}

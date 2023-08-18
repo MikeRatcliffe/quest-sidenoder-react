@@ -1,5 +1,5 @@
-import { AppInfo } from './AppInfo';
-import { Navbar } from './Navbar';
+import AppInfo from './AppInfo';
+import Navbar from './Navbar';
 
 function Header() {
   return (
@@ -10,4 +10,4 @@ function Header() {
   );
 }
 
-export { Header };
+export default Header;

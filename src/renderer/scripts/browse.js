@@ -2,6 +2,9 @@
 /* eslint no-unused-vars: ["error", {
   "varsIgnorePattern": "addBookmark|delBookmark|getDirSize|install|oculusInfo|sortFiles|sqInfo|steamInfo"
 }] */
+import { ipcRenderer } from 'electron';
+const remote = window.require('@electron/remote');
+
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -30,20 +33,20 @@ function setLocation(loc) {
   resizeLoc();
 }
 
-function addBookmark(name, path, writeCfg = true) {
+function addBookmark(name, filePath, writeCfg = true) {
   // console.log('addBookmark', { name, path, writeCfg });
   if (!name) {
     return alert('Bookmark name can`t be empty');
   }
   const i = $('.dir-bookmark').length;
   id('bookmarksdropdown').innerHTML += `<div class="dropdown-item">
-    <a class="dir-bookmark" onclick="getDir('${path}');$id('bookmarksdropdown').toggle()">
+    <a class="dir-bookmark" onclick="getDir('${filePath}');$id('bookmarksdropdown').toggle()">
     <i class="fa fa-star-o"></i> ${name}</a>
     <a class="pull-right text-danger" data-i="${i}" onclick="delBookmark(this)"> x</a>
   </div>`;
   if (writeCfg) {
     const bookmarks = remote.getGlobal('currentConfiguration').dirBookmarks;
-    bookmarks.push({ name, path });
+    bookmarks.push({ name, path: filePath });
     ipcRenderer.send('change_config', { key: 'dirBookmarks', val: bookmarks });
   }
 
@@ -95,7 +98,7 @@ function resizeLoc() {
   const width = window.innerWidth / 10 - 60;
   if (dirPath.title.length > width) {
     dirPath.innerText = `${dirPath.title.substr(0, 8)}...${dirPath.title.slice(
-      -(width - 10),
+      -(width - 10)
     )}`;
   } else {
     dirPath.innerText = dirPath.title;
@@ -133,7 +136,7 @@ function fixIcons() {
     (e) => {
       $(e.target).find('i').addClass('fa-folder-o');
       $(e.target).find('i').removeClass('fa-folder-open-o');
-    },
+    }
   );
 }
 
@@ -203,7 +206,7 @@ function loadDir(list) {
     // console.log(item);
     if (!item.createdAt) {
       cardsFirst.unshift(
-        `<div class="listitem badge badge-danger"><i class="fa fa-times-circle-o"></i> ${item.name}</div>`,
+        `<div class="listitem badge badge-danger"><i class="fa fa-times-circle-o"></i> ${item.name}</div>`
       );
       continue;
     }
@@ -291,7 +294,7 @@ function loadDir(list) {
     }
 
     const youtubeUrl = `https://youtube.com/results?search_query=oculus+quest+${escape(
-      item.simpleName,
+      item.simpleName
     )}`;
     selectBtn += `<a onclick="shell.openExternal('${youtubeUrl}')" title="Search YouTube" class="btn btn-sm btn-danger">
       <i class="fa fa-youtube-play"></i></a> `;
@@ -385,6 +388,6 @@ function sortFileElements(el, key, asc) {
           return -1;
         }
         return 0;
-      }),
+      })
   );
 }

@@ -1,11 +1,24 @@
-const { app, Menu, shell } = require('electron');
+import {
+  app,
+  Menu,
+  shell,
+  BrowserWindow,
+  MenuItemConstructorOptions,
+} from 'electron';
 
-module.exports = class MenuBuilder {
-  constructor(mainWindow) {
+interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
+  selector?: string;
+  submenu?: DarwinMenuItemConstructorOptions[] | Menu;
+}
+
+export default class MenuBuilder {
+  mainWindow: BrowserWindow;
+
+  constructor(mainWindow: BrowserWindow) {
     this.mainWindow = mainWindow;
   }
 
-  buildMenu() {
+  buildMenu(): Menu {
     if (
       process.env.NODE_ENV === 'development' ||
       process.env.DEBUG_PROD === 'true'
@@ -24,7 +37,7 @@ module.exports = class MenuBuilder {
     return menu;
   }
 
-  setupDevelopmentEnvironment() {
+  setupDevelopmentEnvironment(): void {
     this.mainWindow.webContents.on('context-menu', (_, props) => {
       const { x, y } = props;
 
@@ -39,19 +52,19 @@ module.exports = class MenuBuilder {
     });
   }
 
-  buildDarwinTemplate() {
-    const subMenuAbout = {
+  buildDarwinTemplate(): MenuItemConstructorOptions[] {
+    const subMenuAbout: DarwinMenuItemConstructorOptions = {
       label: 'Electron',
       submenu: [
         {
-          label: 'About Quest Sidenoder',
+          label: 'About ElectronReact',
           selector: 'orderFrontStandardAboutPanel:',
         },
         { type: 'separator' },
         { label: 'Services', submenu: [] },
         { type: 'separator' },
         {
-          label: 'Hide Quest Sidenoder',
+          label: 'Hide ElectronReact',
           accelerator: 'Command+H',
           selector: 'hide:',
         },
@@ -71,7 +84,7 @@ module.exports = class MenuBuilder {
         },
       ],
     };
-    const subMenuEdit = {
+    const subMenuEdit: DarwinMenuItemConstructorOptions = {
       label: 'Edit',
       submenu: [
         { label: 'Undo', accelerator: 'Command+Z', selector: 'undo:' },
@@ -87,7 +100,7 @@ module.exports = class MenuBuilder {
         },
       ],
     };
-    const subMenuViewDev = {
+    const subMenuViewDev: MenuItemConstructorOptions = {
       label: 'View',
       submenu: [
         {
@@ -113,7 +126,7 @@ module.exports = class MenuBuilder {
         },
       ],
     };
-    const subMenuViewProd = {
+    const subMenuViewProd: MenuItemConstructorOptions = {
       label: 'View',
       submenu: [
         {
@@ -125,7 +138,7 @@ module.exports = class MenuBuilder {
         },
       ],
     };
-    const subMenuWindow = {
+    const subMenuWindow: DarwinMenuItemConstructorOptions = {
       label: 'Window',
       submenu: [
         {
@@ -138,7 +151,7 @@ module.exports = class MenuBuilder {
         { label: 'Bring All to Front', selector: 'arrangeInFront:' },
       ],
     };
-    const subMenuHelp = {
+    const subMenuHelp: MenuItemConstructorOptions = {
       label: 'Help',
       submenu: [
         {
@@ -151,7 +164,7 @@ module.exports = class MenuBuilder {
           label: 'Documentation',
           click() {
             shell.openExternal(
-              'https://github.com/electron/electron/tree/main/docs#readme',
+              'https://github.com/electron/electron/tree/main/docs#readme'
             );
           },
         },
@@ -215,7 +228,7 @@ module.exports = class MenuBuilder {
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen(),
+                      !this.mainWindow.isFullScreen()
                     );
                   },
                 },
@@ -233,7 +246,7 @@ module.exports = class MenuBuilder {
                   accelerator: 'F11',
                   click: () => {
                     this.mainWindow.setFullScreen(
-                      !this.mainWindow.isFullScreen(),
+                      !this.mainWindow.isFullScreen()
                     );
                   },
                 },
@@ -252,7 +265,7 @@ module.exports = class MenuBuilder {
             label: 'Documentation',
             click() {
               shell.openExternal(
-                'https://github.com/electron/electron/tree/main/docs#readme',
+                'https://github.com/electron/electron/tree/main/docs#readme'
               );
             },
           },
@@ -274,4 +287,4 @@ module.exports = class MenuBuilder {
 
     return templateDefault;
   }
-};
+}

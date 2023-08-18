@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { AppIcon } from '../../../../assets/AppIcon.jsx';
 import { Navbar as BootstrapNavbar, Button, Container } from 'react-bootstrap';
-import { Icon } from '../shared/icon';
+import AppIcon from '../../../../assets/AppIcon.jsx';
+import Icon from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { dialog, ipcRenderer } = window.require('electron');
@@ -108,7 +108,8 @@ function Navbar() {
           spin={mountButtonVariant !== 'success'}
         />
       );
-    } else if (mounting) {
+    }
+    if (mounting) {
       mountButtonVariant = 'warning';
     }
 
@@ -234,7 +235,7 @@ function Navbar() {
   );
 }
 
-export { Navbar };
+export default Navbar;
 
 // events
 
