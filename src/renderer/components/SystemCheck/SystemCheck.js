@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AdbBlock } from './AdbBlock';
 import { RcloneBlock } from './RcloneBlock';
 import { ScrCpyBlock } from './ScrCpyBlock';
 import { ZipBlock } from './ZipBlock';
+import { Icon } from '../shared/icon';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -47,7 +47,7 @@ function SystemCheck() {
   return (
     <Card>
       <Card.Header>
-        <FontAwesomeIcon icon="list" /> System Check
+        <Icon set="fa" icon="FaList" size="sm" /> System Check
       </Card.Header>
       <Card.Body className="fs-5">
         <Table borderless hover size="sm" className="fit-first-column">
@@ -67,7 +67,7 @@ function SystemCheck() {
                   variant="outline-secondary"
                   onClick={() => shell.openPath(sidenoderHome)}
                 >
-                  <FontAwesomeIcon icon="home" />
+                  <Icon set="fa" icon="FaHome" size="2xl" />
                 </Button>
               </td>
             </tr>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Icon } from '../../../../assets/Icon.jsx';
+import { AppIcon } from '../../../../assets/AppIcon.jsx';
 import { Navbar as BootstrapNavbar, Button, Container } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { dialog, ipcRenderer } = window.require('electron');
@@ -96,17 +96,31 @@ function Navbar() {
     wirelessVariant = 'danger';
   }
 
-  let mountButtonVariant = null;
-  let mountRefreshIcon = null;
-  if (mounted) {
-    mountButtonVariant = 'success';
-    mountRefreshIcon = ['far', 'check-circle'];
-  } else if (mounting) {
-    mountButtonVariant = 'warning';
-    mountRefreshIcon = 'folder-open spin';
-  } else {
+  let mountButtonVariant = 'danger';
+  function getMountRefreshIcon() {
+    if (mounted) {
+      mountButtonVariant = 'success';
+      return (
+        <Icon
+          set="fa"
+          icon="FaRegCheckCircle"
+          id="mountrefresh"
+          spin={mountButtonVariant !== 'success'}
+        />
+      );
+    } else if (mounting) {
+      mountButtonVariant = 'warning';
+    }
+
     mountButtonVariant = 'danger';
-    mountRefreshIcon = 'folder-open';
+    return (
+      <Icon
+        set="im"
+        icon="ImSpinner11"
+        id="mountrefresh"
+        spin={mountButtonVariant === 'warning'}
+      />
+    );
   }
 
   return (
@@ -116,7 +130,7 @@ function Navbar() {
       className="justify-content-between border-0"
     >
       <BootstrapNavbar.Brand>
-        <Icon
+        <AppIcon
           width={60}
           height={50}
           mode="light"
@@ -130,7 +144,7 @@ function Navbar() {
         className="me-1 text-nowrap"
         // onClick="loadInclude('browse_include.twig', null, () => ipcRenderer.send('get_dir', ``));"
       >
-        <FontAwesomeIcon icon={['far', 'folder-open']} /> Browse
+        <Icon set="fa" icon="FaRegFolderOpen" /> Browse
       </Button>
       <Button
         id="browse-remote"
@@ -139,7 +153,7 @@ function Navbar() {
         disabled={!mounted}
         // onClick="loadInclude('browse_include.twig', null, () => ipcRenderer.send('get_dir', remote.getGlobal('mountFolder')));"
       >
-        <FontAwesomeIcon icon={['far', 'folder-open']} /> Remote
+        <Icon set="fa" icon="FaRegFolderOpen" /> Remote
       </Button>
       <Button
         id="browse-installed"
@@ -149,7 +163,7 @@ function Navbar() {
         //       button can be shown / hidden
         // onClick="loadInclude('modals/installed.twig', 'installedmodaldiv')"
       >
-        <FontAwesomeIcon icon="list" /> Installed
+        <Icon set="fa" icon="FaList" /> Installed
       </Button>
       <Button
         id="device-tweaks"
@@ -157,7 +171,7 @@ function Navbar() {
         className="me-1 text-nowrap"
         // onClick="loadInclude('modals/tweaks.twig', 'tweaksmodaldiv')"
       >
-        <FontAwesomeIcon icon="bug" />
+        <Icon set="fa" icon="FaBug" />
       </Button>
       <Button
         id="settings"
@@ -165,18 +179,21 @@ function Navbar() {
         className="me-1 text-nowrap"
         // onClick="loadInclude('settings_include.twig')"
       >
-        <FontAwesomeIcon icon="cog" />
+        <Icon set="fa" icon="FaCog" />
       </Button>
-      <Container className="justify-content-end gap-2">
+      <Container
+        id="action-button-container"
+        className="justify-content-end gap-2"
+      >
         <Button
           id="mountbtn"
           variant={mountButtonVariant}
           size="sm"
+          data-spin={mounting}
           className="text-nowrap"
           onClick={onCheckMountClick}
         >
-          <FontAwesomeIcon icon={mountRefreshIcon} id="mountrefresh" />{' '}
-          {mounted ? 'UNMOUNT' : 'MOUNT'}
+          {getMountRefreshIcon()} {mounted ? 'UNMOUNT' : 'MOUNT'}
           <br />
           {mounted ? 'connected' : 'disconnected'}
         </Button>
@@ -186,10 +203,11 @@ function Navbar() {
           size="sm"
           className="text-nowrap"
         >
-          <FontAwesomeIcon
-            icon={deviceConnected ? ['far', 'check-circle'] : 'refresh'}
-            spin={!deviceConnected}
-          />{' '}
+          {deviceConnected ? (
+            <Icon set="fa" icon="FaRegCheckCircle" />
+          ) : (
+            <Icon set="im" icon="ImSpinner11" spin={!deviceConnected} />
+          )}{' '}
           DEVICE
           <br />
           {deviceConnected ? 'connected' : 'disconnected'}
@@ -201,9 +219,10 @@ function Navbar() {
           className="text-nowrap"
           onClick={onWirelessClick}
         >
-          <FontAwesomeIcon
-            icon="refresh"
+          <Icon
             id="wirelessrefresh"
+            set="im"
+            icon="ImSpinner11"
             spin={wirelessRefresh}
           />{' '}
           WIRELESS

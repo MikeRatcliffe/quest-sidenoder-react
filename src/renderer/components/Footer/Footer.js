@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -31,7 +31,7 @@ function Footer() {
           shell.openPath(logPath);
         }}
       >
-        <FontAwesomeIcon icon={['far', 'file-code']} /> log
+        <Icon set="fa" icon="FaRegFileCode" /> log
       </Button>{' '}
       <b>SideNoder v{version}</b>
       <br />
@@ -53,7 +53,7 @@ function Footer() {
           document.documentElement.scrollTop = 0;
         }}
       >
-        <FontAwesomeIcon icon="angle-up" />
+        <Icon set="fa6" icon="FaAngleUp" size="2xl" />
       </Button>
     </footer>
   );

@@ -7,15 +7,6 @@ import { SystemCheck } from './components/SystemCheck/SystemCheck';
 import './utils/logger';
 
 // import { dialog, ipcRenderer, shell } from 'electron';
-
-// Make fontawesome icons available throughout app
-// e.g. <FontAwesomeIcon icon="bug" />
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { far } from '@fortawesome/free-regular-svg-icons';
-import { fas } from '@fortawesome/free-solid-svg-icons';
-
-library.add(far, fas);
-
 import './css/bootstrap-slate.css';
 import './css/App.css';
 

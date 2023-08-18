@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import { Col, Row } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { Battery } from './Battery';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { ipcRenderer } = window.require('electron');
@@ -104,13 +104,13 @@ function AppInfo() {
     <div id="device_infoDiv">
       <Row>
         <Col sm={2}>
-          <FontAwesomeIcon icon={['far', 'user-circle']} /> User: <br />
+          <Icon set="fa" icon="FaRegUserCircle" /> User: <br />
           <small id="deviceUserName">
             {(user && user.name) || <i>Unknown</i>}
           </small>
         </Col>
         <Col sm={2}>
-          <FontAwesomeIcon icon="tag" /> FW: <br />
+          <Icon set="fa6" icon="FaTag" /> FW: <br />
           <span id="deviceFwVersion">{fw}</span>
         </Col>
         <Col sm={2} title={batNote}>
@@ -122,7 +122,7 @@ function AppInfo() {
           </small>
         </Col>
         <Col sm={2}>
-          <FontAwesomeIcon icon="wifi" /> <span id="deviceWifi">{wifi}</span>
+          <Icon set="fa" icon="FaWifi" /> <span id="deviceWifi">{wifi}</span>
           <br />
           <small>
             IP: <span id="deviceIp">{ip}</span>
@@ -140,8 +140,8 @@ function StorageDiv({ storage }) {
   if (!storage) {
     return (
       <div id="storageDiv">
-        <FontAwesomeIcon icon="refresh" spin={true} /> Trying to fetch device
-        storage info
+        <Icon set="im" icon="ImSpinner11" spin /> Trying to fetch device storage
+        info
       </div>
     );
   }
@@ -160,7 +160,7 @@ function StorageDiv({ storage }) {
     return (
       <>
         <small className="pull-left">
-          Used: {storage.used} of {storage.size}({storage.percent})
+          Used: {storage.used} of {storage.size} ({storage.percent})
         </small>
         <small className="pull-right">Free: {storage.free}</small>
         <br />

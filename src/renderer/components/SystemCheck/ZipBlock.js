@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -10,8 +10,7 @@ function ZipBlock({ zip }) {
     return (
       <h4>
         <Alert variant="warning" className="fs-6 p-1">
-          <FontAwesomeIcon icon="refresh" spin={true} /> 7zip Archiver -
-          checking...
+          <Icon set="im" icon="ImSpinner11" spin /> 7zip Archiver - checking...
         </Alert>
       </h4>
     );
@@ -20,8 +19,8 @@ function ZipBlock({ zip }) {
   if (zip.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'check-circle']} /> 7zip Archiver
-        Installed ({zip.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> 7zip Archiver Installed (
+        {zip.cmd})
         <br />
         <pre style={{ fontSize: 'x-small' }}>{zip.version}</pre>
       </Alert>
@@ -29,8 +28,7 @@ function ZipBlock({ zip }) {
   } else {
     return (
       <Alert variant="danger" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'times-circle']} /> Can&apos;t find 7zip
-        Archiver
+        <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find 7zip Archiver
         <br />
         Install the{' '}
         <Button

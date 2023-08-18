@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -9,7 +9,7 @@ function AdbBlock({ adb }) {
   if (!adb) {
     return (
       <Alert variant="warning" className="fs-6 p-1">
-        <FontAwesomeIcon icon="refresh" spin={true} /> Android Debug Bridge -
+        <Icon set="im" icon="ImSpinner11" spin /> Android Debug Bridge -
         checking...
       </Alert>
     );
@@ -18,8 +18,7 @@ function AdbBlock({ adb }) {
   if (adb.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'check-circle']} /> ADB Installed (
-        {adb.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> ADB Installed ({adb.cmd})
         <br />
         <pre style={{ fontSize: 'x-small' }}>{adb.version}</pre>
       </Alert>
@@ -27,7 +26,7 @@ function AdbBlock({ adb }) {
   } else {
     return (
       <Alert variant="danger" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'times-circle']} /> Can&apos;t find ADB
+        <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find ADB
         <br />
         Install the{' '}
         <Button

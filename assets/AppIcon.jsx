@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-function Icon({
+function AppIcon({
   width = 431,
   height = 431,
   mode = 'light',
@@ -33,11 +33,11 @@ function Icon({
   );
 }
 
-Icon.propTypes = {
+AppIcon.propTypes = {
   title: PropTypes.string,
   width: PropTypes.number,
   height: PropTypes.number,
   mode: PropTypes.oneOf(['light', 'dark']),
 };
 
-export { Icon };
+export { AppIcon };

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -12,7 +12,7 @@ function ScrCpyBlock({ scrcpy }) {
     return (
       <h4>
         <Alert variant="warning" className="fs-6 p-1">
-          <FontAwesomeIcon icon="refresh" spin={true} /> SCRCPY - checking...
+          <Icon set="im" icon="ImSpinner11" spin /> SCRCPY - checking...
         </Alert>
       </h4>
     );
@@ -21,8 +21,8 @@ function ScrCpyBlock({ scrcpy }) {
   if (scrcpy.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'check-circle']} /> SCRCPY Installed (
-        {scrcpy.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> SCRCPY Installed ({scrcpy.cmd}
+        )
         <br />
         <pre style={{ fontSize: 'x-small' }}>{scrcpy.version}</pre>
       </Alert>
@@ -32,8 +32,7 @@ function ScrCpyBlock({ scrcpy }) {
 
     return (
       <Alert variant="danger" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'times-circle']} /> Can&apos;t find
-        SCRCPY
+        <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find SCRCPY
         <br />
         Install the{' '}
         <Button

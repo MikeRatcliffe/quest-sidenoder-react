@@ -1,28 +1,27 @@
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import imgBattery from '../../../../assets/battery-charging.gif';
+import { Icon } from '../shared/icon';
 
 function Battery({ level, chargeMethod }) {
   if (chargeMethod === 'AC' || chargeMethod === 'USB') {
-    return <img src={imgBattery} alt="Battery charging icon" />;
+    return <Icon set="pi" icon="PiBatteryChargingBold" size="1point5x" />;
   }
   if (!level) {
-    return <FontAwesomeIcon icon="battery-empty" />;
+    return <Icon set="pi" icon="PiBatteryEmptyBold" size="1point5x" />;
   }
   if (level <= 25) {
-    return <FontAwesomeIcon icon="battery-quarter" />;
+    return <Icon set="pi" icon="PiBatteryLowBold" size="1point5x" />;
   }
   if (level <= 50) {
-    return <FontAwesomeIcon icon="battery-half" />;
+    return <Icon set="pi" icon="PiBatteryMediumBold" size="1point5x" />;
   }
   if (level <= 75) {
-    return <FontAwesomeIcon icon="battery-three-quarters" />;
+    return <Icon set="pi" icon="PiBatteryHighBold" size="1point5x" />;
   }
-  if (level <= 75) {
-    return <FontAwesomeIcon icon="battery-three-quarters" />;
+  if (level <= 100) {
+    return <Icon set="pi" icon="PiBatteryFullBold" size="1point5x" />;
   }
 
-  return <FontAwesomeIcon icon="battery-full" />;
+  return <Icon set="pi" icon="PiBatteryFullBold" size="1point5x" />;
 }
 
 Battery.propTypes = {

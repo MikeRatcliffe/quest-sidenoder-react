@@ -43,9 +43,6 @@ a {
 .btn-md {
   padding: 0.4rem 0.75rem;
 }
-.btn svg {
-  font-size: 15px;
-}
 .btn-success {
   background: #7c4;
 }
@@ -238,6 +235,80 @@ pre {
   white-space: normal;
   font-size: 100%;
   line-height: 18pt;
+}
+
+span.icon-spin {
+  animation: icon-spin 2s infinite linear;
+}
+@keyframes icon-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+span.icon {
+  position: relative;
+  display: inline-block;
+  top: -1px;
+}
+
+span.icon-1x {
+  font-size: 1em;
+}
+
+span.icon-1point5x {
+  font-size: 1.5em;
+  line-height: 0.1em;
+  top: 1px;
+}
+
+span.icon-2x {
+  font-size: 2em;
+}
+
+span.icon-2xs {
+  font-size: 0.625em;
+  line-height: 0.1em;
+  vertical-align: 0.225em;
+}
+
+span.icon-xs {
+  font-size: 0.75em;
+  line-height: 0.08333em;
+  vertical-align: 0.125em;
+}
+
+span.icon-sm {
+  font-size: 0.875em;
+  line-height: 0.07143em;
+  vertical-align: 0.05357em;
+}
+
+span.icon-lg {
+  font-size: 1.25em;
+  line-height: 0.05em;
+  vertical-align: -0.075em;
+}
+
+span.icon-xl {
+  font-size: 1.5em;
+  line-height: 0.04167em;
+  vertical-align: -0.125em;
+}
+
+span.icon-2xl {
+  font-size: 2em;
+  line-height: 0.03125em;
+  vertical-align: -0.1875em;
+}
+
+#action-button-container svg {
+  height: 0.8em;
+  position: relative;
+  top: -1px;
 }
 
 #sideloadQueueModal.fade .modal-dialog {

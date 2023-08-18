@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Icon } from '../shared/icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -10,7 +10,7 @@ function RcloneBlock({ rclone }) {
     return (
       <h4>
         <Alert variant="warning" className="fs-6 p-1">
-          <FontAwesomeIcon icon="refresh" spin={true} /> RCLONE - checking...
+          <Icon set="im" icon="ImSpinner11" spin /> RCLONE - checking...
         </Alert>
       </h4>
     );
@@ -19,8 +19,8 @@ function RcloneBlock({ rclone }) {
   if (rclone.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'check-circle']} /> RCLONE Installed (
-        {rclone.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> RCLONE Installed ({rclone.cmd}
+        )
         <br />
         <pre style={{ fontSize: 'x-small' }}>{rclone.version}</pre>
       </Alert>
@@ -28,8 +28,7 @@ function RcloneBlock({ rclone }) {
   } else {
     return (
       <Alert variant="danger" className="fs-6 p-1">
-        <FontAwesomeIcon icon={['far', 'times-circle']} /> Can&apos;t find
-        RCLONE
+        <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find RCLONE
         <br />
         Install the{' '}
         <Button
