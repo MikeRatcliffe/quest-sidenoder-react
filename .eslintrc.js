@@ -16,6 +16,7 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['html', 'prettier', 'no-floating-promise', '@typescript-eslint'],
