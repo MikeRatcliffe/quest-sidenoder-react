@@ -1,6 +1,5 @@
-const { ipcMain } = require('electron');
-
-const tools = require('./tools');
+import { ipcMain } from 'electron';
+import tools from './tools';
 
 const addIPCMainListeners = () => {
   ipcMain.on('get_installed', async (event) => {
@@ -369,4 +368,4 @@ const addIPCMainListeners = () => {
   });
 };
 
-module.exports = { addIPCMainListeners };
+export default addIPCMainListeners;

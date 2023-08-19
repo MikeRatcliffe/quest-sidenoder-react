@@ -81,7 +81,7 @@
     async function report() {
       const screenshot = await makeScreenshot(); // png dataUrl
       console.log(screenshot)
-      const fs = require('fs');
+      const fs = window.require('fs');
       const base64Data = screenshot.replace(/^data:([A-Za-z-+/]+);base64,/, '');
       fs.writeFile('out.png', base64Data, 'base64', (err) => {
         console.log(err);

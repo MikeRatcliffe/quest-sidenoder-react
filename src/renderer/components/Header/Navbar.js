@@ -33,7 +33,7 @@ function Navbar() {
       }
     });
     ipcRenderer.on('check_device', (event, arg) => {
-      console.log('check_device msg:', arg);
+      console.log('check_device msg received', arg);
       if (arg.success) {
         console.log('GETDEVICE SUCCESS');
         setDeviceConnected(true);

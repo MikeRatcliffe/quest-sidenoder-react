@@ -2,9 +2,9 @@
   "varsIgnorePattern": "sortItems"
 }] */
 
-const remote = window.require('@electron/remote');
+import remote from '@electron/remote';
+import { FindInPage } from 'electron-find';
 
-const { FindInPage } = require('electron-find');
 let search = false;
 
 document.addEventListener('keydown', (e) => {

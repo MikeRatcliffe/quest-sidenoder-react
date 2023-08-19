@@ -86,11 +86,10 @@ if (global.platform === 'darwin') {
 /* eslint-disable import/first */
 // This group of requires need access to at least one `global.<somevar>`, which
 // are assigned above.
-import { checkVersion } from './utils/versioncheck';
-import * as tools from './utils/tools';
+import checkVersion from './utils/versioncheck';
+import addIPCMainListeners from './utils/addIPCMainListeners';
+import tools from './utils/tools';
 /* eslint-enable import/first */
-
-const { addIPCMainListeners } = require('./utils/addIPCMainListeners');
 
 addIPCMainListeners();
 

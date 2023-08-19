@@ -1,8 +1,8 @@
-const fetch = require('node-fetch');
-const compareVersions = require('compare-versions');
-const pkg = require('../../../package.json');
+import fetch from 'node-fetch';
+import compareVersions from 'compare-versions';
+import pkgJson from '../../../package.json';
 
-global.version = pkg.version;
+global.version = pkgJson.version;
 
 async function checkVersion() {
   try {
@@ -15,19 +15,19 @@ async function checkVersion() {
     const content = JSON.parse(await res.text());
     const remoteversion = content.name;
 
-    console.log(`Current version: ${pkg.version}`);
+    console.log(`Current version: ${pkgJson.version}`);
     console.log(`Github version: ${remoteversion}`);
     if (!remoteversion) {
       return;
     }
 
-    if (compareVersions.compare(remoteversion, pkg.version, '<=')) {
+    if (compareVersions.compare(remoteversion, pkgJson.version, '<=')) {
       console.log('Using latest version');
     } else {
       console.log('Requires update');
       global.win.webContents.send('notify_update', {
         success: true,
-        current: pkg.version,
+        current: pkgJson.version,
         remote: remoteversion,
         url: content.html_url,
         description: content.body,
@@ -38,6 +38,4 @@ async function checkVersion() {
   }
 }
 
-module.exports = {
-  checkVersion,
-};
+export default checkVersion;

@@ -177,7 +177,7 @@ const configuration: webpack.Configuration = {
         stdio: 'inherit',
       })
         .on('close', (code: number) => {
-          process.exit(code!);
+          process.exit(code);
         })
         .on('error', (spawnError) => console.error(spawnError));
       return middlewares;

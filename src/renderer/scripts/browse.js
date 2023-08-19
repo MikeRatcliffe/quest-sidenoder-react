@@ -2,11 +2,10 @@
 /* eslint no-unused-vars: ["error", {
   "varsIgnorePattern": "addBookmark|delBookmark|getDirSize|install|oculusInfo|sortFiles|sqInfo|steamInfo"
 }] */
+import { promises as fsp } from 'fs';
+import path from 'path';
 import { ipcRenderer } from 'electron';
-const remote = window.require('@electron/remote');
-
-const fs = require('fs').promises;
-const path = require('path');
+import remote from '@electron/remote';
 
 console.log('ONLOAD BROWSE');
 
@@ -158,13 +157,13 @@ function getDir(loc = '', resetCache = false) {
 }
 
 async function readSizeRecursive(item) {
-  const stats = await fs.lstat(item);
+  const stats = await fsp.lstat(item);
   if (!stats.isDirectory()) {
     return stats.size;
   }
 
   let total = 0;
-  const list = await fs.readdir(item);
+  const list = await fsp.readdir(item);
   for (const diritem of list) {
     const size = await readSizeRecursive(path.join(item, diritem));
     total += size;

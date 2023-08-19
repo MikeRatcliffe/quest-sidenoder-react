@@ -1,26 +1,26 @@
-const { exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { maxDepth, toJSON } = require('electron-log/src/main/transforms/object');
-const log = require('electron-log/main');
-const commandExists = require('command-exists');
-const chalk = require('chalk');
-const ApkReader = require('adbkit-apkreader');
-const adbkit = require('@devicefarmer/adbkit').default;
-const fetch = require('node-fetch');
-const WAE = require('web-auto-extractor').default;
-// const HttpProxyAgent = require('https-proxy-agent'); // TODO add https proxy support
-const { SocksProxyAgent } = require('socks-proxy-agent');
-// const ApkReader = require('node-apk-parser');
+import { exec } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { tmpdir } from 'os';
+import crypto from 'crypto';
+import { maxDepth, toJSON } from 'electron-log/src/main/transforms/object';
+import log from 'electron-log/main';
+import commandExists from 'command-exists';
+import chalk from 'chalk';
+import ApkReader from 'adbkit-apkreader';
+import adbkit from '@devicefarmer/adbkit';
+import fetch from 'node-fetch';
+import WAE from 'web-auto-extractor';
+import { SocksProxyAgent } from 'socks-proxy-agent';
+import fixPath from 'fix-path';
+import pkgJson from '../../../package.json';
+// import ApkReader from 'node-apk-parser';
 
 const fsp = fs.promises;
 const adb = adbkit.createClient();
 
-require('fix-path')();
+fixPath();
 // adb.kill();
-
-const pkgJson = require('../../../package.json');
 
 const SEC = 1000;
 const MIN = 60 * SEC;
@@ -645,7 +645,7 @@ async function getDeviceSync() {
         console.log(`Device type ${device.type}... skipping`);
         continue;
       }
-      if (['unauthorized'].includes(device.type)) {
+      if (device.type === 'unauthorized') {
         console.log(`Device type ${device.type}... skipping`);
         global.win.webContents.send(
           'alert',
@@ -672,6 +672,7 @@ async function getDeviceSync() {
     } */
     // if (lastDevice == global.adbDevice) return;
 
+    console.log('XXXXX', 'sending check_device to renderer');
     global.win.webContents.send('check_device', { success: global.adbDevice });
 
     return global.adbDevice;
@@ -2930,10 +2931,8 @@ async function reloadConfig() {
 
   if (await fileExists(configLocation)) {
     console.log(`Config exists, using "${configLocation}"`);
-    global.currentConfiguration = Object.assign(
-      defaultConfig,
-      require(configLocation)
-    );
+    const { default: config } = await import(configLocation);
+    global.currentConfiguration = { ...defaultConfig, ...config };
   } else {
     console.log(`Config doesn't exist, creating "${configLocation}"`);
     await saveConfig(defaultConfig);
@@ -2979,7 +2978,7 @@ async function changeConfig(key, value) {
     await parseRcloneSections(true);
   }
   if (key === 'tmpdir') {
-    global.tmpdir = value || require('os').tmpdir().replace(/\\/g, '/');
+    global.tmpdir = value || tmpdir().replace(/\\/g, '/');
   }
 
   return value;
@@ -2994,7 +2993,7 @@ async function fileExists(filePath) {
   }
 }
 
-module.exports = {
+export default {
   // properties
   resetCache,
   // methods

@@ -1,9 +1,11 @@
 // https://www.electron.build/configuration/configuration#afterpack
+
+import fs from 'fs';
+
 const LOCALES = ['en-US.pak', 'ru.pak'];
 
-exports.default = async (context) => {
+export default async (context) => {
   // console.log(context);
-  const fs = require('fs');
   const localeDir = `${context.appOutDir}/locales/`;
 
   fs.readdir(localeDir, (err, files) => {
