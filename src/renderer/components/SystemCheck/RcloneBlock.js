@@ -54,7 +54,7 @@ function RcloneBlock({ rclone }) {
 RcloneBlock.propTypes = {
   rclone: PropTypes.shape({
     cmd: PropTypes.string,
-    error: PropTypes.string,
+    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     version: PropTypes.string,
   }),
 };

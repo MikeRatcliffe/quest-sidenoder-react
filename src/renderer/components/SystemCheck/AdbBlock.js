@@ -56,7 +56,7 @@ function AdbBlock({ adb }) {
 AdbBlock.propTypes = {
   adb: PropTypes.shape({
     cmd: PropTypes.string,
-    error: PropTypes.string,
+    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     version: PropTypes.string,
   }),
 };
