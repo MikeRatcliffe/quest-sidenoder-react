@@ -1,0 +1,65 @@
+<!-- Modal -->
+<div class="modal" id="appinfoModal">
+  <div
+    role="document"
+    style="margin: 1.75rem auto; min-width: 800px; max-width: 834px"
+  >
+    <!-- class="modal-dialog"  -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="appinfoModalLabel">Unknown</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning">
+          <small>
+            <i class="fa fa-exclamation-triangle"></i>
+            WARNING: Info auto parsed and can contains mistakes
+          </small>
+        </div>
+        <div class="text-center">
+          <div id="appinfoSlider" class="cbp-fwslider">
+            <ul></ul>
+          </div>
+        </div>
+        <div id="appinfoGenres" class="text-center mb-2"></div>
+        <div class="mb-2" id="appinfoShortDesc"></div>
+        <div class="mb-2">
+          <b>Supported laguages:</b>
+          <span id="supportedLanguages">Unknown</span>
+        </div>
+        <div class="text-center">
+          <a id="appinfoUrl" class="btn btn-primary" style="display: none"
+            >Open info on resource</a
+          >
+          <a
+            id="appinfoUrlDev"
+            class="adbdev btn btn-info"
+            style="display: none"
+            >Open info on device</a
+          >
+          <a id="appinfoEventsBtn" class="btn btn-success" style="display: none"
+            >Show last events</a
+          >
+        </div>
+        <hr />
+        <b>Description:</b>
+        <br />
+        <div id="appinfoText"></div>
+        <div id="appinfoAbout" class="text-center"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

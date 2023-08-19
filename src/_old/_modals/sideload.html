@@ -1,0 +1,139 @@
+<div
+  class="modal fade"
+  id="sideloadModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="sideloadModalLabel"
+  data-backdrop="static"
+  data-keyboard="false"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sideloadModalLabel">
+          <i id="sideloadRefresh" class="fa fa-refresh fa-spin"></i> Sideloading
+        </h5>
+        <small id="sideload_transfer_state" class="text-right"></small>
+      </div>
+      <div class="modal-body">
+        <span id="sideloadText"></span>
+        <br />
+        <div class="row">
+          <div class="col-4">Check device:</div>
+          <div>
+            <span id="deviceBadge" class="badge badge-warning">pending</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Download APK:</div>
+          <div>
+            <span id="downloadDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Read PackageInfo:</div>
+          <div>
+            <span id="aaptDoneBadge" class="badge badge-warning">pending</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Check if installed:</div>
+          <div>
+            <span id="checkDoneBadge" class="badge badge-warning">pending</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Backup App Data:</div>
+          <div>
+            <span id="backupDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Uninstall APK:</div>
+          <div>
+            <span id="uninstallDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Install APK:</div>
+          <div>
+            <span id="apkDoneBadge" class="badge badge-warning">pending</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Restore App Data:</div>
+          <div>
+            <span id="restoreDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Remove OBB's:</div>
+          <div>
+            <span id="removeObbDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Download OBB's:</div>
+          <div>
+            <span id="downloadObbDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Copy OBB's:</div>
+          <div>
+            <span id="copyObbDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">Sideloading finished:</div>
+          <div>
+            <span id="sideloadDoneBadge" class="badge badge-warning"
+              >pending</span
+            >
+          </div>
+        </div>
+        <div id="sideloadErrorArea" style="display: none">
+          <a
+            class="btn btn-sm btn-outline-danger"
+            data-toggle="collapse"
+            href="#collapseError"
+            aria-expanded="false"
+            aria-controls="collapseError"
+          >
+            <i class="fa fa-angle-down"></i> Fail log
+          </a>
+          <div class="collapse" id="collapseError">
+            <pre
+              id="sideloadError"
+              class="card bg-dark"
+              style="white-space: pre-wrap; padding: 8pt"
+            ></pre>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          id="sideloadDoneBtn"
+          class="btn btn-primary disabled"
+        >
+          Please wait for the process to finish
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
