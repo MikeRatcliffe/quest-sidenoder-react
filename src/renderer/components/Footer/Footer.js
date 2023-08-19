@@ -14,13 +14,6 @@ function Footer() {
 
   const [showScrollToTop, setShowScrollToTop] = useState(false);
 
-  useEffect(() => {
-    window.addEventListener('scroll', () => {
-      const scroll = document.documentElement.scrollTop;
-      setShowScrollToTop(scroll > 100);
-    });
-  });
-
   return (
     <footer className="footer text-center">
       <hr />

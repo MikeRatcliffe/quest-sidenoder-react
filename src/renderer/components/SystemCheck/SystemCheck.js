@@ -24,30 +24,40 @@ function SystemCheck() {
 
   useEffect(() => {
     // eslint-disable-next-line no-floating-promise/no-floating-promise
-    (async () => {
-      console.log('ONLOAD SYSTEMCHECK START');
-      console.log('sending check_deps');
+    console.log('ONLOAD SYSTEMCHECK START');
+    console.log('sending check_deps');
 
-      const { adb: adbResult } = await ipcRenderer.invoke('check_deps', 'adb');
-      setAdb(adbResult);
+    ipcRenderer.removeAllListeners('check_deps');
+    ipcRenderer.on('check_deps', (event, res) => {
+      console.log('check_deps msg arrived:', res);
 
-      const { rclone: rcloneResult } = await ipcRenderer.invoke(
-        'check_deps',
-        'rclone'
-      );
-      setRclone(rcloneResult);
+      const {
+        adb: resAdb,
+        rclone: resRclone,
+        zip: resZip,
+        scrcpy: resScrcpy,
+      } = res;
 
-      const { zip: zipResult } = await ipcRenderer.invoke('check_deps', 'zip');
-      setZip(zipResult);
+      if (resAdb) {
+        setAdb(resAdb);
+      }
+      if (resRclone) {
+        setRclone(resRclone);
+      }
+      if (resZip) {
+        setZip(resZip);
+      }
+      if (resScrcpy) {
+        setScrcpy(resScrcpy);
+      }
+    });
 
-      const { scrcpy: scrcpyResult } = await ipcRenderer.invoke(
-        'check_deps',
-        'scrcpy'
-      );
-      setScrcpy(scrcpyResult);
+    ipcRenderer.send('check_deps', 'adb');
+    ipcRenderer.send('check_deps', 'rclone');
+    ipcRenderer.send('check_deps', 'zip');
+    ipcRenderer.send('check_deps', 'scrcpy');
 
-      console.log('ONLOAD SYSTEMCHECK END');
-    })();
+    console.log('ONLOAD SYSTEMCHECK END');
   }, []);
 
   return (

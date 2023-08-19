@@ -3,7 +3,6 @@ import { Navbar as BootstrapNavbar, Button, Container } from 'react-bootstrap';
 import AppIcon from '../../../../assets/AppIcon.jsx';
 import Icon from '../shared/icon';
 
-const remote = window.require('@electron/remote');
 const { dialog, ipcRenderer } = window.require('electron');
 
 function Navbar() {
@@ -14,14 +13,14 @@ function Navbar() {
   const [deviceConnected, setDeviceConnected] = useState(false);
 
   useEffect(() => {
+    ipcRenderer.removeAllListeners('check_mount');
+    ipcRenderer.removeAllListeners('check_device');
+
     ipcRenderer.on('check_mount', (event, arg) => {
       console.log('check_mount responded: ', arg); // prints "ping"
       if (arg.success) {
         setMounting(false);
         setMounted(true);
-        if (!remote.getGlobal('adbDevice')) {
-          return;
-        }
       } else if (arg.error) {
         dialog.showMessageBox(null, {
           type: 'error',
@@ -73,7 +72,7 @@ function Navbar() {
         //     );
       }
     });
-  });
+  }, []);
 
   function onWirelessClick() {
     setWirelessRefresh(true);
@@ -236,62 +235,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
-// events
-
-// ipcRenderer.on("connect_wireless", (event, arg) => {
-//   console.log("check_wireless msg came from backend to frontend:", arg);
-//   $id("wirelessrefresh").removeClass("fa-spin");
-
-//   if (arg.success) {
-//     console.log("WIRELESS CONNECTED");
-//     id("wirelessbtn").onclick = disconnectWireless;
-//     $id("wirelessbtn")
-//       .removeClass("btn-danger")
-//       .addClass("btn-success")
-//       .html(
-//         `<i id="wirelessrefresh" class="fa fa-check-circle-o"></i> | WIRELESS:<br>connected`,
-//       );
-
-//     dialog.showMessageBox(null, {
-//       type: "info",
-//       buttons: ["Ok"],
-//       title: "Device connected by TCP",
-//       message:
-//         "You can now unplug the USB cable and continue using the program via wireless connection",
-//     });
-//   } else {
-//     id("wirelessbtn").onclick = connectWireless;
-//     $id("wirelessbtn")
-//       .removeClass("btn-success")
-//       .addClass("btn-danger")
-//       .html(
-//         `<i id="wirelessbtnrefresh" class="fa fa-refresh"></i> | WIRELESS:<br>disconnected`,
-//       );
-//   }
-// });
-
-// let last_alert_msg;
-// ipcRenderer.on("alert", (event, arg) => {
-//   if (arg === last_alert_msg) {
-//     return;
-//   }
-//   last_alert_msg = arg;
-//   setTimeout(() => (last_alert_msg = false), 500);
-//   alert(arg);
-// });
-
-// ipcRenderer.on("cmd_sent", (event, arg) => {
-//   alert(`Command sended: \n ${arg.success}`);
-// });
-
-// ipcRenderer.on("ask_device", () => {
-//   console.log("ask_device msg arrived");
-//   $id("processingModal").modal("hide");
-//   dialog.showMessageBox(null, {
-//     type: "info",
-//     buttons: ["Understood"],
-//     title: "Missing device",
-//     message: `This action cannot be performed without a device attached.`,
-//   });
-// });

@@ -50,10 +50,11 @@ const addIPCMainListeners = () => {
     event.reply('connect_wireless', { success: !res });
   });
 
-  ipcMain.handle('check_deps', async (event, arg) => {
+  ipcMain.on('check_deps', async (event, arg) => {
     console.log('check_deps received', arg);
+
     const res = await tools.checkDeps(arg);
-    return res;
+    event.reply('check_deps', res);
   });
 
   ipcMain.on('mount', async (event) => {
@@ -63,7 +64,7 @@ const addIPCMainListeners = () => {
   });
 
   ipcMain.on('check_mount', async (event) => {
-    await checkMount(event);
+    checkMount(event);
   });
 
   let rcloneProgress = false;

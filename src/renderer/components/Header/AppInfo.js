@@ -18,93 +18,88 @@ function AppInfo() {
   const [ip, setIp] = useState('X.X.X.X');
 
   useEffect(() => {
-    // eslint-disable-next-line no-floating-promise/no-floating-promise
-    (async () => {
-      console.log('ONLOAD APPINFO START');
+    console.log('ONLOAD APPINFO START');
 
-      let timer = null;
-      ipcRenderer.removeAllListeners('get_device_info');
+    let timer = null;
 
-      ipcRenderer.on('get_device_info', async (event, deviceInfo) => {
-        clearTimeout(timer);
+    ipcRenderer.removeAllListeners('get_device_info');
+    ipcRenderer.on('get_device_info', (event, deviceInfo) => {
+      clearTimeout(timer);
 
-        timer = setTimeout(
-          () => ipcRenderer.send('get_device_info', ''),
-          30000
-        );
+      timer = setTimeout(() => ipcRenderer.send('get_device_info', ''), 30000);
 
+      const {
+        storage: devStorage,
+        user: devUser,
+        fw: devFw,
+        battery,
+        wifi: devWifi,
+        ip: devIp,
+      } = deviceInfo;
+
+      const dev = remote.getGlobal('adbDevice');
+
+      setBatCharge(!dev && 'unknown');
+      setStorage(devStorage);
+      setUser(devUser);
+      setFw((devFw && devFw.version) || 'v.XX');
+
+      if (battery) {
         const {
-          storage: devStorage,
-          user: devUser,
-          fw: devFw,
-          battery,
-          wifi: devWifi,
-          ip: devIp,
-        } = deviceInfo;
+          ACpowered,
+          Maxchargingcurrent,
+          Maxchargingvoltage,
+          temperature,
+          USBpowered,
+          Wirelesspowered,
+        } = battery;
 
-        const dev = remote.getGlobal('adbDevice');
+        setLevel(battery.level);
 
-        setBatCharge(!dev && 'unknown');
-        setStorage(devStorage);
-        setUser(devUser);
-        setFw((devFw && devFw.version) || 'v.XX');
-
-        if (battery) {
-          const {
-            ACpowered,
-            Maxchargingcurrent,
-            Maxchargingvoltage,
-            temperature,
-            USBpowered,
-            Wirelesspowered,
-          } = battery;
-
-          setLevel(battery.level);
+        if (temperature) {
+          setBatNote(`Temperature: ${temperature / 10}°C`);
+        }
+        if (ACpowered) {
+          setBatCharge('AC');
+        }
+        if (USBpowered) {
+          setBatCharge('USB');
+        }
+        if (Wirelesspowered) {
+          setBatCharge('AIR');
+        }
+        if (Maxchargingcurrent && Maxchargingvoltage) {
+          const current = Maxchargingcurrent / 1000000;
+          const voltage = Maxchargingvoltage / 1000000;
 
           if (temperature) {
-            setBatNote(`Temperature: ${temperature / 10}°C`);
-          }
-          if (ACpowered) {
-            setBatCharge('AC');
-          }
-          if (USBpowered) {
-            setBatCharge('USB');
-          }
-          if (Wirelesspowered) {
-            setBatCharge('AIR');
-          }
-          if (Maxchargingcurrent && Maxchargingvoltage) {
-            const current = Maxchargingcurrent / 1000000;
-            const voltage = Maxchargingvoltage / 1000000;
-            if (temperature) {
-              setBatNote(
-                `Temperature: ${
-                  temperature / 10
-                }°C\nMax Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
-                  current * voltage
-                }W`
-              );
-            } else {
-              setBatNote(
-                `Max Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
-                  current * voltage
-                }W`
-              );
-            }
+            setBatNote(
+              `Temperature: ${
+                temperature / 10
+              }°C\nMax Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
+                current * voltage
+              }W`
+            );
+          } else {
+            setBatNote(
+              `Max Current: ${current}A\nMax Voltage: ${voltage}V\nMax Power: ${
+                current * voltage
+              }W`
+            );
           }
         }
+      }
 
-        setWifi(devWifi ? 'On' : 'Off');
-        setIp(
-          (devWifi && devIp) ||
-            remote.getGlobal('currentConfiguration').lastIp ||
-            'X.X.X.X'
-        );
-      });
-      ipcRenderer.send('get_device_info', '');
+      setWifi(devWifi ? 'On' : 'Off');
+      setIp(
+        (devWifi && devIp) ||
+          remote.getGlobal('currentConfiguration').lastIp ||
+          'X.X.X.X'
+      );
+    });
+    ipcRenderer.send('get_device_info', '');
 
-      console.log('ONLOAD APPINFO END');
-    })();
+    console.log('ONLOAD APPINFO END');
   }, []);
 
   return (
