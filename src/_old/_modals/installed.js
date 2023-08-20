@@ -18,7 +18,7 @@ function uninstall(elem, packageName) {
 
 function startApp(packageName) {
   ipcRenderer.send('start_app', packageName);
-  // ipcRenderer.send('get_activities', packageName);
+  ipcRenderer.send('get_activities', packageName);
 }
 
 function sortApps(key, asc) {
