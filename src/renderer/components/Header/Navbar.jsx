@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navbar as BootstrapNavbar, Button, Container } from 'react-bootstrap';
 import AppIcon from '../../../../assets/AppIcon.jsx';
-import Icon from '../shared/icon';
+import Icon from '../shared/icon.jsx';
 
 const { dialog, ipcRenderer } = window.require('electron');
 
