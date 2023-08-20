@@ -1,0 +1,63 @@
+<div class="content_container">
+  <div class="sticky" id="topbar">
+    <nav class="navbar navbar-expand" style="padding: 5px">
+      <img
+        src="img/quest-sidenoder-light.svg"
+        width="60"
+        height="50"
+        class="mr-2"
+      />
+      <div class="navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a
+              class="btn btn-primary mr-1"
+              onclick="loadInclude('browse_include.twig', null, () => ipcRenderer.send('get_dir', ''));"
+            >
+              <i class="fa fa-folder-open-o"></i>
+              Browse
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              id="remotebtn"
+              class="disabled btn btn-info mr-1"
+              onclick="loadInclude('browse_include.twig', null, () => ipcRenderer.send('get_dir', remote.getGlobal('mountFolder')));"
+            >
+              <i class="fa fa-folder-open-o"></i>
+              Remote
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="adbdev disabled btn btn-primary mr-1"
+              onclick="loadInclude('modals/installed.twig', 'installedmodaldiv')"
+              title="Installed APP's"
+            >
+              <i class="fa fa-list"></i>
+              Installed
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="adbdev btn btn-primary mr-1"
+              onclick="loadInclude('modals/tweaks.twig', 'tweaksmodaldiv')"
+              title="Device tweaks"
+            >
+              <i class="fa fa-bug"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="btn btn-primary mr-1"
+              onclick="loadInclude('settings_include.twig')"
+              title="Settings"
+            >
+              <i class="fa fa-cog"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
