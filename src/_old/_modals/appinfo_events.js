@@ -51,7 +51,7 @@ ipcRenderer.on('app_info', (event, arg) => {
     $id('processingModal').modal('show');
     ipcRenderer.send('app_events_info', {
       res: data.res,
-      package: data.package,
+      pkg: data.pkg,
     });
   };
 
