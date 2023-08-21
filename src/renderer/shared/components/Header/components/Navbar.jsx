@@ -5,7 +5,8 @@ import DeviceButtons from './DeviceButtons';
 import NavigationButtons from './NavigationButtons';
 import AppIcon from '../../../../../../assets/AppIcon';
 
-const { dialog, ipcRenderer } = window.require('electron');
+const { dialog } = window.require('@electron/remote');
+const { ipcRenderer } = window.require('electron');
 
 function Navbar({ currentPage, setCurrentPage }) {
   const [mounted, setMounted] = useState(false);
