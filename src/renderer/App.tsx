@@ -1,6 +1,5 @@
 // import { useEffect } from 'react';
 import React, { useState } from 'react';
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './shared/components/Header/Header';
 import Footer from './shared/components/Footer/Footer';
 import SystemCheck from './pages/SystemCheck/SystemCheck';
@@ -10,7 +9,7 @@ import FileBrowserRemote from './pages/FileBrowser/FileBrowserRemote';
 import './css/bootstrap-slate.css';
 import './css/App.css';
 
-function Sidenoder() {
+function App() {
   const [currentPage, setCurrentPage] = useState('SystemCheck');
 
   return (
@@ -26,12 +25,4 @@ function Sidenoder() {
   );
 }
 
-export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Sidenoder />} />
-      </Routes>
-    </Router>
-  );
-}
+export default App;
