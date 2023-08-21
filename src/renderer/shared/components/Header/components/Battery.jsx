@@ -26,7 +26,10 @@ function Battery({ level, chargeMethod }) {
 
 Battery.propTypes = {
   level: PropTypes.oneOfType([PropTypes.number, PropTypes.oneOf(['XX'])]),
-  chargeMethod: PropTypes.oneOf(['AC', 'AIR', 'USB', 'unknown']),
+  chargeMethod: PropTypes.oneOfType([
+    PropTypes.oneOf(['AC', 'AIR', 'USB', 'unknown']),
+    PropTypes.bool,
+  ]),
 };
 
 export default Battery;

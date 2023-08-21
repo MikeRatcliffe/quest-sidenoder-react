@@ -46,12 +46,15 @@ function StorageDiv({ storage }) {
 }
 
 StorageDiv.propTypes = {
-  storage: PropTypes.shape({
-    percent: PropTypes.string,
-    used: PropTypes.string,
-    size: PropTypes.string,
-    free: PropTypes.string,
-  }),
+  storage: PropTypes.oneOfType([
+    PropTypes.shape({
+      percent: PropTypes.string,
+      used: PropTypes.string,
+      size: PropTypes.string,
+      free: PropTypes.string,
+    }),
+    PropTypes.bool,
+  ]),
 };
 
 export default StorageDiv;
