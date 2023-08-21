@@ -472,6 +472,11 @@ async function connectWireless() {
 
   try {
     if (global.adbDevice) {
+      if (global.adbDevice.endsWith(':5555')) {
+        // Nothing to do, already in wireless mode
+        return ip;
+      }
+
       const device = adb.getDevice(global.adbDevice);
       const port = await device.tcpip();
       await device.waitForDevice();
