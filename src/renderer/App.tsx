@@ -1,61 +1,25 @@
 // import { useEffect } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
-import SystemCheck from './components/SystemCheck/SystemCheck';
-import log from './utils/logger';
+import Header from './shared/components/Header/Header';
+import Footer from './shared/components/Footer/Footer';
+import SystemCheck from './pages/SystemCheck/SystemCheck';
+import FileBrowserLocal from './pages/FileBrowser/FileBrowserLocal';
+import FileBrowserRemote from './pages/FileBrowser/FileBrowserRemote';
 
-// import { dialog, ipcRenderer, shell } from 'electron';
 import './css/bootstrap-slate.css';
 import './css/App.css';
 
 function Sidenoder() {
-  // useEffect(() => {
-  //   document.ondragover = document.ondrop = (ev) => {
-  //     ev.preventDefault();
-  //   };
-
-  //   document.body.ondrop = (ev) => {
-  //     ev.preventDefault();
-  //     if (!ev.dataTransfer.files || !ev.dataTransfer.files.length) {
-  //       return;
-  //     }
-
-  //     if (ev.dataTransfer.files[0].path.endsWith('.apk')) {
-  //       ipcRenderer.send(
-  //         'filedrop',
-  //         ev.dataTransfer.files[0].path.replace(/\\/g, '/'),
-  //       );
-  //     }
-  //   };
-
-  //   ipcRenderer.on('log', (event, arg) => {
-  //     console.log('log arrived');
-  //     console.log(arg);
-  //   });
-
-  //   ipcRenderer.on('notify_update', async (event, arg) => {
-  //     console.log('notify_update msg arrived');
-  //     const response = await dialog.showMessageBox(null, {
-  //       type: 'info',
-  //       buttons: ['Cancel', 'Download'],
-  //       title: `Update available ${arg.current} to ${arg.remote}`,
-  //       message: `sidenoder-${arg.remote} is now available on github.`,
-  //       detail: arg.description,
-  //     });
-
-  //     if (response === 1) {
-  //       shell.openExternal(arg.url);
-  //     }
-  //   });
-  // });
+  const [currentPage, setCurrentPage] = useState('SystemCheck');
 
   return (
     <React.StrictMode>
-      <Header />
+      <Header setCurrentPage={setCurrentPage} />
       <div id="mainbody">
-        <SystemCheck />
+        <SystemCheck show={currentPage === 'SystemCheck'} />
+        <FileBrowserLocal show={currentPage === 'FileBrowserLocal'} />
+        <FileBrowserRemote show={currentPage === 'FileBrowserRemote'} />
       </div>
       <Footer />
     </React.StrictMode>

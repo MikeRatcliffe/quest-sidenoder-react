@@ -1,33 +1,35 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import Icon from '../shared/icon';
+import Icon from '../../../shared/Icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
-function AdbBlock({ adb }) {
-  if (!adb) {
+function ZipBlock({ zip }) {
+  if (!zip) {
     return (
-      <Alert variant="warning" className="fs-6 p-1">
-        <Icon set="im" icon="ImSpinner11" spin /> Android Debug Bridge -
-        checking...
-      </Alert>
+      <h4>
+        <Alert variant="warning" className="fs-6 p-1">
+          <Icon set="im" icon="ImSpinner11" spin /> 7zip Archiver - checking...
+        </Alert>
+      </h4>
     );
   }
 
-  if (adb.version) {
+  if (zip.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <Icon set="fa" icon="FaRegCheckCircle" /> ADB Installed ({adb.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> 7zip Archiver Installed (
+        {zip.cmd})
         <br />
-        <pre style={{ fontSize: 'x-small' }}>{adb.version}</pre>
+        <pre style={{ fontSize: 'x-small' }}>{zip.version}</pre>
       </Alert>
     );
   }
 
   return (
     <Alert variant="danger" className="fs-6 p-1">
-      <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find ADB
+      <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find 7zip Archiver
       <br />
       Install the{' '}
       <Button
@@ -35,30 +37,28 @@ function AdbBlock({ adb }) {
         size="lg"
         className="p-0 border-0 fs-inherit link-light fw-normal system-check-link"
         onClick={() =>
-          shell.openExternal(
-            'https://www.xda-developers.com/install-adb-windows-macos-linux/'
-          )
+          shell.openExternal('https://www.7-zip.org/download.html')
         }
       >
         latest version
       </Button>{' '}
       and try again
-      {adb.error && (
+      {zip.error && (
         <>
           <br />
-          <pre style={{ fontSize: 'x-small' }}>error: \n{adb.error}</pre>
+          <pre style={{ fontSize: 'x-small' }}>error: \n{zip.error}</pre>
         </>
       )}
     </Alert>
   );
 }
 
-AdbBlock.propTypes = {
-  adb: PropTypes.shape({
+ZipBlock.propTypes = {
+  zip: PropTypes.shape({
     cmd: PropTypes.string,
     error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     version: PropTypes.string,
   }),
 };
 
-export default AdbBlock;
+export default ZipBlock;

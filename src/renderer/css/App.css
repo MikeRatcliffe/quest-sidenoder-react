@@ -103,14 +103,6 @@ pre {
   overflow: visible;
 }
 
-.modal {
-  overflow: auto !important;
-}
-
-.modal-content {
-  box-shadow: 0px 0px 20pt black;
-}
-
 .pull-left {
   float: left;
 }
@@ -311,22 +303,6 @@ span.icon-2xl {
   top: -1px;
 }
 
-#sideloadQueueModal.fade .modal-dialog {
-  transform: translate(45%, 45%) scale(0.1);
-}
-#sideloadQueueModal.show .modal-dialog {
-  transform: none;
-}
-#sideloadQueueModal .modal-dialog {
-  min-width: 600px;
-  max-width: 1200px;
-  width: 90%;
-  bottom: 20pt;
-  position: fixed;
-  right: 20pt;
-  margin: 0;
-}
-
 #showQueue {
   position: fixed;
   width: 52px;
@@ -346,17 +322,16 @@ span.icon-2xl {
   /*min-width: 30%;*/
 }
 
-#sideloadQueueModal .modal-body {
-  padding: 0;
-  height: 300pt;
-  overflow: auto;
-  border-top: 1px solid rgba(0, 0, 0, 0.4);
+.modal-open {
+  padding-right: 0 !important;
 }
 
-#sideloadQueueModal th {
-  background: #32383e;
-  position: sticky;
-  top: -1px;
+.modal-header {
+  padding: 5px 10px 5px 5px;
+}
+
+.modal-header .icon {
+  top: -2px;
 }
 
 .progress {

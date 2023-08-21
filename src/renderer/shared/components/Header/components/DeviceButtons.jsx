@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Container } from 'react-bootstrap';
-import Icon from '../shared/icon';
+import Icon from '../../../Icon';
 
 const { ipcRenderer } = window.require('electron');
 

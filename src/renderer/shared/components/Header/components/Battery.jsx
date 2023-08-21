@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import Icon from '../shared/icon';
+import Icon from '../../../Icon';
 
 function Battery({ level, chargeMethod }) {
   if (chargeMethod === 'AC' || chargeMethod === 'USB') {

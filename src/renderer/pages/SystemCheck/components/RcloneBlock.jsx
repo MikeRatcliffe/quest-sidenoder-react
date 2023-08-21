@@ -1,70 +1,62 @@
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import Icon from '../shared/icon';
+import Icon from '../../../shared/Icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
-const platform = remote.getGlobal('platform');
-
-function ScrCpyBlock({ scrcpy }) {
-  if (!scrcpy) {
+function RcloneBlock({ rclone }) {
+  if (!rclone) {
     return (
       <h4>
         <Alert variant="warning" className="fs-6 p-1">
-          <Icon set="im" icon="ImSpinner11" spin /> SCRCPY - checking...
+          <Icon set="im" icon="ImSpinner11" spin /> RCLONE - checking...
         </Alert>
       </h4>
     );
   }
 
-  if (scrcpy.version) {
+  if (rclone.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <Icon set="fa" icon="FaRegCheckCircle" /> SCRCPY Installed ({scrcpy.cmd}
+        <Icon set="fa" icon="FaRegCheckCircle" /> RCLONE Installed ({rclone.cmd}
         )
         <br />
-        <pre style={{ fontSize: 'x-small' }}>{scrcpy.version}</pre>
+        <pre style={{ fontSize: 'x-small' }}>{rclone.version}</pre>
       </Alert>
     );
   }
 
-  const tag = platform.replace('win', 'windows').replace('mac', 'macos');
-
   return (
     <Alert variant="danger" className="fs-6 p-1">
-      <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find SCRCPY
+      <Icon set="fa" icon="FaTimesCircle" /> Can&apos;t find RCLONE
       <br />
       Install the{' '}
       <Button
         variant="link"
         size="lg"
         className="p-0 border-0 fs-inherit link-light fw-normal system-check-link"
-        onClick={() =>
-          shell.openExternal(
-            `https://github.com/Genymobile/scrcpy/blob/master/doc/${tag}.md`
-          )
-        }
+        onClick={() => shell.openExternal('https://downloads.rclone.org/')}
       >
         latest version
       </Button>
       , set a custom location in settings and try again
-      {scrcpy.error && (
+      {rclone.error && (
         <>
           <br />
-          <pre style={{ fontSize: 'x-small' }}>error: \n{scrcpy.error}</pre>
+          <pre style={{ fontSize: 'x-small' }}>error: \n{rclone.error}</pre>
         </>
       )}
     </Alert>
   );
 }
 
-ScrCpyBlock.propTypes = {
-  scrcpy: PropTypes.shape({
+RcloneBlock.propTypes = {
+  rclone: PropTypes.shape({
     cmd: PropTypes.string,
     error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     version: PropTypes.string,
   }),
 };
 
-export default ScrCpyBlock;
+export default RcloneBlock;

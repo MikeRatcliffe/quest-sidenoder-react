@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Card, Table } from 'react-bootstrap';
-import AdbBlock from './AdbBlock';
-import RcloneBlock from './RcloneBlock';
-import ScrCpyBlock from './ScrCpyBlock';
-import ZipBlock from './ZipBlock';
-import Icon from '../shared/icon';
+import AdbBlock from './components/AdbBlock';
+import RcloneBlock from './components/RcloneBlock';
+import ScrCpyBlock from './components/ScrCpyBlock';
+import ZipBlock from './components/ZipBlock';
+import Icon from '../../shared/Icon';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -16,7 +17,7 @@ const tmpdir = remote.getGlobal('tmpdir');
 const mountFolder = remote.getGlobal('mountFolder');
 const sidenoderHome = remote.getGlobal('sidenoderHome');
 
-function SystemCheck() {
+function SystemCheck({ show }) {
   const [adb, setAdb] = useState(null);
   const [rclone, setRclone] = useState(null);
   const [zip, setZip] = useState(null);
@@ -61,7 +62,7 @@ function SystemCheck() {
   }, []);
 
   return (
-    <Card>
+    <Card hidden={!show}>
       <Card.Header>
         <Icon set="fa" icon="FaList" size="sm" /> System Check
       </Card.Header>
@@ -105,5 +106,9 @@ function SystemCheck() {
     </Card>
   );
 }
+
+SystemCheck.propTypes = {
+  show: PropTypes.bool,
+};
 
 export default SystemCheck;

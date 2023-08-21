@@ -64,7 +64,7 @@ const addIPCMainListeners = () => {
   });
 
   ipcMain.on('check_mount', async (event) => {
-    checkMount(event);
+    await checkMount(event);
   });
 
   let rcloneProgress = false;
