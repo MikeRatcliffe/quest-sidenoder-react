@@ -89,7 +89,7 @@ ipcRenderer.on('check_device', (event, arg) => {
 });
 
 ipcRenderer.on('connect_wireless', (event, arg) => {
-  console.log('check_wireless msg came from backend to frontend:', arg);
+  console.log('connect_wireless msg came from backend to frontend:', arg);
   $id('wirelessrefresh').removeClass('fa-spin');
 
   if (arg.success) {
