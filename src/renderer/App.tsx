@@ -14,7 +14,7 @@ function App() {
 
   return (
     <React.StrictMode>
-      <Header setCurrentPage={setCurrentPage} />
+      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
       <div id="mainbody">
         <SystemCheck show={currentPage === 'SystemCheck'} />
         <FileBrowserLocal show={currentPage === 'FileBrowserLocal'} />

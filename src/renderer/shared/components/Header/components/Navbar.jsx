@@ -7,28 +7,38 @@ import AppIcon from '../../../../../../assets/AppIcon';
 
 const { dialog, ipcRenderer } = window.require('electron');
 
-function Navbar({ setCurrentPage }) {
+function Navbar({ currentPage, setCurrentPage }) {
   const [mounted, setMounted] = useState(false);
-  const [mounting, setMounting] = useState(false);
+  const [mountRefresh, setMountRefresh] = useState(false);
 
   useEffect(() => {
     ipcRenderer.removeAllListeners('check_mount');
     ipcRenderer.on('check_mount', (event, arg) => {
       console.log('check_mount responded: ', arg);
+
+      setMountRefresh(false);
+
       if (arg.success) {
-        setMounting(false);
         setMounted(true);
-      } else if (arg.error) {
-        dialog.showMessageBox(null, {
-          type: 'error',
-          buttons: ['Ok'],
-          title: 'RCLONE MOUNT FAILED',
-          message: 'Rclone failed on mount command',
-          detail: arg.error.toString(),
-        });
+      } else {
+        setMounted(false);
+
+        if (currentPage === 'FileBrowserRemote') {
+          setCurrentPage('SystemCheck');
+        }
+
+        if (arg.error) {
+          dialog.showMessageBox(null, {
+            type: 'error',
+            buttons: ['Ok'],
+            title: 'RCLONE MOUNT FAILED',
+            message: 'Rclone failed on mount command',
+            detail: arg.error.toString(),
+          });
+        }
       }
     });
-  }, []);
+  }, [currentPage, setCurrentPage]);
 
   return (
     <BootstrapNavbar
@@ -55,14 +65,15 @@ function Navbar({ setCurrentPage }) {
       <DeviceButtons
         mounted={mounted}
         setMounted={setMounted}
-        mounting={mounting}
-        setMounting={setMounting}
+        mountRefresh={mountRefresh}
+        setMountRefresh={setMountRefresh}
       />
     </BootstrapNavbar>
   );
 }
 
 Navbar.propTypes = {
+  currentPage: PropTypes.string,
   setCurrentPage: PropTypes.func,
 };
 
