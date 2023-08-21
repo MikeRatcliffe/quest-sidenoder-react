@@ -3,6 +3,10 @@ import { Modal } from 'react-bootstrap';
 import Icon from '../shared/Icon';
 
 function Installed({ closeInstalledModal, isInstalledModalVisible }) {
+  //   if (!mounted) {
+  //     $id('updateBadge').addClass('disabled');
+  //   }
+
   return (
     <Modal
       scrollable
