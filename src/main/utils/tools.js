@@ -1624,10 +1624,14 @@ async function parseRcloneSections(newCfg = false) {
       );
     }
 
-    const sections = out.split('\n');
-    if (sections.length) {
-      sections.pop();
-    }
+    let sections = out.trim().split('\n');
+    sections = sections.map((section) => {
+      if (section.endsWith(':')) {
+        return section.slice(0, -1);
+      }
+      return section;
+    });
+
     if (!sections.length) {
       return console.error(
         'rclone config sections not found',
