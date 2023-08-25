@@ -17,7 +17,7 @@ const tmpdir = remote.getGlobal('tmpdir');
 const mountFolder = remote.getGlobal('mountFolder');
 const sidenoderHome = remote.getGlobal('sidenoderHome');
 
-function SystemCheck({ show }) {
+function Welcome({ show }) {
   const [adb, setAdb] = useState(null);
   const [rclone, setRclone] = useState(null);
   const [zip, setZip] = useState(null);
@@ -25,7 +25,7 @@ function SystemCheck({ show }) {
 
   useEffect(() => {
     // eslint-disable-next-line no-floating-promise/no-floating-promise
-    console.log('ONLOAD SYSTEMCHECK START');
+    console.log('ONLOAD WELCOME START');
     console.log('sending check_deps');
 
     ipcRenderer.removeAllListeners('check_deps');
@@ -58,7 +58,7 @@ function SystemCheck({ show }) {
     ipcRenderer.send('check_deps', 'zip');
     ipcRenderer.send('check_deps', 'scrcpy');
 
-    console.log('ONLOAD SYSTEMCHECK END');
+    console.log('ONLOAD WELCOME END');
   }, []);
 
   return (
@@ -107,8 +107,8 @@ function SystemCheck({ show }) {
   );
 }
 
-SystemCheck.propTypes = {
+Welcome.propTypes = {
   show: PropTypes.bool,
 };
 
-export default SystemCheck;
+export default Welcome;

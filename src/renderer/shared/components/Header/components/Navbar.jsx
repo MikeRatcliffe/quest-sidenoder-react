@@ -25,7 +25,7 @@ function Navbar({ currentPage, setCurrentPage }) {
         setMounted(false);
 
         if (currentPage === 'FileBrowserRemote') {
-          setCurrentPage('SystemCheck');
+          setCurrentPage('Welcome');
         }
 
         if (arg.error) {
@@ -51,7 +51,7 @@ function Navbar({ currentPage, setCurrentPage }) {
         variant="primary"
         className="me-1 p-0"
         onClick={() => {
-          setCurrentPage('SystemCheck');
+          setCurrentPage('Welcome');
         }}
       >
         <AppIcon
