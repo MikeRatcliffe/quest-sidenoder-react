@@ -707,14 +707,12 @@ async function adbShell(cmd, deviceId = global.adbDevice, skipRead = false) {
     }
 
     let output = await adbkit.util.readAll(r);
-    output = await output.toString();
+    output = await output.toString().trim();
     // output = output.split('\n');
     // const end = output.pop();
     // if (end != '') output.push();
     console.log(`adbShell[${deviceId}]`, { cmd, output });
-    if (output.endsWith('\n')) {
-      return output.trim();
-    }
+
     return output;
   } catch (err) {
     console.error(`adbShell[${deviceId}]: err`, { cmd }, err);
