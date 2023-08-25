@@ -116,10 +116,10 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     width: 1000,
-    minWidth: 920,
     height: 800,
-    icon: getAssetPath('icon.png'),
+    minWidth: 920,
     minHeight: 500,
+    icon: getAssetPath('icon.png'),
     title: 'Quest Sidenoder',
     webPreferences: {
       nodeIntegration: true,
