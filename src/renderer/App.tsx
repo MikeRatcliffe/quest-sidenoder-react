@@ -1,28 +1,42 @@
 // import { useEffect } from 'react';
-import React, { useState } from 'react';
-import Header from './shared/components/Header/Header';
-import Footer from './shared/components/Footer/Footer';
+import React from 'react';
+import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
+import Layout from './Layout';
 import Welcome from './pages/Welcome/Welcome';
 import FileBrowserLocal from './pages/FileBrowser/FileBrowserLocal';
 import FileBrowserRemote from './pages/FileBrowser/FileBrowserRemote';
-
 import './css/bootstrap-slate.css';
 import './css/App.css';
 
-function App() {
-  const [currentPage, setCurrentPage] = useState('Welcome');
-
+export default function App() {
   return (
-    <React.StrictMode>
-      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      <div id="mainbody">
-        <Welcome show={currentPage === 'Welcome'} />
-        <FileBrowserLocal show={currentPage === 'FileBrowserLocal'} />
-        <FileBrowserRemote show={currentPage === 'FileBrowserRemote'} />
-      </div>
-      <Footer />
-    </React.StrictMode>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Welcome />
+            </Layout>
+          }
+        />
+        <Route
+          path="/browselocal"
+          element={
+            <Layout>
+              <FileBrowserLocal />
+            </Layout>
+          }
+        />
+        <Route
+          path="/browseremote"
+          element={
+            <Layout>
+              <FileBrowserRemote />
+            </Layout>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
-
-export default App;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Navbar as BootstrapNavbar } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import DeviceButtons from './DeviceButtons';
 import NavigationButtons from './NavigationButtons';
 import AppIcon from '../../../../../../assets/AppIcon';
@@ -8,7 +8,7 @@ import AppIcon from '../../../../../../assets/AppIcon';
 const { dialog } = window.require('@electron/remote');
 const { ipcRenderer } = window.require('electron');
 
-function Navbar({ currentPage, setCurrentPage }) {
+function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [mountRefresh, setMountRefresh] = useState(false);
 
@@ -24,10 +24,6 @@ function Navbar({ currentPage, setCurrentPage }) {
       } else {
         setMounted(false);
 
-        if (currentPage === 'FileBrowserRemote') {
-          setCurrentPage('Welcome');
-        }
-
         if (arg.error) {
           dialog.showMessageBox(null, {
             type: 'error',
@@ -39,7 +35,7 @@ function Navbar({ currentPage, setCurrentPage }) {
         }
       }
     });
-  }, [currentPage, setCurrentPage]);
+  }, []);
 
   return (
     <BootstrapNavbar
@@ -47,22 +43,18 @@ function Navbar({ currentPage, setCurrentPage }) {
       variant="dark"
       className="justify-content-between border-0"
     >
-      <Button
-        variant="primary"
-        className="me-1 p-0"
-        onClick={() => {
-          setCurrentPage('Welcome');
-        }}
-      >
-        <AppIcon
-          width={46.5}
-          height={46.5}
-          mode="light"
-          className="mr-2"
-          title="Quest Sidenoder"
-        />
-      </Button>
-      <NavigationButtons mounted={mounted} setCurrentPage={setCurrentPage} />
+      <Link to="/">
+        <Button variant="primary" className="me-1 p-0">
+          <AppIcon
+            width={46.5}
+            height={46.5}
+            mode="light"
+            className="mr-2"
+            title="Quest Sidenoder"
+          />
+        </Button>
+      </Link>
+      <NavigationButtons mounted={mounted} />
       <DeviceButtons
         mounted={mounted}
         setMounted={setMounted}
@@ -72,10 +64,5 @@ function Navbar({ currentPage, setCurrentPage }) {
     </BootstrapNavbar>
   );
 }
-
-Navbar.propTypes = {
-  currentPage: PropTypes.string,
-  setCurrentPage: PropTypes.func,
-};
 
 export default Navbar;

@@ -1,5 +1,6 @@
 import { PropTypes } from 'prop-types';
 import { Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import useModal from '../../../../hooks/useModal';
 import SettingsModal from '../../../../modals/SettingsModal';
 import DeviceTweaksModal from '../../../../modals/DeviceTweaksModal';
@@ -19,7 +20,7 @@ import InstalledModal from '../../../../modals/InstalledModal';
 
 import Icon from '../../../Icon';
 
-function NavigationButtons({ mounted, setCurrentPage }) {
+function NavigationButtons({ mounted }) {
   const [
     openDeviceTweaksModal,
     closeDeviceTweaksModal,
@@ -60,27 +61,25 @@ function NavigationButtons({ mounted, setCurrentPage }) {
 
   return (
     <>
-      <Button
-        id="browse-local"
-        variant="primary"
-        className="me-1 text-nowrap"
-        onClick={() => {
-          setCurrentPage('FileBrowserLocal');
-        }}
-      >
-        <Icon set="fa" icon="FaRegFolderOpen" /> Browse
-      </Button>
-      <Button
-        id="browse-remote"
-        variant="info"
-        className="me-1 text-nowrap"
-        disabled={!mounted}
-        onClick={() => {
-          setCurrentPage('FileBrowserRemote');
-        }}
-      >
-        <Icon set="fa" icon="FaRegFolderOpen" /> Remote
-      </Button>
+      <Link to="/browselocal">
+        <Button
+          id="browse-local"
+          variant="primary"
+          className="me-1 text-nowrap"
+        >
+          <Icon set="fa" icon="FaRegFolderOpen" /> Browse
+        </Button>
+      </Link>
+      <Link to={mounted && '/browseremote'}>
+        <Button
+          id="browse-remote"
+          variant="info"
+          className="me-1 text-nowrap"
+          disabled={!mounted}
+        >
+          <Icon set="fa" icon="FaRegFolderOpen" /> Remote
+        </Button>
+      </Link>
       <Button
         id="browse-installed"
         variant="primary"
@@ -167,7 +166,6 @@ function NavigationButtons({ mounted, setCurrentPage }) {
 
 NavigationButtons.propTypes = {
   mounted: PropTypes.bool,
-  setCurrentPage: PropTypes.func,
 };
 
 export default NavigationButtons;

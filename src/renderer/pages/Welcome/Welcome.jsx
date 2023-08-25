@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import { Button, Card, Table } from 'react-bootstrap';
 import AdbBlock from './components/AdbBlock';
 import RcloneBlock from './components/RcloneBlock';
@@ -17,7 +16,7 @@ const tmpdir = remote.getGlobal('tmpdir');
 const mountFolder = remote.getGlobal('mountFolder');
 const sidenoderHome = remote.getGlobal('sidenoderHome');
 
-function Welcome({ show }) {
+function Welcome() {
   const [adb, setAdb] = useState(null);
   const [rclone, setRclone] = useState(null);
   const [zip, setZip] = useState(null);
@@ -62,7 +61,7 @@ function Welcome({ show }) {
   }, []);
 
   return (
-    <Card hidden={!show}>
+    <Card>
       <Card.Header>
         <Icon set="fa" icon="FaList" size="sm" /> System Check
       </Card.Header>
@@ -106,9 +105,5 @@ function Welcome({ show }) {
     </Card>
   );
 }
-
-Welcome.propTypes = {
-  show: PropTypes.bool,
-};
 
 export default Welcome;
