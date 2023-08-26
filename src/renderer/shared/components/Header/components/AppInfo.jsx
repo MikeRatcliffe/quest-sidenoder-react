@@ -107,8 +107,8 @@ function AppInfo() {
   }, []);
 
   return (
-    <div id="device_infoDiv">
-      <Row>
+    <div id="device_infoDiv" className="ps-0 pe-0">
+      <Row className="ps-4 pe-4">
         <Col sm={2}>
           <Icon set="fa" icon="FaRegUserCircle" /> User: <br />
           <small id="deviceUserName">
