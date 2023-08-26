@@ -1,10 +1,10 @@
-// import { useEffect } from 'react';
 import React from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './Layout';
 import Welcome from './pages/Welcome/Welcome';
 import FileBrowserLocal from './pages/FileBrowser/FileBrowserLocal';
 import FileBrowserRemote from './pages/FileBrowser/FileBrowserRemote';
+import './utils/logger';
 import './css/bootstrap-slate.css';
 import './css/App.css';
 
