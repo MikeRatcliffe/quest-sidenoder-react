@@ -12,34 +12,25 @@ function StorageDiv({ storage }) {
     );
   }
 
-  if (storage) {
-    const percent = +storage.percent.replace('%', '');
+  const percent = +storage.percent.replace('%', '');
+  const success = Math.min(80, percent);
+  const warning = Math.max(0, percent - 80);
+  const danger = Math.max(0, percent - 95);
 
-    let variant = 'success';
-    if (percent > 80) {
-      variant = 'warning';
-    }
-    if (percent > 95) {
-      variant = 'danger';
-    }
-
-    return (
-      <>
-        <small className="pull-left">
-          Used: {storage.used} of {storage.size} ({storage.percent})
-        </small>
-        <small className="pull-right">Free: {storage.free}</small>
-        <br />
-        <ProgressBar
-          id="progress-bar"
-          striped
-          variant={variant}
-          now={percent}
-        />
-      </>
-    );
-  }
-  return 'Can`t get storage status';
+  return (
+    <>
+      <small className="pull-left">
+        Used: {storage.used} of {storage.size} ({storage.percent})
+      </small>
+      <small className="pull-right">Free: {storage.free}</small>
+      <br />
+      <ProgressBar>
+        <ProgressBar striped variant="success" now={success} key={1} />
+        <ProgressBar striped variant="warning" now={warning} key={2} />
+        <ProgressBar striped variant="danger" now={danger} key={3} />
+      </ProgressBar>
+    </>
+  );
 }
 
 StorageDiv.propTypes = {
