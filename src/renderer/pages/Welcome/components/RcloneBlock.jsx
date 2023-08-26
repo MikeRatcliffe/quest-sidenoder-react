@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
 
+import _useIpcListener from '../../../hooks/useIpcListener';
 import _sendIPC from '../../../utils/sendIPC';
+
+const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');
@@ -12,9 +14,7 @@ const { shell } = remote;
 function RcloneBlock() {
   const [rclone, setRclone] = useState(null);
 
-  useIpcListener('check_deps', (event, res) => {
-    console.log('check_deps msg arrived in AdbBlock:', res);
-
+  useIpcListener('check_deps_rclone', (event, res) => {
     const { rclone: resRclone } = res;
 
     if (resRclone) {
@@ -23,7 +23,7 @@ function RcloneBlock() {
   });
 
   useEffect(() => {
-    sendIPC('check_deps', 'rclone');
+    sendIPC('check_deps_rclone', 'rclone');
   }, []);
 
   if (!rclone) {
@@ -64,7 +64,7 @@ function RcloneBlock() {
       {rclone.error && (
         <>
           <br />
-          <pre style={{ fontSize: 'x-small' }}>error: \n{rclone.error}</pre>
+          <pre style={{ fontSize: 'x-small' }}>{rclone.error}</pre>
         </>
       )}
     </Alert>

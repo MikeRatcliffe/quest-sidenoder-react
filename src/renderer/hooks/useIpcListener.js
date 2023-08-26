@@ -2,8 +2,11 @@ import { useEffect, useRef } from 'react';
 
 const { ipcRenderer } = window.require('electron');
 
-const useIpcListener = (channel, listener) => {
+const bold = 'color: white; font-weight: bold';
+
+function useIpcListener(mod, channel, listener) {
   const savedHandler = useRef();
+  const sender = mod.id.split('/').pop();
 
   useEffect(() => {
     savedHandler.current = listener;
@@ -17,12 +20,25 @@ const useIpcListener = (channel, listener) => {
       return savedHandler.current(event, ...rest);
     };
 
-    ipcRenderer.on(channel, eventHandler);
+    const wrappedHandler = (event, ...rest) => {
+      console.log(
+        `%c${sender} %c⭠ %c"${channel}" %carg:`,
+        bold,
+        '',
+        bold,
+        '',
+        ...rest
+      );
+
+      eventHandler(event, ...rest);
+    };
+
+    ipcRenderer.on(channel, wrappedHandler);
 
     return () => {
-      ipcRenderer.removeListener(channel, eventHandler);
+      ipcRenderer.removeListener(channel, wrappedHandler);
     };
-  }, [channel]);
-};
+  }, [channel, sender]);
+}
 
 export default useIpcListener;

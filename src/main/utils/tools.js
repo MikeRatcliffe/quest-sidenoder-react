@@ -1448,8 +1448,8 @@ async function checkMount(attempt = 0) {
   }
 }
 
-async function checkDeps(arg) {
-  console.log('checkDeps()', arg);
+async function checkDepsAdb(arg) {
+  console.log('checkDepsAdb()', arg);
   const res = {
     [arg]: {
       version: false,
@@ -1459,63 +1459,109 @@ async function checkDeps(arg) {
   };
 
   try {
-    if (arg === 'adb') {
-      let globalAdb = false;
-      try {
-        globalAdb = await commandExists('adb');
-      } catch (e) {
-        // Do nothing
-      }
-
-      if (globalAdb) {
-        adbCmd = 'adb';
-      } else {
-        adbCmd = await fetchBinary('adb');
-      }
-
-      res[arg].cmd = adbCmd;
-      try {
-        await execShellCommand(`"${res[arg].cmd}" start-server`);
-      } catch (err) {
-        if (!err.toString().includes('daemon started successfully')) {
-          throw err;
-        }
-      }
-
-      const adbVersion = await adb.version();
-      const cmdVersion = await execShellCommand(`"${res[arg].cmd}" version`);
-      res[arg].version = `adbkit v.${adbVersion}\n${cmdVersion}`;
-
-      await trackDevices();
+    let globalAdb = false;
+    try {
+      globalAdb = await commandExists('adb');
+    } catch (e) {
+      // Do nothing
     }
 
-    if (arg === 'rclone') {
-      // module with autodownload https://github.com/sntran/rclone.js/blob/main/index.js
-      // res.rclone.cmd = global.currentConfiguration.rclonePath || await commandExists('rclone');
-      res[arg].cmd = await fetchBinary('rclone');
+    if (globalAdb) {
+      adbCmd = 'adb';
+    } else {
+      adbCmd = await fetchBinary('adb');
+    }
+
+    res[arg].cmd = adbCmd;
+    try {
+      await execShellCommand(`"${res[arg].cmd}" start-server`);
+    } catch (err) {
+      if (!err.toString().includes('daemon started successfully')) {
+        throw err;
+      }
+    }
+
+    const adbVersion = await adb.version();
+    const cmdVersion = await execShellCommand(`"${res[arg].cmd}" version`);
+    res[arg].version = `adbkit v.${adbVersion}\n${cmdVersion}`;
+
+    await trackDevices();
+  } catch (e) {
+    console.error('checkDeps', arg, e);
+    res[arg].error = e && e.toString();
+  }
+
+  res.success = true;
+  return res;
+}
+
+async function checkDepsRclone(arg) {
+  console.log('checkDepsRclone()', arg);
+  const res = {
+    [arg]: {
+      version: false,
+      cmd: false,
+      error: false,
+    },
+  };
+
+  try {
+    // module with autodownload https://github.com/sntran/rclone.js/blob/main/index.js
+    // res.rclone.cmd = global.currentConfiguration.rclonePath || await commandExists('rclone');
+    res[arg].cmd = await fetchBinary('rclone');
+    res[arg].version = await execShellCommand(`"${res[arg].cmd}" --version`);
+  } catch (e) {
+    console.error('checkDeps', arg, e);
+    res[arg].error = e && e.toString();
+  }
+
+  res.success = true;
+  return res;
+}
+
+async function checkDepsZip(arg) {
+  console.log('checkDepsZip()', arg);
+  const res = {
+    [arg]: {
+      version: false,
+      cmd: false,
+      error: false,
+    },
+  };
+
+  try {
+    res[arg].cmd = await fetchBinary('7za');
+    res[arg].version = await execShellCommand(
+      `"${res[arg].cmd}" --help ${grepCmd} "7-Zip"`
+    );
+    console.log(res[arg].version);
+  } catch (e) {
+    console.error('checkDeps', arg, e);
+    res[arg].error = e && e.toString();
+  }
+
+  res.success = true;
+  return res;
+}
+
+async function checkDepsScrcpy(arg) {
+  console.log('checkDepsScrcpy()', arg);
+  const res = {
+    [arg]: {
+      version: false,
+      cmd: false,
+      error: false,
+    },
+  };
+
+  try {
+    res[arg].cmd =
+      global.currentConfiguration.scrcpyPath || (await commandExists('scrcpy'));
+    try {
       res[arg].version = await execShellCommand(`"${res[arg].cmd}" --version`);
-    }
-
-    if (arg === 'zip') {
-      res[arg].cmd = await fetchBinary('7za');
-      res[arg].version = await execShellCommand(
-        `"${res[arg].cmd}" --help ${grepCmd} "7-Zip"`
-      );
-      console.log(res[arg].version);
-    }
-
-    if (arg === 'scrcpy') {
-      res[arg].cmd =
-        global.currentConfiguration.scrcpyPath ||
-        (await commandExists('scrcpy'));
-      try {
-        res[arg].version = await execShellCommand(
-          `"${res[arg].cmd}" --version`
-        );
-        res[arg].version = res[arg].version.replace(/\n\n/, '\n');
-      } catch (err) {
-        res[arg].version = err; // don`t know why version at std_err((
-      }
+      res[arg].version = res[arg].version.replace(/\n\n/, '\n');
+    } catch (err) {
+      res[arg].version = err; // don`t know why version at std_err((
     }
   } catch (e) {
     console.error('checkDeps', arg, e);
@@ -3006,7 +3052,10 @@ export default {
   // methods
   getDeviceSync,
   trackDevices,
-  checkDeps,
+  checkDepsAdb,
+  checkDepsRclone,
+  checkDepsScrcpy,
+  checkDepsZip,
   checkMount,
   mount,
   killRClone,

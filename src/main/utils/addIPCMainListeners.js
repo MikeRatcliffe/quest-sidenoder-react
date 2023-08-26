@@ -50,11 +50,32 @@ const addIPCMainListeners = () => {
     event.reply('connect_wireless', { success: !res });
   });
 
-  ipcMain.on('check_deps', async (event, arg) => {
-    console.log('check_deps received', arg);
+  ipcMain.on('check_deps_adb', async (event, arg) => {
+    console.log('check_deps_adb received', arg);
 
-    const res = await tools.checkDeps(arg);
-    event.reply('check_deps', res);
+    const res = await tools.checkDepsAdb(arg);
+    event.reply('check_deps_adb', res);
+  });
+
+  ipcMain.on('check_deps_rclone', async (event, arg) => {
+    console.log('check_deps_rclone received', arg);
+
+    const res = await tools.checkDepsRclone(arg);
+    event.reply('check_deps_rclone', res);
+  });
+
+  ipcMain.on('check_deps_zip', async (event, arg) => {
+    console.log('check_deps_zip received', arg);
+
+    const res = await tools.checkDepsZip(arg);
+    event.reply('check_deps_zip', res);
+  });
+
+  ipcMain.on('check_deps_scrcpy', async (event, arg) => {
+    console.log('check_deps_scrcpy received', arg);
+
+    const res = await tools.checkDepsScrcpy(arg);
+    event.reply('check_deps_scrcpy', res);
   });
 
   ipcMain.on('mount', async (event) => {

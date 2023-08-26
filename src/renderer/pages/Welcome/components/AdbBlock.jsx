@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
 
+import _useIpcListener from '../../../hooks/useIpcListener';
 import _sendIPC from '../../../utils/sendIPC';
-const sendIPC = _sendIPC.bind(this, module);
 
+const useIpcListener = _useIpcListener.bind(this, module);
+const sendIPC = _sendIPC.bind(this, module);
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
 function AdbBlock() {
   const [adb, setAdb] = useState(null);
 
-  useIpcListener('check_deps', (event, res) => {
-    console.log('check_deps msg arrived in AdbBlock:', res);
-
+  useIpcListener('check_deps_adb', (event, res) => {
     const { adb: resAdb } = res;
 
     if (resAdb) {
@@ -23,7 +22,7 @@ function AdbBlock() {
   });
 
   useEffect(() => {
-    sendIPC('check_deps', 'adb');
+    sendIPC('check_deps_adb', 'adb');
   }, []);
 
   if (!adb) {

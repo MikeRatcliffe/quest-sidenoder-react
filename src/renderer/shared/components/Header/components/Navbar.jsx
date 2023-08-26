@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 import DeviceButtons from './DeviceButtons';
 import NavigationButtons from './NavigationButtons';
 import AppIcon from '../../../../../../assets/AppIcon';
-import useIpcListener from '../../../../hooks/useIpcListener';
+
+import _useIpcListener from '../../../../hooks/useIpcListener';
+const useIpcListener = _useIpcListener.bind(this, module);
 
 const { dialog } = window.require('@electron/remote');
 

@@ -3,9 +3,11 @@ import { useEffect, useState } from 'react';
 import Battery from './Battery';
 import Icon from '../../../Icon';
 import StorageDiv from './StorageDiv';
-import useIpcListener from '../../../../hooks/useIpcListener';
 
+import _useIpcListener from '../../../../hooks/useIpcListener';
 import _sendIPC from '../../../../utils/sendIPC';
+
+const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');

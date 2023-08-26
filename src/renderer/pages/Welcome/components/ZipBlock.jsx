@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
 
+import _useIpcListener from '../../../hooks/useIpcListener';
 import _sendIPC from '../../../utils/sendIPC';
+
+const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');
@@ -12,9 +14,7 @@ const { shell } = remote;
 function ZipBlock() {
   const [zip, setZip] = useState(null);
 
-  useIpcListener('check_deps', (event, res) => {
-    console.log('check_deps msg arrived in ZipBlock:', res);
-
+  useIpcListener('check_deps_zip', (event, res) => {
     const { zip: resZip } = res;
 
     if (resZip) {
@@ -23,7 +23,7 @@ function ZipBlock() {
   });
 
   useEffect(() => {
-    sendIPC('check_deps', 'zip');
+    sendIPC('check_deps_zip', 'zip');
   }, []);
 
   if (!zip) {

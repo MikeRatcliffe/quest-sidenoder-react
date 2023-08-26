@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Container } from 'react-bootstrap';
-import useIpcListener from '../../../../hooks/useIpcListener';
 import Icon from '../../../Icon';
 
+// import _useIPC from '../../../../hooks/useIPC';
+import _useIpcListener from '../../../../hooks/useIpcListener';
 import _sendIPC from '../../../../utils/sendIPC';
+
+const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
 const { dialog } = window.require('@electron/remote');
@@ -15,9 +18,7 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   const [wirelessRefresh, setWirelessRefresh] = useState(false);
 
   useIpcListener('check_device', (event, arg) => {
-    console.log('check_device msg received', arg);
     if (arg.success) {
-      console.log('GETDEVICE SUCCESS');
       setDeviceConnected(true);
 
       if (arg.success.endsWith(':5555')) {

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
-import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
 
+import _useIpcListener from '../../../hooks/useIpcListener';
 import _sendIPC from '../../../utils/sendIPC';
+
+const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');
@@ -14,9 +16,7 @@ const platform = remote.getGlobal('platform');
 function ScrCpyBlock() {
   const [scrcpy, setScrcpy] = useState(null);
 
-  useIpcListener('check_deps', (event, res) => {
-    console.log('check_deps msg arrived in ScrCpyBlock:', res);
-
+  useIpcListener('check_deps_scrcpy', (event, res) => {
     const { scrcpy: resScrcpy } = res;
 
     if (resScrcpy) {
@@ -25,7 +25,7 @@ function ScrCpyBlock() {
   });
 
   useEffect(() => {
-    sendIPC('check_deps', 'scrcpy');
+    sendIPC('check_deps_scrcpy', 'scrcpy');
   }, []);
 
   if (!scrcpy) {
@@ -72,7 +72,7 @@ function ScrCpyBlock() {
       {scrcpy.error && (
         <>
           <br />
-          <pre style={{ fontSize: 'x-small' }}>error: \n{scrcpy.error}</pre>
+          <pre style={{ fontSize: 'x-small' }}>{scrcpy.error}</pre>
         </>
       )}
     </Alert>

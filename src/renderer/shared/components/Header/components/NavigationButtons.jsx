@@ -5,7 +5,10 @@ import useModal from '../../../../hooks/useModal';
 import SettingsModal from '../../../../modals/SettingsModal';
 import DeviceTweaksModal from '../../../../modals/DeviceTweaksModal';
 import InstalledModal from '../../../../modals/InstalledModal';
-import useIpcListener from '../../../../hooks/useIpcListener';
+import Icon from '../../../Icon';
+
+import _useIpcListener from '../../../../hooks/useIpcListener';
+const useIpcListener = _useIpcListener.bind(this, module);
 
 // import AppInfoModal from '../../modals/AppInfoModal';
 // import AppInfoEventsModal from '../../modals/AppInfoEventsModal';
@@ -18,8 +21,6 @@ import useIpcListener from '../../../../hooks/useIpcListener';
 // import ProcessingModal from '../../modals/ProcessingModal';
 // import DonateModal from '../../modals/DonateModal';
 // import PromptModal from '../../modals/PromptModal';
-
-import Icon from '../../../Icon';
 
 function NavigationButtons() {
   const [mounted, setMounted] = useState(false);
