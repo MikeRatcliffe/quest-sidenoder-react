@@ -68,6 +68,15 @@ function AdbBlock() {
           <pre style={{ fontSize: 'x-small' }}>error: \n{adb.error}</pre>
         </>
       )}
+      <Button
+        id="adb-retry"
+        variant="link"
+        size="sm"
+        className="p-0 border-0 fs-inherit link-light fw-normal system-check-link position-absolute text-white end-0 me-2"
+        onClick={() => sendIPC('check_deps_adb', 'adb')}
+      >
+        Retry
+      </Button>
     </Alert>
   );
 }
