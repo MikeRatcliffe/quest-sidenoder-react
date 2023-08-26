@@ -13,6 +13,7 @@ import fetch from 'node-fetch';
 import WAE from 'web-auto-extractor';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import fixPath from 'fix-path';
+import debounce from 'debounce';
 import pkgJson from '../../../package.json';
 // import ApkReader from 'node-apk-parser';
 
@@ -945,12 +946,23 @@ function execShellCommand(cmd, ignoreError = false, buffer = 100) {
   });
 }
 
+const trackedChange = debounce(async function trackedChange(device) {
+  console.log('Device was changed', device.id);
+  await getDeviceSync();
+});
+
+let tracker = null;
 async function trackDevices() {
+  if (tracker) {
+    // Tracker is already initialized.
+    return;
+  }
+
   console.log('trackDevices()');
   await getDeviceSync();
 
   try {
-    const tracker = await adb.trackDevices();
+    tracker = await adb.trackDevices();
     tracker.on('add', async (device) => {
       console.log('Device was plugged in', device.id);
       // await getDeviceSync();
@@ -962,9 +974,7 @@ async function trackDevices() {
     });
 
     tracker.on('change', async (device) => {
-      // TODO: // need fix double run
-      console.log('Device was changed', device.id);
-      await getDeviceSync();
+      await trackedChange(device);
     });
 
     tracker.on('end', async () => {
