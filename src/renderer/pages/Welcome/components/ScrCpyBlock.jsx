@@ -1,13 +1,33 @@
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
+
+import _sendIPC from '../../../utils/sendIPC';
+const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
 const platform = remote.getGlobal('platform');
 
-function ScrCpyBlock({ scrcpy }) {
+function ScrCpyBlock() {
+  const [scrcpy, setScrcpy] = useState(null);
+
+  useIpcListener('check_deps', (event, res) => {
+    console.log('check_deps msg arrived in ScrCpyBlock:', res);
+
+    const { scrcpy: resScrcpy } = res;
+
+    if (resScrcpy) {
+      setScrcpy(resScrcpy);
+    }
+  });
+
+  useEffect(() => {
+    sendIPC('check_deps', 'scrcpy');
+  }, []);
+
   if (!scrcpy) {
     return (
       <h4>
@@ -58,13 +78,5 @@ function ScrCpyBlock({ scrcpy }) {
     </Alert>
   );
 }
-
-ScrCpyBlock.propTypes = {
-  scrcpy: PropTypes.shape({
-    cmd: PropTypes.string,
-    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    version: PropTypes.string,
-  }),
-};
 
 export default ScrCpyBlock;

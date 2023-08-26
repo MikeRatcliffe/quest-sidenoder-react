@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Button, Card, Table } from 'react-bootstrap';
 import AdbBlock from './components/AdbBlock';
 import RcloneBlock from './components/RcloneBlock';
 import ScrCpyBlock from './components/ScrCpyBlock';
 import ZipBlock from './components/ZipBlock';
 import Icon from '../../shared/Icon';
-
-const { ipcRenderer } = window.require('electron');
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -17,49 +14,6 @@ const mountFolder = remote.getGlobal('mountFolder');
 const sidenoderHome = remote.getGlobal('sidenoderHome');
 
 function Welcome() {
-  const [adb, setAdb] = useState(null);
-  const [rclone, setRclone] = useState(null);
-  const [zip, setZip] = useState(null);
-  const [scrcpy, setScrcpy] = useState(null);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-floating-promise/no-floating-promise
-    console.log('ONLOAD WELCOME START');
-    console.log('sending check_deps');
-
-    ipcRenderer.removeAllListeners('check_deps');
-    ipcRenderer.on('check_deps', (event, res) => {
-      console.log('check_deps msg arrived:', res);
-
-      const {
-        adb: resAdb,
-        rclone: resRclone,
-        zip: resZip,
-        scrcpy: resScrcpy,
-      } = res;
-
-      if (resAdb) {
-        setAdb(resAdb);
-      }
-      if (resRclone) {
-        setRclone(resRclone);
-      }
-      if (resZip) {
-        setZip(resZip);
-      }
-      if (resScrcpy) {
-        setScrcpy(resScrcpy);
-      }
-    });
-
-    ipcRenderer.send('check_deps', 'adb');
-    ipcRenderer.send('check_deps', 'rclone');
-    ipcRenderer.send('check_deps', 'zip');
-    ipcRenderer.send('check_deps', 'scrcpy');
-
-    console.log('ONLOAD WELCOME END');
-  }, []);
-
   return (
     <Card>
       <Card.Header>
@@ -97,10 +51,10 @@ function Welcome() {
             </tr>
           </tbody>
         </Table>
-        <AdbBlock adb={adb} />
-        <RcloneBlock rclone={rclone} />
-        <ZipBlock zip={zip} />
-        <ScrCpyBlock scrcpy={scrcpy} />
+        <AdbBlock />
+        <RcloneBlock />
+        <ZipBlock />
+        <ScrCpyBlock />
       </Card.Body>
     </Card>
   );

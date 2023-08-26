@@ -1,71 +1,72 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Container } from 'react-bootstrap';
+import useIpcListener from '../../../../hooks/useIpcListener';
 import Icon from '../../../Icon';
 
+import _sendIPC from '../../../../utils/sendIPC';
+const sendIPC = _sendIPC.bind(this, module);
+
 const { dialog } = window.require('@electron/remote');
-const { ipcRenderer } = window.require('electron');
 
 function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   const [deviceConnected, setDeviceConnected] = useState(false);
   const [wirelessConnected, setWirelessConnected] = useState(false);
   const [wirelessRefresh, setWirelessRefresh] = useState(false);
 
-  useEffect(() => {
-    ipcRenderer.on('check_device', (event, arg) => {
-      console.log('check_device msg received', arg);
-      if (arg.success) {
-        console.log('GETDEVICE SUCCESS');
-        setDeviceConnected(true);
+  useIpcListener('check_device', (event, arg) => {
+    console.log('check_device msg received', arg);
+    if (arg.success) {
+      console.log('GETDEVICE SUCCESS');
+      setDeviceConnected(true);
 
-        if (arg.success.endsWith(':5555')) {
-          setWirelessConnected(true);
-        }
-
-        ipcRenderer.send('get_device_info', '');
-        ipcRenderer.send('mp_name', { cmd: 'get' });
-      } else {
-        setDeviceConnected(false);
-        setWirelessConnected(false);
-      }
-    });
-
-    ipcRenderer.on('connect_wireless', (event, arg) => {
-      console.log('connect_wireless msg came from backend to frontend:', arg);
-
-      setWirelessRefresh(false);
-
-      if (arg.success) {
-        console.log('WIRELESS CONNECTED');
-
+      if (arg.success.endsWith(':5555')) {
         setWirelessConnected(true);
-
-        dialog.showMessageBox(null, {
-          type: 'info',
-          buttons: ['Ok'],
-          title: 'Device connected by TCP',
-          message:
-            'You can now unplug the USB cable and continue using the program via wireless connection',
-        });
-      } else {
-        setWirelessConnected(false);
       }
-    });
-  }, []);
+
+      sendIPC('get_device_info', '');
+      sendIPC('mp_name', { cmd: 'get' });
+    } else {
+      setDeviceConnected(false);
+      setWirelessConnected(false);
+    }
+  });
+
+  useIpcListener('connect_wireless', (event, arg) => {
+    console.log('connect_wireless msg came from backend to frontend:', arg);
+
+    setWirelessRefresh(false);
+
+    if (arg.success) {
+      console.log('WIRELESS CONNECTED');
+
+      setWirelessConnected(true);
+
+      dialog.showMessageBox(null, {
+        type: 'info',
+        buttons: ['Ok'],
+        title: 'Device connected by TCP',
+        message:
+          'You can now unplug the USB cable and continue using the program via wireless connection',
+      });
+    } else {
+      setWirelessConnected(false);
+    }
+  });
 
   function handleWirelessClick() {
     setWirelessRefresh(true);
 
     if (wirelessConnected) {
-      ipcRenderer.send('disconnect_wireless', '');
+      sendIPC('disconnect_wireless', '');
     } else {
-      ipcRenderer.send('connect_wireless', '');
+      sendIPC('connect_wireless', '');
     }
   }
 
   function handleCheckMountClick() {
     setMountRefresh(true);
-    ipcRenderer.send('mount', 'bla');
+    sendIPC('mount', 'bla');
   }
 
   function getWirelessButtonVariant() {

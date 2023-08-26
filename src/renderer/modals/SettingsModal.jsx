@@ -5,7 +5,9 @@ import useFields from '../hooks/useFields';
 import { ReactComponent as SideQuest } from '../img/sq-white.svg';
 import Icon from '../shared/Icon';
 
-const { ipcRenderer } = window.require('electron');
+import _sendIPC from '../utils/sendIPC';
+const sendIPC = _sendIPC.bind(this, module);
+
 const { dialog } = window.require('@electron/remote');
 const remote = window.require('@electron/remote');
 const { shell } = remote;
@@ -75,70 +77,70 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
     const val = res.filePaths[0];
     setStateFunc(key, val);
 
-    ipcRenderer.send('change_config', { key, val });
+    sendIPC('change_config', { key, val });
   }
 
   async function handleFieldChange({ target }) {
     switch (target.name) {
       case 'autoMount':
         setField('autoMount', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'allowOtherDevices':
         setField('allowOtherDevices', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'cacheOculusGames':
         setField('cacheOculusGames', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'cfgSection':
         setField('cfgSection', target.value);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: 'cfgSection',
           val: target.value,
         });
         break;
       case 'mountCmd':
         setField('mountCmd', target.value);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: 'mountCmd',
           val: target.value,
         });
         break;
       case 'proxyOculus':
         setField('proxyOculus', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'proxySteam':
         setField('proxySteam', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'proxySQ':
         setField('proxySQ', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });
         break;
       case 'proxyUrl':
         setField('proxyUrl', target.value);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: 'proxyUrl',
           val: target.value,
         });
@@ -177,7 +179,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
         break;
       case 'userHide':
         setField('userHide', target.checked);
-        ipcRenderer.send('change_config', {
+        sendIPC('change_config', {
           key: target.name,
           val: target.checked,
         });

@@ -1,41 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button, Navbar as BootstrapNavbar } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import DeviceButtons from './DeviceButtons';
 import NavigationButtons from './NavigationButtons';
 import AppIcon from '../../../../../../assets/AppIcon';
+import useIpcListener from '../../../../hooks/useIpcListener';
 
 const { dialog } = window.require('@electron/remote');
-const { ipcRenderer } = window.require('electron');
 
 function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [mountRefresh, setMountRefresh] = useState(false);
 
-  useEffect(() => {
-    ipcRenderer.removeAllListeners('check_mount');
-    ipcRenderer.on('check_mount', (event, arg) => {
-      console.log('check_mount responded: ', arg);
+  useIpcListener('check_mount', (event, arg) => {
+    console.log('check_mount responded: ', arg);
 
-      setMountRefresh(false);
+    setMountRefresh(false);
 
-      if (arg.success) {
-        setMounted(true);
-      } else {
-        setMounted(false);
+    if (arg.success) {
+      setMounted(true);
+    } else {
+      setMounted(false);
 
-        if (arg.error) {
-          dialog.showMessageBox(null, {
-            type: 'error',
-            buttons: ['Ok'],
-            title: 'RCLONE MOUNT FAILED',
-            message: 'Rclone failed on mount command',
-            detail: arg.error.toString(),
-          });
-        }
+      if (arg.error) {
+        dialog.showMessageBox(null, {
+          type: 'error',
+          buttons: ['Ok'],
+          title: 'RCLONE MOUNT FAILED',
+          message: 'Rclone failed on mount command',
+          detail: arg.error.toString(),
+        });
       }
-    });
-  }, []);
+    }
+  });
 
   return (
     <BootstrapNavbar

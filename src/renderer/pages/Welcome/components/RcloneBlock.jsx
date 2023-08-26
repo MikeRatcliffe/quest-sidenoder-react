@@ -1,11 +1,31 @@
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import useIpcListener from '../../../hooks/useIpcListener';
 import Icon from '../../../shared/Icon';
+
+import _sendIPC from '../../../utils/sendIPC';
+const sendIPC = _sendIPC.bind(this, module);
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
-function RcloneBlock({ rclone }) {
+function RcloneBlock() {
+  const [rclone, setRclone] = useState(null);
+
+  useIpcListener('check_deps', (event, res) => {
+    console.log('check_deps msg arrived in AdbBlock:', res);
+
+    const { rclone: resRclone } = res;
+
+    if (resRclone) {
+      setRclone(resRclone);
+    }
+  });
+
+  useEffect(() => {
+    sendIPC('check_deps', 'rclone');
+  }, []);
+
   if (!rclone) {
     return (
       <h4>
@@ -50,13 +70,5 @@ function RcloneBlock({ rclone }) {
     </Alert>
   );
 }
-
-RcloneBlock.propTypes = {
-  rclone: PropTypes.shape({
-    cmd: PropTypes.string,
-    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    version: PropTypes.string,
-  }),
-};
 
 export default RcloneBlock;

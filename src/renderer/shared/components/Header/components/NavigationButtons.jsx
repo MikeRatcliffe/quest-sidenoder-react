@@ -1,10 +1,11 @@
-import { PropTypes } from 'prop-types';
+import { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import useModal from '../../../../hooks/useModal';
 import SettingsModal from '../../../../modals/SettingsModal';
 import DeviceTweaksModal from '../../../../modals/DeviceTweaksModal';
 import InstalledModal from '../../../../modals/InstalledModal';
+import useIpcListener from '../../../../hooks/useIpcListener';
 
 // import AppInfoModal from '../../modals/AppInfoModal';
 // import AppInfoEventsModal from '../../modals/AppInfoEventsModal';
@@ -20,7 +21,15 @@ import InstalledModal from '../../../../modals/InstalledModal';
 
 import Icon from '../../../Icon';
 
-function NavigationButtons({ mounted }) {
+function NavigationButtons() {
+  const [mounted, setMounted] = useState(false);
+
+  useIpcListener('check_mount', (event, arg) => {
+    console.log('check_mount responded: ', arg);
+
+    setMounted(arg.success);
+  });
+
   const [
     openDeviceTweaksModal,
     closeDeviceTweaksModal,
@@ -163,9 +172,5 @@ function NavigationButtons({ mounted }) {
     </>
   );
 }
-
-NavigationButtons.propTypes = {
-  mounted: PropTypes.bool,
-};
 
 export default NavigationButtons;
