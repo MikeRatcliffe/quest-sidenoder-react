@@ -97,7 +97,7 @@ addIPCMainListeners();
 // process.stdout.write('\u001b[3J\u001b[1J');
 // console.clear();
 
-if (isProd) {
+if (!isProd) {
   sourceMapSupport.install();
 }
 
