@@ -17,6 +17,7 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   const [wirelessConnected, setWirelessConnected] = useState(false);
   const [wirelessRefresh, setWirelessRefresh] = useState(false);
 
+  console.log('RERENDER');
   useIpcListener('check_device', (event, arg) => {
     if (arg.success) {
       setDeviceConnected(true);
@@ -24,9 +25,6 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
       if (arg.success.endsWith(':5555')) {
         setWirelessConnected(true);
       }
-
-      sendIPC('get_device_info', '');
-      sendIPC('mp_name', { cmd: 'get' });
     } else {
       setDeviceConnected(false);
       setWirelessConnected(false);
