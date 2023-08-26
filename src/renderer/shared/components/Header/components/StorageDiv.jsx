@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { ProgressBar } from 'react-bootstrap';
 import Icon from '../../../Icon';
 
 function StorageDiv({ storage }) {
@@ -14,12 +15,12 @@ function StorageDiv({ storage }) {
   if (storage) {
     const percent = +storage.percent.replace('%', '');
 
-    let bg = 'success';
+    let variant = 'success';
     if (percent > 80) {
-      bg = 'warning';
+      variant = 'warning';
     }
     if (percent > 95) {
-      bg = 'danger';
+      variant = 'danger';
     }
 
     return (
@@ -29,16 +30,12 @@ function StorageDiv({ storage }) {
         </small>
         <small className="pull-right">Free: {storage.free}</small>
         <br />
-        <div className="progress">
-          <div
-            className={`progress-bar progress-bar-striped bg-${bg}`}
-            role="progressbar"
-            style={{ width: storage.percent }}
-            aria-valuenow={percent}
-            aria-valuemin="0"
-            aria-valuemax="100"
-          />
-        </div>
+        <ProgressBar
+          id="progress-bar"
+          striped
+          variant={variant}
+          now={percent}
+        />
       </>
     );
   }
