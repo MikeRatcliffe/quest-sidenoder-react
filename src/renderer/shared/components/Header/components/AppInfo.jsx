@@ -1,5 +1,5 @@
 import { Col, Row } from 'react-bootstrap';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Battery from './Battery';
 import Icon from '../../../Icon';
 import StorageDiv from './StorageDiv';
@@ -22,11 +22,15 @@ function AppInfo() {
   const [wifi, setWifi] = useState('Off');
   const [ip, setIp] = useState('X.X.X.X');
 
-  let timer = null;
-  useIpcListener('get_device_info', (event, deviceInfo) => {
-    clearTimeout(timer);
+  const timer = useRef(null);
 
-    timer = setTimeout(() => sendIPC('get_device_info', ''), 30000);
+  useIpcListener('get_device_info', (event, deviceInfo) => {
+    clearTimeout(timer.current);
+
+    timer.current = setTimeout(
+      () => sendIPC('get_device_info', 'from setTimeout'),
+      30000
+    );
 
     const {
       storage: devStorage,
@@ -99,7 +103,7 @@ function AppInfo() {
   });
 
   useEffect(() => {
-    sendIPC('get_device_info', '');
+    sendIPC('get_device_info', 'From useEffect');
   }, []);
 
   return (
