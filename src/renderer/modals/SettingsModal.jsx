@@ -509,6 +509,16 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
             </Form.Group>
           </Card>
         </Form>
+
+        <Form.Group className="pull-right m-1 mt-2 me-0">
+          <Button
+            name="rclonePath"
+            variant="primary"
+            onClick={() => closeSettingsModal()}
+          >
+            Close
+          </Button>
+        </Form.Group>
       </Modal.Body>
     </Modal>
   );
