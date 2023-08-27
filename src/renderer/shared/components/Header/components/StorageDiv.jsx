@@ -14,8 +14,8 @@ function StorageDiv({ storage }) {
 
   const percent = +storage.percent.replace('%', '');
   const success = Math.min(80, percent);
-  const warning = Math.max(0, percent - 80);
-  const danger = Math.max(0, percent - 95);
+  const warning = Math.min(15, Math.max(0, percent - 80));
+  const danger = Math.min(5, Math.max(0, percent - 95));
 
   return (
     <>
