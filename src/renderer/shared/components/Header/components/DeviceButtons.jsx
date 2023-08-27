@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button, Container } from 'react-bootstrap';
 import Icon from '../../../Icon';
 
-// import _useIPC from '../../../../hooks/useIPC';
 import _useIpcListener from '../../../../hooks/useIpcListener';
 import _sendIPC from '../../../../utils/sendIPC';
 
@@ -17,7 +16,6 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   const [wirelessConnected, setWirelessConnected] = useState(false);
   const [wirelessRefresh, setWirelessRefresh] = useState(false);
 
-  console.log('RERENDER');
   useIpcListener('check_device', (event, arg) => {
     if (arg.success) {
       setDeviceConnected(true);
