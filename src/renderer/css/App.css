@@ -77,6 +77,10 @@ a {
   font-size: inherit;
 }
 
+.tweak-alert {
+  font-size: 15px;
+}
+
 .system-check-link {
   position: relative;
   top: -2px;
@@ -332,6 +336,11 @@ span.icon-2xl {
 
 .modal-header .icon {
   top: -2px;
+}
+
+.modal-lg {
+  min-width: 820px !important;
+  max-width: 50% !important;
 }
 
 .form-floating > .form-control:focus ~ label,
