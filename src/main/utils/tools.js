@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { maxDepth, toJSON } from 'electron-log/src/main/transforms/object';
 import log from 'electron-log/main';
 import commandExists from 'command-exists';
+import which from 'which';
 import chalk from 'chalk';
 import ApkReader from 'adbkit-apkreader';
 import adbkit from '@devicefarmer/adbkit';
@@ -1554,28 +1555,27 @@ async function checkDepsZip(arg) {
   return res;
 }
 
-async function checkDepsScrcpy(arg) {
-  console.log('checkDepsScrcpy()', arg);
+async function checkDepsScrcpy() {
+  console.log('checkDepsScrcpy()');
+
   const res = {
-    [arg]: {
-      version: false,
-      cmd: false,
-      error: false,
-    },
+    version: false,
+    cmd: false,
+    error: false,
   };
 
   try {
-    res[arg].cmd =
+    res.cmd =
       global.currentConfiguration.scrcpyPath || (await commandExists('scrcpy'));
     try {
-      res[arg].version = await execShellCommand(`"${res[arg].cmd}" --version`);
-      res[arg].version = res[arg].version.replace(/\n\n/, '\n');
+      res.version = await execShellCommand(`"${res.cmd}" --version`);
+      res.version = res.version.replace(/\n\n/, '\n');
     } catch (err) {
-      res[arg].version = err; // don`t know why version at std_err((
+      res.error = err.message;
     }
   } catch (e) {
-    console.error('checkDeps', arg, e);
-    res[arg].error = e && e.toString();
+    console.error('checkDeps', e);
+    res.error = e && e.toString();
   }
 
   res.success = true;
@@ -1655,6 +1655,96 @@ async function killRClone() {
   });
 }
 
+async function checkRcloneSetup() {
+  console.warn('checkRcloneConfig()');
+  if (!global.currentConfiguration.rclonePath) {
+    return {
+      success: false,
+      error: 'Rclone binary not defined',
+    };
+  }
+
+  if (!global.currentConfiguration.rcloneConf) {
+    return {
+      success: false,
+      error: 'Rclone config not defined',
+    };
+  }
+
+  try {
+    const rcloneCmd = global.currentConfiguration.rclonePath;
+    const out = await execShellCommand(
+      `"${rcloneCmd}" --config="${global.currentConfiguration.rcloneConf}" listremotes`
+    );
+    if (out.includes('not found')) {
+      return {
+        success: false,
+        error: 'Rclone config is empty',
+      };
+    }
+    return {
+      success: true,
+    };
+  } catch (err) {
+    console.log(err);
+
+    if (err.message.includes('Failed to load config')) {
+      return {
+        success: false,
+        error: 'Failed to load config file',
+      };
+    }
+
+    return {
+      success: false,
+      error: 'Invalid Rclone binary',
+    };
+  } finally {
+    await parseRcloneSections(true);
+  }
+}
+
+async function checkStrcpySetup() {
+  console.warn('checkStrcpySetup()');
+
+  if (!global.currentConfiguration.scrcpyPath) {
+    const scrcpyPath = await which('scrcpy', { nothrow: true });
+
+    if (scrcpyPath) {
+      global.currentConfiguration.scrcpyPath = scrcpyPath;
+      await changeConfig('scrcpyPath', scrcpyPath);
+    }
+  }
+
+  if (!global.currentConfiguration.scrcpyPath) {
+    return {
+      success: false,
+      error: 'Strcpy binary not defined',
+    };
+  }
+
+  try {
+    const strcpyCmd = global.currentConfiguration.scrcpyPath;
+    const out = await execShellCommand(`"${strcpyCmd}" --version`);
+    if (out.includes('Dependencies')) {
+      return {
+        success: true,
+      };
+    }
+    return {
+      success: false,
+      error: 'Invalid scrcpy binary',
+    };
+  } catch (err) {
+    console.log(err);
+
+    return {
+      success: false,
+      error: 'Invalid scrcpy binary',
+    };
+  }
+}
+
 async function parseRcloneSections(newCfg = false) {
   console.warn('parseRcloneSections', newCfg);
   if (!global.currentConfiguration.rclonePath) {
@@ -1671,6 +1761,7 @@ async function parseRcloneSections(newCfg = false) {
       `"${rcloneCmd}" --config="${global.currentConfiguration.rcloneConf}" listremotes`
     );
     if (!out || out.includes('not found')) {
+      global.rcloneSections = [];
       return console.error(
         'rclone config is empty',
         global.currentConfiguration.rcloneConf,
@@ -1687,6 +1778,7 @@ async function parseRcloneSections(newCfg = false) {
     });
 
     if (!sections.length) {
+      global.rcloneSections = [];
       return console.error(
         'rclone config sections not found',
         global.currentConfiguration.rcloneConf,
@@ -1711,6 +1803,9 @@ async function parseRcloneSections(newCfg = false) {
     const lines = cfg.split('\n');
     const sections = [];
     for (const line of lines) {
+      if (!line) {
+        continue;
+      }
       if (!line[0].startsWith('[')) {
         continue;
       }
@@ -3067,6 +3162,8 @@ export default {
   checkDepsScrcpy,
   checkDepsZip,
   checkMount,
+  checkRcloneSetup,
+  checkStrcpySetup,
   mount,
   killRClone,
   getDir,

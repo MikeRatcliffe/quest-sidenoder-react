@@ -1,12 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import { Button, Card, Form, InputGroup, Modal } from 'react-bootstrap';
 import useFields from '../hooks/useFields';
 import { ReactComponent as SideQuest } from '../img/sq-white.svg';
 import Icon from '../shared/Icon';
 
+import _useIpcListener from '../hooks/useIpcListener';
 import _sendIPC from '../utils/sendIPC';
+
 const sendIPC = _sendIPC.bind(this, module);
+const useIpcListener = _useIpcListener.bind(this, module);
 
 const { dialog } = window.require('@electron/remote');
 const remote = window.require('@electron/remote');
@@ -34,21 +37,63 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
     proxySteam: config.proxySteam,
     userHide: config.userHide,
   });
+  const [rcloneBinaryError, setRcloneBinaryError] = useState('');
+  const [rcloneConfigError, setRcloneConfigError] = useState('');
+  const [rcloneSections, setRcloneSections] = useState(
+    remote.getGlobal('rcloneSections')
+  );
+  const [scrcpyBinaryError, setScrcpyBinaryError] = useState('');
+
+  useIpcListener('check_rclone_setup', (event, res) => {
+    if (res.success) {
+      setRcloneBinaryError('');
+      setRcloneConfigError('');
+      setRcloneSections(remote.getGlobal('rcloneSections'));
+    } else if (res.error === 'Invalid Rclone binary') {
+      setRcloneBinaryError(res.error);
+    } else {
+      setRcloneConfigError(res.error);
+      setRcloneSections([]);
+    }
+  });
+
+  useIpcListener('check_scrcpy_setup', (event, res) => {
+    if (res.success) {
+      setScrcpyBinaryError('');
+    } else if (res.error === 'Invalid scrcpy binary') {
+      setScrcpyBinaryError(res.error);
+    } else {
+      setRcloneConfigError(res.error);
+    }
+  });
 
   useEffect(() => {
     // eslint-disable-next-line no-floating-promise/no-floating-promise
     (async () => {
       if (!getField('rclonePath')) {
-        setField('rclonePath', await which('rclone'));
+        const rclonePath = await which('rclone', { nothrow: true });
+
+        if (rclonePath) {
+          setField('rclonePath', rclonePath);
+        }
       }
       if (!getField('scrcpyPath')) {
-        setField('scrcpyPath', await which('scrcpy'));
+        const scrcpyPath = await which('scrcpy', { nothrow: true });
+
+        if (scrcpyPath) {
+          setField('scrcpyPath', await which('scrcpy', { nothrow: true }));
+        }
       }
       if (!getField('tmpdir')) {
         setField('tmpdir', remote.getGlobal('tmpdir'));
       }
     })();
   }, [getField, setField, allFields]);
+
+  useEffect(() => {
+    sendIPC('check_rclone_setup', 'From useEffect');
+    sendIPC('check_scrcpy_setup', 'From strcpyConf');
+  }, []);
 
   async function setCustomPath({
     key,
@@ -152,6 +197,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           message: 'Browse to rclone binary location',
           setStateFunc: setField,
         });
+        sendIPC('check_rclone_setup', 'From rclonePath');
         break;
       case 'rcloneConf':
         await setCustomPath({
@@ -160,6 +206,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           message: 'Browse to Rclone config location',
           setStateFunc: setField,
         });
+        sendIPC('check_rclone_setup', 'From rcloneConf');
         break;
       case 'scrcpyPath':
         await setCustomPath({
@@ -168,6 +215,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           message: 'Browse to Scrcpy binary location',
           setStateFunc: setField,
         });
+        sendIPC('check_scrcpy_setup', 'From strcpyConf');
         break;
       case 'tmpdir':
         await setCustomPath({
@@ -217,7 +265,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 onChange={handleFieldChange}
                 value={getField('cfgSection')}
               >
-                {remote.getGlobal('rcloneSections').map((section) => {
+                {rcloneSections.map((section) => {
                   return (
                     <option key={section} value={section}>
                       {section}
@@ -229,13 +277,14 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
 
             <Form.Group className="m-3 mt-0">
               <Form.Label>Custom Rclone binary path:</Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <Form.Control
                   name="rclonePath"
                   type="text"
                   readOnly
                   value={getField('rclonePath')}
                   onClick={handleFieldChange}
+                  isInvalid={!!rcloneBinaryError}
                 />
                 <Button
                   name="rclonePath"
@@ -252,20 +301,22 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 >
                   Download
                 </Button>
+                <Form.Control.Feedback type="invalid">
+                  {rcloneBinaryError}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
             <Form.Group className="m-3 mt-0">
-              <Form.Label htmlFor="rcloneConfigPath">
-                Custom Rclone config path:
-              </Form.Label>
-              <InputGroup>
+              <Form.Label>Custom Rclone config path:</Form.Label>
+              <InputGroup hasValidation>
                 <Form.Control
                   name="rcloneConf"
                   type="text"
                   readOnly
                   value={getField('rcloneConf')}
                   onClick={handleFieldChange}
+                  isInvalid={!!rcloneConfigError}
                 />
                 <Button
                   name="rcloneConf"
@@ -274,6 +325,9 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 >
                   Browse
                 </Button>
+                <Form.Control.Feedback type="invalid">
+                  {rcloneConfigError}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 
@@ -308,13 +362,14 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
             <Card.Header>Main:</Card.Header>
             <Form.Group className="m-3">
               <Form.Label>Custom Scrcpy binary path:</Form.Label>
-              <InputGroup>
+              <InputGroup hasValidation>
                 <Form.Control
                   name="scrcpyPath"
                   type="text"
                   readOnly
                   value={getField('scrcpyPath')}
                   onClick={handleFieldChange}
+                  isInvalid={!!scrcpyBinaryError}
                 />
                 <Button
                   name="scrcpyPath"
@@ -333,6 +388,9 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 >
                   Download
                 </Button>
+                <Form.Control.Feedback type="invalid">
+                  {scrcpyBinaryError}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
 

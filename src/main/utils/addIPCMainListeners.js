@@ -57,6 +57,20 @@ const addIPCMainListeners = () => {
     event.reply('check_deps_adb', res);
   });
 
+  ipcMain.on('check_rclone_setup', async (event, arg) => {
+    console.log('check_rclone_setup received', arg);
+
+    const res = await tools.checkRcloneSetup(arg);
+    event.reply('check_rclone_setup', res);
+  });
+
+  ipcMain.on('check_scrcpy_setup', async (event, arg) => {
+    console.log('check_strcpy_setup received', arg);
+
+    const res = await tools.checkStrcpySetup(arg);
+    event.reply('check_scrcpy_setup', res);
+  });
+
   ipcMain.on('check_deps_rclone', async (event, arg) => {
     console.log('check_deps_rclone received', arg);
 
@@ -74,7 +88,7 @@ const addIPCMainListeners = () => {
   ipcMain.on('check_deps_scrcpy', async (event, arg) => {
     console.log('check_deps_scrcpy received', arg);
 
-    const res = await tools.checkDepsScrcpy(arg);
+    const res = await tools.checkDepsScrcpy();
     event.reply('check_deps_scrcpy', res);
   });
 

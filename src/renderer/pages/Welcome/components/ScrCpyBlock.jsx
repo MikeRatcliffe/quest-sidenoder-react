@@ -17,15 +17,13 @@ function ScrCpyBlock() {
   const [scrcpy, setScrcpy] = useState(null);
 
   useIpcListener('check_deps_scrcpy', (event, res) => {
-    const { scrcpy: resScrcpy } = res;
-
-    if (resScrcpy) {
-      setScrcpy(resScrcpy);
+    if (res) {
+      setScrcpy(res);
     }
   });
 
   useEffect(() => {
-    sendIPC('check_deps_scrcpy', 'scrcpy');
+    sendIPC('check_deps_scrcpy', '');
   }, []);
 
   if (!scrcpy) {
