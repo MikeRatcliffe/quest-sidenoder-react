@@ -1,4 +1,4 @@
-/* global $,$id,connectWireless,dialog,disconnectWireless,id,ipcRenderer,remote */
+/* global $,$id,connectWireless,disconnectWireless,id,ipcRenderer,remote,showMessageBox */
 
 ipcRenderer.on('check_mount', (event, arg) => {
   console.log('check_mount responded: ', arg); // prints "ping"
