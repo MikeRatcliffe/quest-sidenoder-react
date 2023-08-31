@@ -1,28 +1,41 @@
-import { PropTypes } from 'prop-types';
-import { Modal } from 'react-bootstrap';
-import Icon from '../../shared/Icon';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Modal } from 'react-bootstrap';
+import { modalHide, getModalIsVisibleSelector } from '../../store';
+import { MODAL_DONATE } from '../utils/constants';
+import Icon from '../shared/Icon';
 
-function Donate({ closeDonateModal, isDonateModalVisible }) {
+function Donate() {
+  const dispatch = useDispatch();
+
+  const isShown = useSelector((state) =>
+    getModalIsVisibleSelector(state, MODAL_DONATE)
+  );
+
   return (
     <Modal
       scrollable
       size="xl"
-      show={isDonateModalVisible()}
-      onHide={() => closeDonateModal()}
+      show={isShown}
+      onHide={() => dispatch(modalHide(MODAL_DONATE))}
     >
       <Modal.Header closeButton>
         <Modal.Title as="h5">
-          <Icon set="fa" icon="FaBug" /> Donate
+          <Icon set="fa" icon="FaList" /> Donate
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>Donate content</Modal.Body>
+      <Modal.Body>
+        <h1>Donate Modal</h1>
+
+        <Button
+          name="rclonePath"
+          variant="primary"
+          onClick={() => dispatch(modalHide(MODAL_DONATE))}
+        >
+          Close
+        </Button>
+      </Modal.Body>
     </Modal>
   );
 }
-
-Donate.propTypes = {
-  closeDonateModal: PropTypes.func,
-  isDonateModalVisible: PropTypes.func,
-};
 
 export default Donate;

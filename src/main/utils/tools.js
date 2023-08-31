@@ -120,9 +120,7 @@ async function getUserInfo() {
   console.log('XXXXX getUserInfo()');
 
   if (global.currentConfiguration.userHide) {
-    return {
-      name: '<i>hidden</i>',
-    };
+    return '<i>hidden</i>';
   }
 
   const res = await adbShell('dumpsys user | grep UserInfo');
@@ -130,9 +128,7 @@ async function getUserInfo() {
     return false;
   }
 
-  return {
-    name: res.split(':')[1],
-  };
+  return res.split(':')[1];
 }
 
 async function deviceTweaksGet(arg) {
@@ -1682,16 +1678,26 @@ async function checkRcloneSetup() {
         error: 'Rclone config is empty',
       };
     }
+
+    await parseRcloneSections(true);
+
     return {
       success: true,
     };
   } catch (err) {
-    console.log(err);
+    const message = err.message || err;
 
-    if (err.message.includes('Failed to load config')) {
+    if (message.includes('not found')) {
       return {
         success: false,
-        error: 'Failed to load config file',
+        error: 'Invalid Rclone config path',
+      };
+    }
+
+    if (message.includes('Failed to load config')) {
+      return {
+        success: false,
+        error: 'Invalid Rclone config file',
       };
     }
 
@@ -1699,8 +1705,6 @@ async function checkRcloneSetup() {
       success: false,
       error: 'Invalid Rclone binary',
     };
-  } finally {
-    await parseRcloneSections(true);
   }
 }
 

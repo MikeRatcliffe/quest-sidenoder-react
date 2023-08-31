@@ -1,28 +1,41 @@
-import { PropTypes } from 'prop-types';
-import { Modal } from 'react-bootstrap';
-import Icon from '../../shared/Icon';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Modal } from 'react-bootstrap';
+import { modalHide, getModalIsVisibleSelector } from '../../store';
+import { MODAL_SIDELOAD } from '../utils/constants';
+import Icon from '../shared/Icon';
 
-function Sideload({ closeSideloadModal, isSideloadModalVisible }) {
+function Sideload() {
+  const dispatch = useDispatch();
+
+  const isShown = useSelector((state) =>
+    getModalIsVisibleSelector(state, MODAL_SIDELOAD)
+  );
+
   return (
     <Modal
       scrollable
       size="xl"
-      show={isSideloadModalVisible()}
-      onHide={() => closeSideloadModal()}
+      show={isShown}
+      onHide={() => dispatch(modalHide(MODAL_SIDELOAD))}
     >
       <Modal.Header closeButton>
         <Modal.Title as="h5">
-          <Icon set="fa" icon="FaBug" /> Sideload
+          <Icon set="fa" icon="FaList" /> Sideload
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>Sideload content</Modal.Body>
+      <Modal.Body>
+        <h1>Sideload Modal</h1>
+
+        <Button
+          name="rclonePath"
+          variant="primary"
+          onClick={() => dispatch(modalHide(MODAL_SIDELOAD))}
+        >
+          Close
+        </Button>
+      </Modal.Body>
     </Modal>
   );
 }
-
-Sideload.propTypes = {
-  closeSideloadModal: PropTypes.func,
-  isSideloadModalVisible: PropTypes.func,
-};
 
 export default Sideload;

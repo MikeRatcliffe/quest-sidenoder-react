@@ -1,18 +1,20 @@
 import * as path from 'path';
-import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
+import { showScrollToTopSelector } from '../../../../store';
+
 import Icon from '../../Icon';
 
 const remote = window.require('@electron/remote');
 const { shell } = remote;
 
-function Footer() {
-  const repository = remote.getGlobal('repository');
-  const sidenoderHome = remote.getGlobal('sidenoderHome');
-  const version = remote.getGlobal('version');
-  const logPath = path.join(sidenoderHome, 'debug_last.log');
+const version = remote.getGlobal('version');
+const sidenoderHome = remote.getGlobal('sidenoderHome');
+const logPath = path.join(sidenoderHome, 'debug_last.log');
+const repository = remote.getGlobal('repository');
 
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
+function Footer() {
+  const showScrollToTop = useSelector(showScrollToTopSelector);
 
   return (
     <footer className="footer text-center">
@@ -42,6 +44,7 @@ function Footer() {
         size="lg"
         id="backToTop"
         className={showScrollToTop ? 'fade-in' : 'fade-out'}
+        style={{ opacity: showScrollToTop ? '1' : '0' }}
         onClick={() => {
           document.documentElement.scrollTop = 0;
         }}

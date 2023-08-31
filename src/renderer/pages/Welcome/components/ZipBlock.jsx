@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { setZip, zipSelector } from '../../../../store';
 import Icon from '../../../shared/Icon';
 
 import _useIpcListener from '../../../hooks/useIpcListener';
@@ -12,13 +14,14 @@ const remote = window.require('@electron/remote');
 const { shell } = remote;
 
 function ZipBlock() {
-  const [zip, setZip] = useState(null);
+  const zip = useSelector(zipSelector);
+  const dispatch = useDispatch();
 
   useIpcListener('check_deps_zip', (event, res) => {
     const { zip: resZip } = res;
 
     if (resZip) {
-      setZip(resZip);
+      dispatch(setZip(resZip));
     }
   });
 

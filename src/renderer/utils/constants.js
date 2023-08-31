@@ -1,0 +1,15 @@
+export const MODAL_APPINFOEVENTS = 'appinfoevents';
+export const MODAL_APPINFO = 'appinfo';
+export const MODAL_APPSTART = 'appstart';
+export const MODAL_APPTOOLS = 'apptools';
+export const MODAL_CONFIRM = 'confirm';
+export const MODAL_DEVICETWEAKS = 'devicetweaks';
+export const MODAL_DONATE = 'donate';
+export const MODAL_INSTALLED = 'installed';
+export const MODAL_MESSAGEBOX = 'messagebox';
+export const MODAL_PROCESSING = 'processing';
+export const MODAL_PROMPT = 'prompt';
+export const MODAL_SETTINGS = 'settings';
+export const MODAL_SIDELOAD = 'sideload';
+export const MODAL_SIDELOADQUEUE = 'sideloadqueue';
+export const MODAL_STRCPY = 'strcpy';

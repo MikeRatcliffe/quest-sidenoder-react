@@ -1,5 +1,17 @@
+import { Card } from 'react-bootstrap';
+import Icon from '../../shared/Icon';
+
 function FileBrowserRemote() {
-  return <h1>FileBrowserRemote.js</h1>;
+  return (
+    <Card>
+      <Card.Header>
+        <Icon set="fa" icon="FaList" size="sm" /> Browse Local Files
+      </Card.Header>
+      <Card.Body className="fs-5">
+        <h1>FileBrowserRemote.js</h1>
+      </Card.Body>
+    </Card>
+  );
 }
 
 export default FileBrowserRemote;

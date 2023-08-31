@@ -402,6 +402,14 @@ const addIPCMainListeners = () => {
     const resp = await tools.restoreAppData(arg);
     event.reply('data_restore', { success: resp });
   });
+
+  ipcMain.on('messagebox-button-clicked', async (event, arg) => {
+    console.log('messagebox-button-clicked received', arg);
+    event.reply('messagebox-button-clicked', {
+      success: true,
+      buttonIndexClicked: arg,
+    });
+  });
 };
 
 export default addIPCMainListeners;

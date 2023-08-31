@@ -1,28 +1,41 @@
-import { PropTypes } from 'prop-types';
-import { Modal } from 'react-bootstrap';
-import Icon from '../../shared/Icon';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Modal } from 'react-bootstrap';
+import { modalHide, getModalIsVisibleSelector } from '../../store';
+import { MODAL_APPTOOLS } from '../utils/constants';
+import Icon from '../shared/Icon';
 
-function AppTools({ closeAppToolsModal, isAppToolsModalVisible }) {
+function AppTools() {
+  const dispatch = useDispatch();
+
+  const isShown = useSelector((state) =>
+    getModalIsVisibleSelector(state, MODAL_APPTOOLS)
+  );
+
   return (
     <Modal
       scrollable
       size="xl"
-      show={isAppToolsModalVisible()}
-      onHide={() => closeAppToolsModal()}
+      show={isShown}
+      onHide={() => dispatch(modalHide(MODAL_APPTOOLS))}
     >
       <Modal.Header closeButton>
         <Modal.Title as="h5">
-          <Icon set="fa" icon="FaBug" /> AppTools
+          <Icon set="fa" icon="FaList" /> App Tools
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>AppTools content</Modal.Body>
+      <Modal.Body>
+        <h1>AppTools Modal</h1>
+
+        <Button
+          name="rclonePath"
+          variant="primary"
+          onClick={() => dispatch(modalHide(MODAL_APPTOOLS))}
+        >
+          Close
+        </Button>
+      </Modal.Body>
     </Modal>
   );
 }
-
-AppTools.propTypes = {
-  closeAppToolsModal: PropTypes.func,
-  isAppToolsModalVisible: PropTypes.func,
-};
 
 export default AppTools;

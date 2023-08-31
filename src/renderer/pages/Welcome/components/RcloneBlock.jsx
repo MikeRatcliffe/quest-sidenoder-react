@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { rcloneSelector, setRclone } from '../../../../store';
 import Icon from '../../../shared/Icon';
 
 import _useIpcListener from '../../../hooks/useIpcListener';
@@ -12,13 +14,14 @@ const remote = window.require('@electron/remote');
 const { shell } = remote;
 
 function RcloneBlock() {
-  const [rclone, setRclone] = useState(null);
+  const rclone = useSelector(rcloneSelector);
+  const dispatch = useDispatch();
 
   useIpcListener('check_deps_rclone', (event, res) => {
     const { rclone: resRclone } = res;
 
     if (resRclone) {
-      setRclone(resRclone);
+      dispatch(setRclone(resRclone));
     }
   });
 

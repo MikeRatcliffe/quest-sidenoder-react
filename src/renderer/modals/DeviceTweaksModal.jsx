@@ -1,14 +1,31 @@
-import { PropTypes } from 'prop-types';
-import { Alert, Button, Card, Col, Form, InputGroup, Modal, Row } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  Alert,
+  Button,
+  Card,
+  Col,
+  Form,
+  InputGroup,
+  Modal,
+  Row,
+} from 'react-bootstrap';
+import { modalHide, getModalIsVisibleSelector } from '../../store';
+import { MODAL_DEVICETWEAKS } from '../utils/constants';
 import Icon from '../shared/Icon';
 
-function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
+function DeviceTweaks() {
+  const dispatch = useDispatch();
+
+  const isShown = useSelector((state) =>
+    getModalIsVisibleSelector(state, MODAL_DEVICETWEAKS)
+  );
+
   return (
     <Modal
       scrollable
       size="lg"
-      show={isDeviceTweaksModalVisible()}
-      onHide={() => closeDeviceTweaksModal()}
+      show={isShown}
+      onHide={() => dispatch(modalHide(MODAL_DEVICETWEAKS))}
     >
       <Modal.Header closeButton>
         <Modal.Title as="h5">
@@ -33,7 +50,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 variant="primary"
                 className="me-1"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="fa" icon="FaShareSquare" /> Screen share
@@ -43,7 +60,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 variant="primary"
                 className="me-1"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="fa" icon="FaPlug" /> Switch USB mode to MTP
@@ -53,7 +70,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 variant="danger"
                 className="me-1"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="fa" icon="FaPowerOff" /> Reboot device
@@ -62,7 +79,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
               <Button
                 variant="warning"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="im" icon="ImSpinner11" /> Reboot to recovery
@@ -74,8 +91,8 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 name="guardian_pause"
                 className="fs-5"
                 label="Pause the guardian (temporary disable it)"
-                checked={}
-                onChange={}
+                checked={null}
+                onChange={null}
               />
             </Form.Group>
 
@@ -90,8 +107,8 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 <Form.Control
                   name="mp_name"
                   type="text"
-                  value={}
-                  onChange={}
+                  value=""
+                  onChange={null}
                 />
               </InputGroup>
             </Form.Group>
@@ -104,12 +121,12 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
               <Alert variant="info" className="m-3 mt-0 mb-0">
                 <small>
                   <h6>Instructions:</h6>
-                  <ol style={{marginBottom: 0}}>
+                  <ol style={{ marginBottom: 0 }}>
                     <li>Reboot to bootloader.</li>
                     <li>
-                      Select the "firmware update" option on your device using the
-                      volume buttons to move the selection, and power button to
-                      select.
+                      Select the &quot;firmware update&quot; option on your
+                      device using the volume buttons to move the selection, and
+                      power button to select.
                     </li>
                     <li>Sideload update.zip</li>
                   </ol>
@@ -124,14 +141,10 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                   name="updateFwPath"
                   type="text"
                   readOnly
-                  value={}
-                  onClick={}
+                  value=""
+                  onChange={null}
                 />
-                <Button
-                  name="updateFwPath"
-                  variant="primary"
-                  onClick={}
-                >
+                <Button name="updateFwPath" variant="primary" onClick={null}>
                   Browse
                 </Button>
               </InputGroup>
@@ -142,7 +155,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 variant="danger"
                 className="me-1"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="im" icon="ImSpinner11" /> Reboot to bootloader
@@ -152,7 +165,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 variant="warning"
                 className="me-1"
                 onClick={() => {
-                  //shell.openExternal('https://downloads.rclone.org/');
+                  // shell.openExternal('https://downloads.rclone.org/');
                 }}
               >
                 <Icon set="fa" icon="FaUpload" /> Sideload update.zip
@@ -168,13 +181,11 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
             <Form.Group className="m-3 mb-0">
               <Form.Label className="mb-0">
                 <h6 className="mb-0">Set Screenshot Size</h6>
-                <small>This changes the resolution of screenshots on the Quest</small>
+                <small>
+                  This changes the resolution of screenshots on the Quest
+                </small>
               </Form.Label>
-              <Form.Select
-                name="cres"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="cres" onChange={null} value="">
                 <option value="640x480">640x480</option>
                 <option value="1024x1024">1024x1024 (default - Quest2)</option>
                 <option value="1280x720">1280x720</option>
@@ -185,13 +196,11 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
             <Form.Group className="m-3">
               <Form.Label className="mb-0">
                 <h6 className="mb-0">Set Video Capture Size</h6>
-                <small>This changes the resolution of captured videos on the Quest</small>
+                <small>
+                  This changes the resolution of captured videos on the Quest
+                </small>
               </Form.Label>
-              <Form.Select
-                name="cres"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="cres" onChange={null} value="">
                 <option value="1024">1024</option>
                 <option value="1536">1536</option>
               </Form.Select>
@@ -202,8 +211,8 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 name="frc"
                 className="fs-5"
                 label="Full rate capture for videos recorded i.e. 60/72fps rather than 30fps."
-                checked={}
-                onChange={}
+                checked={false}
+                onChange={null}
               />
             </Form.Group>
           </Card>
@@ -214,15 +223,18 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
             <Form.Group className="m-3 mb-0">
               <Form.Label className="mb-0">
                 <h6 className="mb-0">Refresh Rate</h6>
-                <small>This will allow you to change to 90Hz refresh rate for 90fps support in games on Quest 2.
-                <br />
-                WARNING: This does not work in all games, and does not work with Oculus Link. This setting may also reset to default when you restart your headset. You may need to press the power button twice to turn the screen off and on to enable this setting for apps that dont have it natively enabled.</small>
+                <small>
+                  This will allow you to change to 90Hz refresh rate for 90fps
+                  support in games on Quest 2.
+                  <br />
+                  WARNING: This does not work in all games, and does not work
+                  with Oculus Link. This setting may also reset to default when
+                  you restart your headset. You may need to press the power
+                  button twice to turn the screen off and on to enable this
+                  setting for apps that dont have it natively enabled.
+                </small>
               </Form.Label>
-              <Form.Select
-                name="gRR"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="gRR" onChange={null} value="">
                 <option value="72">default(72 Hz)</option>
                 <option value="60">60 Hz</option>
                 <option value="72">72 Hz</option>
@@ -235,11 +247,7 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
               <Form.Label className="mb-0">
                 <h6 className="mb-0">Chromatic Aberration</h6>
               </Form.Label>
-              <Form.Select
-                name="gCA"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="gCA" onChange={null} value="">
                 <option value="-1">by app</option>
                 <option value="1">on</option>
                 <option value="0">off</option>
@@ -249,13 +257,14 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
             <Form.Group className="m-3 mb-0">
               <Form.Label className="mb-0">
                 <h6 className="mb-0">FFR (Fixed Foveated Rendering) level</h6>
-                <small>This will change how the view is rendered at the outer edges of the viewscreen for each eye. Higher gives better performance, lower gives better quality. This will be reset when you reboot the device.</small>
+                <small>
+                  This will change how the view is rendered at the outer edges
+                  of the viewscreen for each eye. Higher gives better
+                  performance, lower gives better quality. This will be reset
+                  when you reboot the device.
+                </small>
               </Form.Label>
-              <Form.Select
-                name="gFFR"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="gFFR" onChange={null} value="">
                 <option value="2">default (medium)</option>
                 <option value="0">off</option>
                 <option value="1">low</option>
@@ -268,13 +277,12 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
             <Form.Group className="m-3 mb-0">
               <Form.Label className="mb-0">
                 <h6 className="mb-0">Default Texture Size</h6>
-                <small>This will change the quality that some in game textures are rendered.</small>
+                <small>
+                  This will change the quality that some in game textures are
+                  rendered.
+                </small>
               </Form.Label>
-              <Form.Select
-                name="gSSO"
-                onChange={}
-                value={}
-              >
+              <Form.Select name="gSSO" onChange={null} value="">
                 <option value="1440x1584">default - Quest2 (1440x1584)</option>
                 <option value="1216x1344">default - Quest1 (1216x1344)</option>
                 <option value="1024x1024">default - Go (1024x1024)</option>
@@ -292,13 +300,11 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 <Form.Group className="m-3">
                   <Form.Label className="mb-0">
                     <h6 className="mb-0">Set CPU level</h6>
-                    <small>This can improve performance for 2D apps & games.</small>
+                    <small>
+                      This can improve performance for 2D apps & games.
+                    </small>
                   </Form.Label>
-                  <Form.Select
-                    name="CPU"
-                    onChange={}
-                    value={}
-                  >
+                  <Form.Select name="CPU" onChange={null} value="">
                     <option value="-1">dynamic</option>
                     <option value="0">level 0 (slowest)</option>
                     <option value="1">level 1</option>
@@ -312,13 +318,11 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
                 <Form.Group className="m-3 mb-0">
                   <Form.Label className="mb-0">
                     <h6 className="mb-0">Set GPU level</h6>
-                    <small>This can improve performance for 2D apps & games.</small>
+                    <small>
+                      This can improve performance for 2D apps & games.
+                    </small>
                   </Form.Label>
-                  <Form.Select
-                    name="GPU"
-                    onChange={}
-                    value={}
-                  >
+                  <Form.Select name="GPU" onChange={null} value="">
                     <option value="-1">dynamic</option>
                     <option value="0">level 0 (slowest)</option>
                     <option value="1">level 1</option>
@@ -336,20 +340,14 @@ function DeviceTweaks({ closeDeviceTweaksModal, isDeviceTweaksModalVisible }) {
           <Button
             name="rclonePath"
             variant="primary"
-            onClick={() => closeDeviceTweaksModal()}
+            onClick={() => dispatch(modalHide(MODAL_DEVICETWEAKS))}
           >
             Close
           </Button>
         </Form.Group>
-
       </Modal.Body>
     </Modal>
   );
 }
-
-DeviceTweaks.propTypes = {
-  closeDeviceTweaksModal: PropTypes.func,
-  isDeviceTweaksModalVisible: PropTypes.func,
-};
 
 export default DeviceTweaks;

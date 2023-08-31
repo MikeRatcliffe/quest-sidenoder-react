@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { scrcpySelector, setScrcpy } from '../../../../store';
 import Icon from '../../../shared/Icon';
 
 import _useIpcListener from '../../../hooks/useIpcListener';
@@ -14,11 +16,12 @@ const { shell } = remote;
 const platform = remote.getGlobal('platform');
 
 function ScrCpyBlock() {
-  const [scrcpy, setScrcpy] = useState(null);
+  const scrcpy = useSelector(scrcpySelector);
+  const dispatch = useDispatch();
 
   useIpcListener('check_deps_scrcpy', (event, res) => {
     if (res) {
-      setScrcpy(res);
+      dispatch(setScrcpy(res));
     }
   });
 

@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Alert, Button } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
+import { adbSelector, setAdb } from '../../../../store';
 import Icon from '../../../shared/Icon';
 
 import _useIpcListener from '../../../hooks/useIpcListener';
@@ -11,13 +13,14 @@ const remote = window.require('@electron/remote');
 const { shell } = remote;
 
 function AdbBlock() {
-  const [adb, setAdb] = useState(null);
+  const adb = useSelector(adbSelector);
+  const dispatch = useDispatch();
 
   useIpcListener('check_deps_adb', (event, res) => {
     const { adb: resAdb } = res;
 
     if (resAdb) {
-      setAdb(resAdb);
+      dispatch(setAdb(resAdb));
     }
   });
 
@@ -37,7 +40,8 @@ function AdbBlock() {
   if (adb.version) {
     return (
       <Alert variant="success" className="fs-6 p-1">
-        <Icon set="fa" icon="FaRegCheckCircle" /> ADB Installed ({adb.cmd})
+        <Icon set="fa" icon="FaRegCheckCircle" /> ADB Installed ({adb.cmd}
+        )
         <br />
         <pre style={{ fontSize: 'x-small' }}>{adb.version}</pre>
       </Alert>

@@ -1,16 +1,18 @@
 body {
-  position: relative;
-  width: 100%;
-  height: 100vh;
+  display: flex;
   min-width: 920px;
   color: #aaa;
   font-family: sans-serif;
   font-size: 15px;
-  overflow-y: hidden;
+  flex-direction: column;
+  align-content: center;
 }
 
 #navbar {
   padding: 5px 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-grow: 1;
 }
 
 .navbar-brand {
@@ -87,8 +89,6 @@ a {
 }
 
 .footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
   padding: 15px;
 }
@@ -98,7 +98,7 @@ html {
 }
 
 #device_infoDiv > .row {
-  padding: 0 30px;
+  padding: 0;
 }
 
 pre {
@@ -159,16 +159,16 @@ pre {
 
 #backToTop {
   position: fixed;
-  width: 52px;
-  height: 52px;
-  bottom: 20pt;
-  left: 20pt;
-  padding-top: 10px;
-  display: none;
+  bottom: 25px;
+  right: 25px;
+  border-radius: 50%;
+  padding: 15px;
+  opacity: 0;
 }
 
 .fade-in {
-  animation: fadeIn 5s;
+  opacity: 1;
+  animation: fadeIn 0.5s;
 }
 
 @keyframes fadeIn {
@@ -181,7 +181,8 @@ pre {
 }
 
 .fade-out {
-  animation: fadeOut 5s;
+  opacity: 0;
+  animation: fadeOut 0.5s;
 }
 
 @keyframes fadeOut {
@@ -200,26 +201,22 @@ pre {
   width: 100%;
 }
 
-.content_container .sticky {
-  position: sticky;
-  top: 0;
-  left: 0;
-  z-index: 1010;
-}
-
 #topbar {
   background: #272b30;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
 }
 
 #device_infoDiv {
   background: #272b30;
-  padding: 2px 20px;
+  padding: 0px 15px;
+  flex-grow: 1;
 }
 
 #mainbody {
-  /*margin-top: 110px;*/
-  padding: 0 20px;
-  flex: 1;
+  padding: 0 13px;
 }
 
 .listitem.badge {
@@ -338,7 +335,8 @@ span.icon-2xl {
   top: -2px;
 }
 
-.modal-lg {
+.modal-lg,
+.modal-xl {
   min-width: 820px !important;
   max-width: 50% !important;
 }
@@ -377,6 +375,35 @@ span.icon-2xl {
   font-size: 1rem !important;
 }
 
+#messagebox {
+  min-width: 500px;
+}
+
+.messagebox-icon svg {
+  font-size: 84px;
+  padding-right: 23px;
+  height: 54px;
+}
+
+.messagebox-error-icon svg {
+  color: #b0b011;
+}
+
+.messagebox-info-icon svg {
+  color: #979cc9;
+}
+
+.messagebox-text-container {
+  width: 375px;
+  overflow-wrap: break-word;
+}
+
+.messagebox-error-container {
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  font-size: 0.8em;
+}
+
 .progress {
   border: 1px solid #666;
 }
@@ -403,10 +430,6 @@ span.icon-2xl {
 
 div[role='alert'] pre {
   line-height: 1;
-}
-
-html {
-  overflow-y: scroll;
 }
 
 .app-container {

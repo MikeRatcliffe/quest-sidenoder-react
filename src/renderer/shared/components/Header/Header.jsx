@@ -1,11 +1,11 @@
-import AppInfo from './components/AppInfo';
+import DeviceInfo from './components/DeviceInfo';
 import Navbar from './components/Navbar';
 
 function Header() {
   return (
-    <div className="sticky" id="topbar">
+    <div id="topbar">
       <Navbar />
-      <AppInfo />
+      <DeviceInfo />
     </div>
   );
 }

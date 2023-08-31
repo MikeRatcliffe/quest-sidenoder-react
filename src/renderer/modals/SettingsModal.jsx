@@ -1,8 +1,17 @@
-import { useEffect, useState } from 'react';
-import { PropTypes } from 'prop-types';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Form, InputGroup, Modal } from 'react-bootstrap';
-import useFields from '../hooks/useFields';
 import { ReactComponent as SideQuest } from '../img/sq-white.svg';
+import { MODAL_SETTINGS } from '../utils/constants';
+import {
+  modalHide,
+  formFieldsSelector,
+  rcloneBinaryIsInvalid,
+  rcloneConfigIsInvalid,
+  rcloneIsValid,
+  setField as setFieldAction,
+  getModalIsVisibleSelector,
+} from '../../store';
 import Icon from '../shared/Icon';
 
 import _useIpcListener from '../hooks/useIpcListener';
@@ -14,81 +23,40 @@ const useIpcListener = _useIpcListener.bind(this, module);
 const { dialog } = window.require('@electron/remote');
 const remote = window.require('@electron/remote');
 const { shell } = remote;
-const which = window.require('which');
 
 const platform = remote.getGlobal('platform');
 
-function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
-  const config = remote.getGlobal('currentConfiguration');
+function SettingsModal() {
+  const dispatch = useDispatch();
 
-  const [getField, setField, allFields] = useFields({
-    proxyUrl: config.proxyUrl,
-    cfgSection: config.cfgSection,
-    mountCmd: config.mountCmd,
-    rclonePath: config.rclonePath,
-    rcloneConf: config.rcloneConf,
-    scrcpyPath: config.scrcpyPath,
-    tmpdir: config.tmpdir,
-    allowOtherDevices: config.allowOtherDevices,
-    autoMount: config.autoMount,
-    cacheOculusGames: config.cacheOculusGames,
-    proxyOculus: config.proxyOculus,
-    proxySQ: config.proxySQ,
-    proxySteam: config.proxySteam,
-    userHide: config.userHide,
-  });
-  const [rcloneBinaryError, setRcloneBinaryError] = useState('');
-  const [rcloneConfigError, setRcloneConfigError] = useState('');
-  const [rcloneSections, setRcloneSections] = useState(
-    remote.getGlobal('rcloneSections')
+  const formFields = useSelector(formFieldsSelector);
+  const isShown = useSelector((state) =>
+    getModalIsVisibleSelector(state, MODAL_SETTINGS)
   );
-  const [scrcpyBinaryError, setScrcpyBinaryError] = useState('');
+
+  const setField = (key, val, sendChangeConfig = true) => {
+    const payload = { key, val };
+
+    dispatch(setFieldAction(payload));
+
+    if (sendChangeConfig) {
+      sendIPC('change_config', payload);
+    }
+  };
 
   useIpcListener('check_rclone_setup', (event, res) => {
     if (res.success) {
-      setRcloneBinaryError('');
-      setRcloneConfigError('');
-      setRcloneSections(remote.getGlobal('rcloneSections'));
+      dispatch(rcloneIsValid());
     } else if (res.error === 'Invalid Rclone binary') {
-      setRcloneBinaryError(res.error);
+      dispatch(rcloneBinaryIsInvalid(res.error));
     } else {
-      setRcloneConfigError(res.error);
-      setRcloneSections([]);
+      dispatch(rcloneConfigIsInvalid(res.error));
     }
   });
 
   useIpcListener('check_scrcpy_setup', (event, res) => {
-    if (res.success) {
-      setScrcpyBinaryError('');
-    } else if (res.error === 'Invalid scrcpy binary') {
-      setScrcpyBinaryError(res.error);
-    } else {
-      setRcloneConfigError(res.error);
-    }
+    setField('scrcpyBinaryError', res.success ? '' : res.error, false);
   });
-
-  useEffect(() => {
-    // eslint-disable-next-line no-floating-promise/no-floating-promise
-    (async () => {
-      if (!getField('rclonePath')) {
-        const rclonePath = await which('rclone', { nothrow: true });
-
-        if (rclonePath) {
-          setField('rclonePath', rclonePath);
-        }
-      }
-      if (!getField('scrcpyPath')) {
-        const scrcpyPath = await which('scrcpy', { nothrow: true });
-
-        if (scrcpyPath) {
-          setField('scrcpyPath', await which('scrcpy', { nothrow: true }));
-        }
-      }
-      if (!getField('tmpdir')) {
-        setField('tmpdir', remote.getGlobal('tmpdir'));
-      }
-    })();
-  }, [getField, setField, allFields]);
 
   useEffect(() => {
     sendIPC('check_rclone_setup', 'From useEffect');
@@ -97,7 +65,6 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
 
   async function setCustomPath({
     key,
-    setStateFunc,
     title,
     message,
     filters,
@@ -120,82 +87,73 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
     }
 
     const val = res.filePaths[0];
-    setStateFunc(key, val);
-
-    sendIPC('change_config', { key, val });
+    setField(key, val);
   }
 
   async function handleFieldChange({ target }) {
+    let key = '';
+    let val = '';
+
     switch (target.name) {
+      // Checkboxes
       case 'autoMount':
-        setField('autoMount', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
-        break;
       case 'allowOtherDevices':
-        setField('allowOtherDevices', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
-        break;
       case 'cacheOculusGames':
-        setField('cacheOculusGames', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
-        break;
-      case 'cfgSection':
-        setField('cfgSection', target.value);
-        sendIPC('change_config', {
-          key: 'cfgSection',
-          val: target.value,
-        });
-        break;
-      case 'mountCmd':
-        setField('mountCmd', target.value);
-        sendIPC('change_config', {
-          key: 'mountCmd',
-          val: target.value,
-        });
-        break;
       case 'proxyOculus':
-        setField('proxyOculus', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
-        break;
       case 'proxySteam':
-        setField('proxySteam', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
-        break;
       case 'proxySQ':
-        setField('proxySQ', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
-        });
+      case 'userHide':
+        key = target.name;
+        val = target.checked;
+
+        setField(key, val);
         break;
+
+      // Textfields and dropdowns
+      case 'cfgSection':
+      case 'mountCmd':
       case 'proxyUrl':
-        setField('proxyUrl', target.value);
-        sendIPC('change_config', {
-          key: 'proxyUrl',
-          val: target.value,
-        });
+        key = target.name;
+        val = target.value;
+
+        setField(key, val);
         break;
+
+      // Textfields for paths
+      case 'tmpdir-text':
+        key = 'tmpdir';
+        val = target.value;
+
+        setField(key, val);
+        break;
+      case 'rclonePath-text':
+        key = 'rclonePath';
+        val = target.value;
+
+        setField(key, val);
+        sendIPC('check_rclone_setup', 'From rclonePath');
+        break;
+      case 'rcloneConf-text':
+        key = 'rcloneConf';
+        val = target.value;
+
+        setField(key, val);
+        sendIPC('check_rclone_setup', 'From rcloneConf');
+        break;
+      case 'scrcpyPath-text':
+        key = 'scrcpyPath';
+        val = target.value;
+
+        setField(key, val);
+        sendIPC('check_scrcpy_setup', 'From strcpyConf');
+        break;
+
+      // File browser buttons
       case 'rclonePath':
         await setCustomPath({
           key: 'rclonePath',
           title: 'RClone custom binary path',
           message: 'Browse to rclone binary location',
-          setStateFunc: setField,
         });
         sendIPC('check_rclone_setup', 'From rclonePath');
         break;
@@ -204,7 +162,6 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           key: 'rcloneConf',
           title: 'Rclone custom config path',
           message: 'Browse to Rclone config location',
-          setStateFunc: setField,
         });
         sendIPC('check_rclone_setup', 'From rcloneConf');
         break;
@@ -213,7 +170,6 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           key: 'scrcpyPath',
           title: 'Scrcpy custom binary path',
           message: 'Browse to Scrcpy binary location',
-          setStateFunc: setField,
         });
         sendIPC('check_scrcpy_setup', 'From strcpyConf');
         break;
@@ -222,14 +178,6 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
           key: 'tmpdir',
           title: 'Temp directory custom path',
           message: 'Browse to new temp directory location',
-          setStateFunc: setField,
-        });
-        break;
-      case 'userHide':
-        setField('userHide', target.checked);
-        sendIPC('change_config', {
-          key: target.name,
-          val: target.checked,
         });
         break;
       default:
@@ -241,8 +189,8 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
     <Modal
       scrollable
       size="xl"
-      show={isSettingsModalVisible()}
-      onHide={() => closeSettingsModal()}
+      show={isShown}
+      onHide={() => dispatch(modalHide(MODAL_SETTINGS))}
     >
       <Modal.Header closeButton>
         <Modal.Title as="h5">
@@ -263,9 +211,9 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
               <Form.Select
                 name="cfgSection"
                 onChange={handleFieldChange}
-                value={getField('cfgSection')}
+                value={formFields.cfgSection}
               >
-                {rcloneSections.map((section) => {
+                {formFields.rcloneSections.map((section) => {
                   return (
                     <option key={section} value={section}>
                       {section}
@@ -279,12 +227,12 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
               <Form.Label>Custom Rclone binary path:</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  name="rclonePath"
+                  name="rclonePath-text"
                   type="text"
-                  readOnly
-                  value={getField('rclonePath')}
-                  onClick={handleFieldChange}
-                  isInvalid={!!rcloneBinaryError}
+                  value={formFields.rclonePath}
+                  placeholder={formFields.rclonePlaceholder}
+                  onChange={handleFieldChange}
+                  isInvalid={!!formFields.rcloneBinaryError}
                 />
                 <Button
                   name="rclonePath"
@@ -302,7 +250,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                   Download
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  {rcloneBinaryError}
+                  {formFields.rcloneBinaryError}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -311,12 +259,11 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
               <Form.Label>Custom Rclone config path:</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  name="rcloneConf"
+                  name="rcloneConf-text"
                   type="text"
-                  readOnly
-                  value={getField('rcloneConf')}
-                  onClick={handleFieldChange}
-                  isInvalid={!!rcloneConfigError}
+                  value={formFields.rcloneConf}
+                  onChange={handleFieldChange}
+                  isInvalid={!!formFields.rcloneConfigError}
                 />
                 <Button
                   name="rcloneConf"
@@ -326,7 +273,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                   Browse
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  {rcloneConfigError}
+                  {formFields.rcloneConfigError}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -336,7 +283,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 <Form.Label>Mount type:</Form.Label>
                 <Form.Select
                   name="mountCmd"
-                  value={getField('mountCmd')}
+                  value={formFields.mountCmd}
                   onChange={handleFieldChange}
                 >
                   <option value="mount">mount</option>
@@ -352,7 +299,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 name="autoMount"
                 className="fs-5"
                 label="Automatically mount drive on startup (if not already mounted)"
-                checked={getField('autoMount')}
+                checked={formFields.autoMount}
                 onChange={handleFieldChange}
               />
             </Form.Group>
@@ -364,12 +311,12 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
               <Form.Label>Custom Scrcpy binary path:</Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
-                  name="scrcpyPath"
+                  name="scrcpyPath-text"
                   type="text"
-                  readOnly
-                  value={getField('scrcpyPath')}
-                  onClick={handleFieldChange}
-                  isInvalid={!!scrcpyBinaryError}
+                  value={formFields.scrcpyPath}
+                  placeholder={formFields.scrcpyPlaceholder}
+                  onChange={handleFieldChange}
+                  isInvalid={!!formFields.scrcpyBinaryError}
                 />
                 <Button
                   name="scrcpyPath"
@@ -389,7 +336,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                   Download
                 </Button>
                 <Form.Control.Feedback type="invalid">
-                  {scrcpyBinaryError}
+                  {formFields.scrcpyBinaryError}
                 </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
@@ -398,11 +345,11 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
               <Form.Label>Custom temp directory:</Form.Label>
               <InputGroup>
                 <Form.Control
-                  name="tmpdir"
+                  name="tmpdir-text"
                   type="text"
-                  readOnly
-                  value={getField('tmpdir')}
-                  onClick={handleFieldChange}
+                  value={formFields.tmpdir}
+                  placeholder={formFields.tmpdirPlaceholder}
+                  onChange={handleFieldChange}
                 />
                 <Button
                   name="tmpdir"
@@ -419,7 +366,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 name="allowOtherDevices"
                 className="fs-5"
                 label="Allow connections to non-oculus devices"
-                checked={getField('allowOtherDevices')}
+                checked={formFields.allowOtherDevices}
                 onChange={handleFieldChange}
               />
             </Form.Group>
@@ -429,7 +376,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 name="cacheOculusGames"
                 className="fs-5"
                 label="Cache Oculus Games when first opened (for faster reopening)"
-                checked={getField('cacheOculusGames')}
+                checked={formFields.cacheOculusGames}
                 onChange={handleFieldChange}
               />
             </Form.Group>
@@ -439,7 +386,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 name="userHide"
                 className="fs-5"
                 label="Hide user name"
-                checked={getField('userHide')}
+                checked={formFields.userHide}
                 onChange={handleFieldChange}
               />
             </Form.Group>
@@ -456,7 +403,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 <Form.Control
                   name="proxyUrl"
                   type="text"
-                  value={getField('proxyUrl')}
+                  value={formFields.proxyUrl}
                   placeholder="socks://[HOST]:[PORT]"
                   onChange={handleFieldChange}
                 />
@@ -469,7 +416,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 type="switch"
                 className="fs-5 me-0"
                 inline
-                checked={getField('proxyOculus')}
+                checked={formFields.proxyOculus}
                 onChange={handleFieldChange}
               />
               <Form.Check.Label>
@@ -484,7 +431,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 type="switch"
                 className="fs-5 me-0"
                 inline
-                checked={getField('proxySteam')}
+                checked={formFields.proxySteam}
                 onChange={handleFieldChange}
               />
               <Form.Check.Label>
@@ -499,7 +446,7 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
                 type="switch"
                 className="fs-5 me-0"
                 inline
-                checked={getField('proxySQ')}
+                checked={formFields.proxySQ}
                 onChange={handleFieldChange}
               />
               <Form.Check.Label>
@@ -512,9 +459,8 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
 
         <Form.Group className="pull-right m-1 mt-2 me-0">
           <Button
-            name="rclonePath"
             variant="primary"
-            onClick={() => closeSettingsModal()}
+            onClick={() => dispatch(modalHide(MODAL_SETTINGS))}
           >
             Close
           </Button>
@@ -523,10 +469,5 @@ function SettingsModal({ closeSettingsModal, isSettingsModalVisible }) {
     </Modal>
   );
 }
-
-SettingsModal.propTypes = {
-  closeSettingsModal: PropTypes.func,
-  isSettingsModalVisible: PropTypes.func,
-};
 
 export default SettingsModal;

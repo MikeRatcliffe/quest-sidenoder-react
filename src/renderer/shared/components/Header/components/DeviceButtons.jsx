@@ -1,6 +1,27 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Container } from 'react-bootstrap';
+import {
+  setDevicePending,
+  setDeviceConnected,
+  setDeviceError,
+  setMountPending,
+  setMountConnected,
+  setMountError,
+  setWirelessPending,
+  setWirelessConnected,
+  setWirelessError,
+  devicePendingSelector,
+  deviceConnectedSelector,
+  deviceErrorSelector,
+  mountPendingSelector,
+  mountConnectedSelector,
+  mountErrorSelector,
+  wirelessPendingSelector,
+  wirelessConnectedSelector,
+  wirelessErrorSelector,
+} from '../../../../../store';
+import showMessageBox from '../../../../utils/messageBox.js';
 import Icon from '../../../Icon';
 
 import _useIpcListener from '../../../../hooks/useIpcListener';
@@ -9,50 +30,82 @@ import _sendIPC from '../../../../utils/sendIPC';
 const useIpcListener = _useIpcListener.bind(this, module);
 const sendIPC = _sendIPC.bind(this, module);
 
-const { dialog } = window.require('@electron/remote');
+function DeviceButtons() {
+  const dispatch = useDispatch();
 
-function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
-  const [deviceConnected, setDeviceConnected] = useState(false);
-  const [wirelessConnected, setWirelessConnected] = useState(false);
-  const [wirelessRefresh, setWirelessRefresh] = useState(false);
+  const deviceConnected = useSelector(deviceConnectedSelector);
+  const devicePending = useSelector(devicePendingSelector);
+  const deviceError = useSelector(deviceErrorSelector);
+
+  const mountConnected = useSelector(mountConnectedSelector);
+  const mountPending = useSelector(mountPendingSelector);
+  const mountError = useSelector(mountErrorSelector);
+
+  const wirelessConnected = useSelector(wirelessConnectedSelector);
+  const wirelessPending = useSelector(wirelessPendingSelector);
+  const wirelessError = useSelector(wirelessErrorSelector);
+
+  useEffect(() => {
+    if (mountError) {
+      showMessageBox({
+        type: 'error',
+        title: 'Rclone Mount Failed',
+        message: 'Rclone failed on mount command',
+        detail: mountError,
+      });
+    }
+  }, [mountError]);
+
+  useIpcListener('check_mount', (event, arg) => {
+    console.log('check_mount responded: ', arg);
+
+    setMountPending(false);
+
+    if (arg.success) {
+      dispatch(setMountConnected(true));
+    } else if (arg.error) {
+      dispatch(setMountError(arg.error.toString()));
+    } else {
+      dispatch(setMountConnected(false));
+    }
+  });
 
   useIpcListener('check_device', (event, arg) => {
     if (arg.success) {
-      setDeviceConnected(true);
+      dispatch(setDeviceConnected(true));
 
       if (arg.success.endsWith(':5555')) {
-        setWirelessConnected(true);
+        dispatch(setWirelessConnected(true));
       }
     } else {
-      setDeviceConnected(false);
-      setWirelessConnected(false);
+      dispatch(setDeviceConnected(false));
+      dispatch(setWirelessConnected(false));
     }
   });
 
   useIpcListener('connect_wireless', (event, arg) => {
     console.log('connect_wireless msg came from backend to frontend:', arg);
 
-    setWirelessRefresh(false);
+    dispatch(setWirelessPending(false));
 
     if (arg.success) {
       console.log('WIRELESS CONNECTED');
 
-      setWirelessConnected(true);
+      dispatch(setWirelessConnected(true));
 
-      dialog.showMessageBox(null, {
+      showMessageBox({
         type: 'info',
-        buttons: ['Ok'],
         title: 'Device connected by TCP',
         message:
           'You can now unplug the USB cable and continue using the program via wireless connection',
       });
     } else {
-      setWirelessConnected(false);
+      dispatch(setWirelessConnected(false));
     }
   });
 
   function handleWirelessClick() {
-    setWirelessRefresh(true);
+    dispatch(setWirelessPending(true));
 
     if (wirelessConnected) {
       sendIPC('disconnect_wireless', '');
@@ -62,7 +115,7 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   }
 
   function handleCheckMountClick() {
-    setMountRefresh(true);
+    dispatch(setMountPending(true));
     sendIPC('mount', 'bla');
   }
 
@@ -74,25 +127,25 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
   }
 
   function getMountButtonVariant() {
-    if (mountRefresh) {
+    if (mountPending) {
       return 'warning';
     }
-    if (mounted) {
+    if (mountConnected) {
       return 'success';
     }
     return 'danger';
   }
 
-  function getMountRefreshIcon() {
-    if (mounted) {
-      return <Icon set="fa" icon="FaRegCheckCircle" id="mountrefresh" />;
+  function getMountPendingIcon() {
+    if (mountConnected) {
+      return <Icon set="fa" icon="FaRegCheckCircle" id="mount-success" />;
     }
 
     return (
       <Icon
         set="im"
         icon="ImSpinner11"
-        id="mountrefresh"
+        id="mount-pending"
         spin={getMountButtonVariant() === 'warning'}
       />
     );
@@ -107,13 +160,13 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
         id="mountbtn"
         variant={getMountButtonVariant()}
         size="sm"
-        data-spin={mountRefresh}
+        data-spin={mountPending}
         className="text-nowrap"
         onClick={handleCheckMountClick}
       >
-        {getMountRefreshIcon()} {mounted ? 'UNMOUNT' : 'MOUNT'}
+        {getMountPendingIcon()} {mountConnected ? 'UNMOUNT' : 'MOUNT'}
         <br />
-        {mounted ? 'connected' : 'disconnected'}
+        {mountConnected ? 'connected' : 'disconnected'}
       </Button>
       <Button
         id="devicebtn"
@@ -141,7 +194,7 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
           id="wirelessrefresh"
           set="im"
           icon="ImSpinner11"
-          spin={wirelessRefresh}
+          spin={wirelessPending}
         />{' '}
         WIRELESS
         <br />
@@ -150,11 +203,5 @@ function DeviceButtons({ mounted, mountRefresh, setMountRefresh }) {
     </Container>
   );
 }
-
-DeviceButtons.propTypes = {
-  mounted: PropTypes.bool,
-  mountRefresh: PropTypes.bool,
-  setMountRefresh: PropTypes.func,
-};
 
 export default DeviceButtons;
