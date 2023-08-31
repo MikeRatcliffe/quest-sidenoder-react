@@ -1,4 +1,4 @@
-/* global $,$id,addBookmark,id,fixIcons,getDir,ipcRenderer,loadDir,promptDialog,remote,resizeLoc,scrollDir,search,setLocation,shell,refreshDir,upDir */
+/* global $,$id,addBookmark,id,fixIcons,getDir,ipcRenderer,loadDir,promptDialog,remote,scrollDir,search,setLocation,shell,refreshDir */
 
 // Electron
 ipcRenderer.on('get_dir', (event, arg) => {
@@ -44,7 +44,6 @@ document.body.addEventListener('load', () => {
     }
   };
 
-  window.addEventListener('resize', resizeLoc);
   window.addEventListener('scroll', scrollDir);
 });
 
@@ -60,7 +59,7 @@ document.addEventListener('keydown', (e) => {
     !$('.find-input').is(':focus') &&
     !$('#bookmarkName').is(':focus')
   ) {
-    return upDir();
+    return getDir();
   }
 
   if (e.ctrlKey && e.code === 'KeyR') {

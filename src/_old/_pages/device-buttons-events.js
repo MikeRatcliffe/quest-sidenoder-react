@@ -32,9 +32,8 @@ ipcRenderer.on('check_mount', (event, arg) => {
     $id('updateBadge').addClass('disabled');
 
     if (arg.error) {
-      dialog.showMessageBox(null, {
+      showMessageBox({
         type: 'error',
-        buttons: ['Ok'],
         title: 'RCLONE MOUNT FAILED',
         message: 'Rclone failed on mount command',
         detail: arg.error.toString(),
@@ -102,9 +101,8 @@ ipcRenderer.on('connect_wireless', (event, arg) => {
         `<i id="wirelessrefresh" class="fa fa-check-circle-o"></i> | WIRELESS:<br>connected`
       );
 
-    dialog.showMessageBox(null, {
+    showMessageBox({
       type: 'info',
-      buttons: ['Ok'],
       title: 'Device connected by TCP',
       message:
         'You can now unplug the USB cable and continue using the program via wireless connection',

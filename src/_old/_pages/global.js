@@ -1,15 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-function copyInput(el) {
-  el.select();
-  document.execCommand('copy');
-  alert('Text copied to clipboard');
-}
-
-function backToTop() {
-  document.documentElement.scrollTop = 0;
-}
-
 function formatEta(seconds) {
   if (seconds == null) {
     return 'Starting...';

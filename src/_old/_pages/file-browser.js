@@ -2,14 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 const BROWSE_HISTORY = {};
-let upDir = () => getDir();
-
-function setLocation(loc) {
-  upDir = () => getDir(path.dirname(loc));
-  id('path').title = loc;
-
-  resizeLoc();
-}
 
 function addBookmark(name, path, writeCfg = true) {
   // console.log('addBookmark', { name, path, write_cfg });
@@ -40,21 +32,6 @@ function delBookmark(el) {
   $el.parent().remove();
 }
 
-function resizeLoc() {
-  const dirPath = id('path');
-  if (!dirPath) {
-    return;
-  }
-
-  const width = window.innerWidth / 10 - 60;
-  if (dirPath.title.length > width) {
-    dirPath.innerText = `${dirPath.title.substr(0, 8)}...${dirPath.title.slice(
-      -(width - 10)
-    )}`;
-  } else {
-    dirPath.innerText = dirPath.title;
-  }
-}
 function scrollDir() {
   if (!id('path')) {
     return;
