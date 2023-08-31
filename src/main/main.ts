@@ -20,7 +20,8 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import installExtension, {
   REACT_DEVELOPER_TOOLS,
-} from 'electron-devtools-installer';
+  REDUX_DEVTOOLS,
+} from 'electron-devtools-assembler';
 import sourceMapSupport from 'source-map-support';
 import electronDebug from 'electron-debug';
 import MenuBuilder from './utils/menu';
@@ -199,6 +200,9 @@ app.on('ready', async () => {
   console.log(`app.on('ready') fired`);
   if (isDebug) {
     await installExtension(REACT_DEVELOPER_TOOLS)
+      .then((name) => console.log(`Added Extension:  ${name}`))
+      .catch((err) => console.log('An error occurred: ', err));
+    await installExtension(REDUX_DEVTOOLS)
       .then((name) => console.log(`Added Extension:  ${name}`))
       .catch((err) => console.log('An error occurred: ', err));
   }
