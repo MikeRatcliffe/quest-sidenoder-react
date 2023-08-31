@@ -128,25 +128,25 @@ function DeviceInfo() {
       <Popover.Body className="text-nowrap p-1">
         <Table borderless className="mb-0">
           <tbody>
-            {batTemperature && (
+            {!!batTemperature && (
               <tr>
                 <th className="p-1">Temperature</th>
                 <td className="p-1">{batTemperature}&#8451;</td>
               </tr>
             )}
-            {batMaxCurrent && (
+            {!!batMaxCurrent && (
               <tr>
                 <th className="p-1">Max Current</th>
                 <td className="p-1">{batMaxCurrent}A</td>
               </tr>
             )}
-            {batMaxVoltage && (
+            {!!batMaxVoltage && (
               <tr>
                 <th className="p-1">Max Voltage</th>
                 <td className="p-1">{batMaxVoltage}V</td>
               </tr>
             )}
-            {batMaxCurrent && batMaxVoltage && (
+            {!!batMaxCurrent && batMaxVoltage && (
               <tr>
                 <th className="p-1">Max Power</th>
                 <td className="p-1">{batMaxCurrent * batMaxVoltage}W</td>
