@@ -65,9 +65,10 @@ export const deviceSlice = createSlice({
       state.mountConnected = action.payload;
 
       if (action.payload === true) {
-        state.mountPending = false;
         state.mountError = '';
       }
+
+      state.mountPending = false;
     },
     setMountError: (state, action) => {
       state.mountError = action.payload;

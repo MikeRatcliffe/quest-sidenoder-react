@@ -1679,7 +1679,7 @@ async function checkRcloneSetup() {
       };
     }
 
-    await parseRcloneSections(true);
+    await parseRcloneSections();
 
     return {
       success: true,

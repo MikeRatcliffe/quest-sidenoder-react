@@ -93,7 +93,7 @@ const addIPCMainListeners = () => {
   });
 
   ipcMain.on('mount', async (event) => {
-    console.log('XXXXX on mount');
+    console.log('XXXXX mount received');
     await tools.mount();
     setTimeout(() => checkMount(event), 1000);
   });
