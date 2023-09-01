@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, OverlayTrigger, Popover, Row, Table } from 'react-bootstrap';
 import { useEffect, useRef } from 'react';
 import {
+  setModel,
   setBatCharge,
   setBatMaxCurrent,
   setBatMaxVoltage,
@@ -12,6 +13,7 @@ import {
   setStorage,
   setUser,
   setWifi,
+  modelSelector,
   batChargeSelector,
   batMaxCurrentSelector,
   batMaxVoltageSelector,
@@ -38,6 +40,7 @@ const remote = window.require('@electron/remote');
 function DeviceInfo() {
   const dispatch = useDispatch();
 
+  const model = useSelector(modelSelector);
   const batCharge = useSelector(batChargeSelector);
   const batMaxCurrent = useSelector(batMaxCurrentSelector);
   const batMaxVoltage = useSelector(batMaxVoltageSelector);
@@ -60,6 +63,7 @@ function DeviceInfo() {
     );
 
     const {
+      model: devModel,
       storage: devStorage,
       user: devUser,
       fw: devFw,
@@ -70,6 +74,7 @@ function DeviceInfo() {
 
     const dev = remote.getGlobal('adbDevice');
 
+    dispatch(setModel(devModel || 'unknown'));
     dispatch(setBatCharge(!dev && 'unknown'));
     dispatch(setStorage(devStorage));
     dispatch(setUser(devUser));
@@ -161,12 +166,16 @@ function DeviceInfo() {
   return (
     <div id="device_infoDiv" className="text-nowrap">
       <Row>
-        <Col sm={2} className="text-nowrap pe-3">
+        <Col className="text-nowrap">
+          <Icon set="di" icon="DiHtml5DeviceAccess" /> Model: <br />
+          <span id="deviceModel">{model}</span>
+        </Col>
+        <Col className="text-nowrap">
           <Icon set="fa" icon="FaRegUserCircle" /> User: <br />
           <small id="deviceUserName">{user || <i>Unknown</i>}</small>
         </Col>
-        <Col sm={2} className="text-nowrap pe-3">
-          <Icon set="fa6" icon="FaTag" /> FW: <br />
+        <Col className="text-nowrap">
+          <Icon set="go" icon="GoTag" /> FW: <br />
           <span id="deviceFwVersion">{fw}</span>
         </Col>
         <OverlayTrigger
@@ -174,7 +183,7 @@ function DeviceInfo() {
           delay={{ show: 250, hide: 400 }}
           overlay={BatteryPopover}
         >
-          <Col sm={2} className="text-nowrap pe-3">
+          <Col className="text-nowrap">
             <Battery level={level} chargeMethod={batCharge} />{' '}
             <span id="deviceBatteryLevel">{level}</span>
             % <br />
@@ -183,14 +192,15 @@ function DeviceInfo() {
             </small>
           </Col>
         </OverlayTrigger>
-        <Col sm={2} className="text-nowrap pe-3">
+        <Col className="text-nowrap">
           <Icon set="fa" icon="FaWifi" /> <span id="deviceWifi">{wifi}</span>
           <br />
           <small>
             IP: <span id="deviceIp">{ip}</span>
           </small>
         </Col>
-        <Col sm={4} className="">
+        <Col />
+        <Col sm={5}>
           <StorageDiv storage={storage} />
         </Col>
       </Row>

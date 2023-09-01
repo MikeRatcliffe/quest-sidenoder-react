@@ -71,6 +71,7 @@ async function getDeviceInfo() {
   }
   // console.log('getDeviceInfo()');
 
+  const model = await adbShell('getprop ro.product.system.model');
   const storage = await getStorageInfo();
   const user = await getUserInfo();
   const fw = await getFwInfo();
@@ -80,6 +81,7 @@ async function getDeviceInfo() {
 
   const res = {
     success: !!storage,
+    model,
     storage,
     user,
     fw,

@@ -2,11 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   deviceInfo: {
+    model: '',
     batCharge: 'unknown',
     batMaxCurrent: 0,
     batMaxVoltage: 0,
     batTemperature: 0,
-    fw: '',
+    fw: 'v.XX',
     ip: 'X.X.X.X',
     level: 'XX',
     storage: null,
@@ -107,6 +108,9 @@ export const deviceSlice = createSlice({
         state.wirelessConnected = false;
       }
     },
+    setModel: (state, action) => {
+      state.deviceInfo.model = action.payload;
+    },
     setBatCharge: (state, action) => {
       state.deviceInfo.batCharge = action.payload;
     },
@@ -153,6 +157,7 @@ export const wirelessConnectedSelector = (state) =>
   state.device.wirelessConnected;
 export const wirelessErrorSelector = (state) => state.device.wirelessError;
 
+export const modelSelector = (state) => state.device.deviceInfo.model;
 export const batChargeSelector = (state) => state.device.deviceInfo.batCharge;
 export const batMaxCurrentSelector = (state) =>
   state.device.deviceInfo.batMaxCurrent;
@@ -180,6 +185,7 @@ export const {
   setWirelessConnected,
   setWirelessError,
 
+  setModel,
   setBatCharge,
   setBatMaxCurrent,
   setBatMaxVoltage,
