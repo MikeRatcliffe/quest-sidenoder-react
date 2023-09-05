@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import { maxDepth, toJSON } from 'electron-log/src/main/transforms/object';
 import log from 'electron-log/main';
 import commandExists from 'command-exists';
+import commandBuilder from 'classnames';
 import which from 'which';
 import chalk from 'chalk';
 import ApkReader from 'adbkit-apkreader';
@@ -71,7 +72,8 @@ async function getDeviceInfo() {
   }
   // console.log('getDeviceInfo()');
 
-  const model = await adbShell('getprop ro.product.system.model');
+  const manufacturer = await adbShell('getprop ro.product.manufacturer');
+  const model = await adbShell('getprop ro.product.model');
   const storage = await getStorageInfo();
   const user = await getUserInfo();
   const fw = await getFwInfo();
@@ -80,7 +82,8 @@ async function getDeviceInfo() {
   const wifi = await wifiGetStat();
 
   const res = {
-    success: !!storage,
+    success: !!manufacturer,
+    manufacturer,
     model,
     storage,
     user,
@@ -135,129 +138,289 @@ async function getUserInfo() {
 
 async function deviceTweaksGet(arg) {
   console.log('deviceTweaksGet()', arg);
+
+  const model = (await adbShell('getprop ro.product.model')) || 'Quest 2';
+  const videoTextureWidth =
+    (await adbShell('getprop debug.oculus.textureWidth')) ||
+    (model === 'Quest' ? '1216' : '1440');
+  const videoTextureHeight =
+    (await adbShell('getprop debug.oculus.textureHeight')) ||
+    (model === 'Quest' ? '1344' : '1584');
+  const videoCaptureWidth =
+    (await adbShell('getprop debug.oculus.capture.width')) || '1024';
+  const videoCaptureHeight =
+    (await adbShell('getprop debug.oculus.capture.height')) || '1024';
+
   const res = {
     cmd: 'get',
-    // mp_name: '',
-    // guardian_pause: '0',
-    // frc: '0',
-    // gRR: '72',
-    // gCA: '-1',
-    // gFFR: '2',
-    // CPU: '2',
-    // GPU: '2',
-    // vres: '1024',
-    // cres: '640x480',
-    // gSSO: '1440x1584',
+    bonelabMods: (
+      await adbShell(
+        '/sdcard/Android/data/com.StressLevelZero.BONELAB/files/repositories.txt'
+      )
+    ).includes('https://blrepo.laund.moe/repository.json'),
+    chromaticAberration:
+      (await adbShell('getprop debug.oculus.forceChroma')) === '1',
+    cpuLevel: (await adbShell('getprop debug.oculus.cpuLevel')) || '-1',
+    experimentalMode:
+      (await adbShell('getprop debug.oculus.experimentalEnabled')) === '1',
+    foveationDynamic:
+      (await adbShell('getprop debug.oculus.foveation.dynamic')) === '1',
+    foveationLevel:
+      (await adbShell('getprop debug.oculus.foveation.level')) || '2',
+    gpuLevel: (await adbShell('getprop debug.oculus.gpuLevel')) || '-1',
+    guardianPause:
+      (await adbShell('getprop debug.oculus.guardian_pause')) === '0',
+    mtpMode: (await adbShell('svc usb getFunctions')).includes('mtp'),
+    multiplayerName:
+      (await adbShell('settings get global username')) || 'Unknown',
+    optimizeFor: 'none',
+    presetTetiana: 'none',
+    videoTextureSize: `${videoTextureWidth}x${videoTextureHeight}`,
+    videoCaptureBitrate:
+      (await adbShell('getprop debug.oculus.capture.bitrate')) || '5000000',
+    videoCaptureFps:
+      (await adbShell('getprop debug.oculus.capture.fps')) || '24',
+    videoCaptureFullRate:
+      (await adbShell('getprop debug.oculus.fullRateCapture')) === '0',
+    videoCaptureIn169: false,
+    videoCaptureSize: `${videoCaptureWidth}x${videoCaptureHeight}`,
+    videoRefreshRate:
+      (await adbShell('getprop debug.oculus.refreshRate')) || '72',
   };
 
-  if (arg.key === 'mp_name') {
-    res.mp_name = await adbShell('settings get global username');
-  }
-  if (arg.key === 'guardian_pause') {
-    res.guardian_pause = await adbShell('getprop debug.oculus.guardian_pause');
-  }
-  if (arg.key === 'frc') {
-    res.frc = await adbShell('getprop debug.oculus.fullRateCapture');
-  }
-  if (arg.key === 'gRR') {
-    res.gRR = await adbShell('getprop debug.oculus.refreshRate');
-  }
-  if (arg.key === 'gCA') {
-    res.gCA = await adbShell('getprop debug.oculus.forceChroma');
-  }
-  if (arg.key === 'gFFR') {
-    res.gFFR = await adbShell('getprop debug.oculus.foveation.level');
-  }
-  if (arg.key === 'CPU') {
-    res.CPU = await adbShell('getprop debug.oculus.cpuLevel');
-  }
-  if (arg.key === 'GPU') {
-    res.GPU = await adbShell('getprop debug.oculus.gpuLevel');
-  }
-  if (arg.key === 'vres') {
-    res.vres = await adbShell('getprop debug.oculus.videoResolution');
-  }
-  if (arg.key === 'cres') {
-    const width = await adbShell('getprop debug.oculus.capture.width');
-    const height = await adbShell('getprop debug.oculus.capture.height');
-    let captureDims = `${width}x${height}`;
-
-    // Default when not set
-    if (captureDims === 'x') {
-      captureDims = '1024x1024';
+  if (res.videoCaptureFps === '60' && res.videoCaptureBitrate === '10000000') {
+    if (res.videoCaptureSize === '1920x1080') {
+      res.presetTetiana = 'full-hd';
+    } else if (res.videoCaptureSize === '1600x1600') {
+      res.presetTetiana = 'square';
     }
-    res.cres = captureDims;
   }
-  if (arg.key === 'gSSO') {
-    const width = await adbShell('getprop debug.oculus.textureWidth');
-    const height = await adbShell('getprop debug.oculus.textureHeight');
 
-    res.gSSO = `${width}x${height}`;
+  if (
+    res.videoRefreshRate === '120' &&
+    res.videoTextureSize === '1280x1408' &&
+    res.foveationDynamic === '0' &&
+    res.foveationLevel === '4'
+  ) {
+    res.optimizeFor = '120hz';
+  } else if (
+    res.videoRefreshRate === '72' &&
+    res.videoTextureSize === '2048x2253'
+  ) {
+    res.optimizeFor = 'better-image-quality';
   }
-  // oculus.capture.bitrate
+
+  if (
+    res.videoCaptureFullRate === '1' &&
+    res.videoCaptureSize === '1920x1080' &&
+    res.videoCaptureBitrate === '30000000'
+  ) {
+    res.videoCaptureIn169 = true;
+  }
 
   return res;
 }
 
 async function deviceTweaksSet(arg) {
   console.log('deviceTweaksSet()', arg);
+  const { key, val } = arg;
+  const model = (await adbShell('getprop ro.product.model')) || 'Quest 2';
   const res = { cmd: 'set' };
-  if (typeof arg.mp_name !== 'undefined') {
-    res.mp_name = await adbShell(`settings put global username ${arg.mp_name}`);
+
+  if (key === 'videoCaptureIn169') {
+    if (val === true) {
+      res.videoCaptureIn169 = await adbShell(
+        [
+          'setprop debug.oculus.fullRateCapture 1',
+          'setprop debug.oculus.capture.width 1920',
+          'setprop debug.oculus.capture.height 1080',
+          'setprop debug.oculus.capture.bitrate 30000000',
+        ].join(' && ')
+      );
+    } else {
+      res.videoCaptureIn169 = await adbShell(
+        [
+          'setprop debug.oculus.fullRateCapture 0',
+          'setprop debug.oculus.capture.width 1024',
+          'setprop debug.oculus.capture.height 1024',
+          'setprop debug.oculus.capture.bitrate 5000000',
+        ].join(' && ')
+      );
+    }
   }
 
-  if (typeof arg.guardian_pause !== 'undefined') {
-    const guardianPaused = arg.guardian_pause ? '1' : '0';
-    res.guardian_pause = await adbShell(
+  if (key === 'presetTetiana') {
+    switch (val) {
+      case 'full-hd':
+        res.presetTetiana = await adbShell(
+          [
+            'setprop debug.oculus.capture.width 1920',
+            'setprop debug.oculus.capture.height 1080',
+            'setprop debug.oculus.capture.fps 60',
+            'setprop debug.oculus.capture.bitrate 10000000',
+          ].join(' && ')
+        );
+        break;
+      case 'square':
+        res.presetTetiana = await adbShell(
+          [
+            'setprop debug.oculus.capture.width 1600',
+            'setprop debug.oculus.capture.height 1600',
+            'setprop debug.oculus.capture.fps 60',
+            'setprop debug.oculus.capture.bitrate 10000000',
+          ].join(' && ')
+        );
+        break;
+      default:
+        res.presetTetiana = await adbShell(
+          [
+            'setprop debug.oculus.capture.width 1024',
+            'setprop debug.oculus.capture.height 1024',
+            'setprop debug.oculus.capture.fps 24',
+            'setprop debug.oculus.capture.bitrate 5000000',
+          ].join(' && ')
+        );
+        break;
+    }
+  }
+
+  if (key === 'optimizeFor') {
+    switch (val) {
+      case 'better-image-quality':
+        res.optimizeFor = await adbShell(
+          [
+            'setprop debug.oculus.refreshRate 72',
+            'setprop debug.oculus.textureWidth 2048',
+            'setprop debug.oculus.textureHeight 2253',
+          ].join(' && ')
+        );
+        break;
+      case '120hz':
+        res.optimizeFor = await adbShell(
+          [
+            'setprop debug.oculus.refreshRate 120',
+            'setprop debug.oculus.textureWidth 1280',
+            'setprop debug.oculus.textureHeight 1408',
+            'setprop debug.oculus.foveation.dynamic 0',
+            'setprop debug.oculus.foveation.level 4',
+          ].join(' && ')
+        );
+        break;
+      default:
+        res.optimizeFor = await adbShell(
+          [
+            'setprop debug.oculus.refreshRate 72',
+            `setprop debug.oculus.textureWidth ${
+              model === 'Quest' ? '1216' : '1440'
+            }`,
+            `setprop debug.oculus.textureHeight ${
+              model === 'Quest' ? '1344' : '1584'
+            }`,
+            'setprop debug.oculus.foveation.dynamic 1',
+            'setprop debug.oculus.foveation.level 2',
+          ].join(' && ')
+        );
+    }
+  }
+
+  if (key === 'bonelabMods') {
+    if (val === true) {
+      await adbShell(
+        `sed -i '/https\\:\\/\\/blrepo\\.laund\\.moe\\/repository\\.json/d' /sdcard/Android/data/com.StressLevelZero.BONELAB/files/repositories.txt`
+      );
+      res.bonelabMods = await adbShell(
+        `echo https://blrepo.laund.moe/repository.json > /sdcard/Android/data/com.StressLevelZero.BONELAB/files/repositories.txt`
+      );
+    } else {
+      res.bonelabMods = await adbShell(
+        `sed -i '/https\\:\\/\\/blrepo\\.laund\\.moe\\/repository\\.json/d' /sdcard/Android/data/com.StressLevelZero.BONELAB/files/repositories.txt`
+      );
+    }
+  }
+
+  if (key === 'chromaticAberration') {
+    res.chromaticAberration = await adbShell(
+      `setprop debug.oculus.forceChroma ${val}`
+    );
+  }
+
+  if (key === 'cpuLevel') {
+    res.cpuLevel = await adbShell(`setprop debug.oculus.cpuLevel ${val}`);
+  }
+
+  if (key === 'experimentalMode') {
+    const experimentalMode = val ? '1' : '0';
+    res.experimentalMode = await adbShell(
+      `setprop debug.oculus.experimentalEnabled ${experimentalMode}`
+    );
+  }
+
+  if (key === 'foveationDynamic') {
+    const foveationDynamic = val ? '1' : '0';
+    res.foveationDynamic = await adbShell(
+      `setprop debug.oculus.foveation.dynamic ${foveationDynamic}`
+    );
+  }
+
+  if (key === 'foveationLevel') {
+    res.foveationLevel = await adbShell(
+      `setprop debug.oculus.foveation.level ${val}`
+    );
+  }
+
+  if (key === 'gpuLevel') {
+    res.gpuLevel = await adbShell(`setprop debug.oculus.gpuLevel ${val}`);
+  }
+
+  if (key === 'guardianPause') {
+    const guardianPaused = val ? '1' : '0';
+    res.guardianPause = await adbShell(
       `setprop debug.oculus.guardian_pause ${guardianPaused}`
     );
   }
-  if (typeof arg.frc !== 'undefined') {
-    const fullRateCapture = arg.frc ? '1' : '0';
-    res.frc = await adbShell(
+
+  if (key === 'multiplayerName') {
+    res.multiplayerName = await adbShell(`settings put global username ${val}`);
+  }
+
+  if (key === 'videoCaptureBitrate') {
+    res.videoCaptureBitrate = await adbShell(
+      `setprop debug.oculus.capture.bitrate ${val}`
+    );
+  }
+
+  if (key === 'videoCaptureFps') {
+    res.videoCaptureFps = await adbShell(
+      `setprop debug.oculus.capture.fps ${val}`
+    );
+  }
+
+  if (key === 'videoCaptureFullRate') {
+    const fullRateCapture = val ? '1' : '0';
+    res.videoCaptureFullRate = await adbShell(
       `setprop debug.oculus.fullRateCapture ${fullRateCapture}`
     );
   }
 
-  if (typeof arg.gRR !== 'undefined') {
-    res.gRR = await adbShell(`setprop debug.oculus.refreshRate ${arg.gRR}`);
-  }
-
-  if (typeof arg.gCA !== 'undefined') {
-    res.gCA = await adbShell(`setprop debug.oculus.forceChroma ${arg.gCA}`);
-  }
-
-  if (typeof arg.gFFR !== 'undefined') {
-    res.gFFR = await adbShell(
-      `setprop debug.oculus.foveation.level ${arg.gFFR}`
-    );
-  }
-
-  if (typeof arg.CPU !== 'undefined') {
-    res.CPU = await adbShell(`setprop debug.oculus.cpuLevel ${arg.CPU}`);
-  }
-
-  if (typeof arg.GPU !== 'undefined') {
-    res.GPU = await adbShell(`setprop debug.oculus.gpuLevel ${arg.GPU}`);
-  }
-
-  if (typeof arg.vres !== 'undefined') {
-    res.vres = await adbShell(
-      `setprop debug.oculus.videoResolution ${arg.vres}`
-    );
-  }
-
-  if (typeof arg.cres !== 'undefined') {
-    const [width, height] = arg.cres.split('x');
+  if (key === 'videoCaptureSize') {
+    const [width, height] = val.split('x');
     await adbShell(`setprop debug.oculus.capture.width ${width}`);
-    res.cres = await adbShell(`setprop debug.oculus.capture.height ${height}`);
+    res.videoCaptureSize = await adbShell(
+      `setprop debug.oculus.capture.height ${height}`
+    );
   }
 
-  if (typeof arg.gSSO !== 'undefined') {
-    const [width, height] = arg.gSSO.split('x');
+  if (key === 'videoRefreshRate') {
+    res.videoRefreshRate = await adbShell(
+      `setprop debug.oculus.refreshRate ${val}`
+    );
+  }
+
+  if (key === 'videoTextureSize') {
+    const [width, height] = val.split('x');
     await adbShell(`setprop debug.oculus.textureWidth ${width}`);
     await adbShell(`setprop debug.oculus.textureHeight ${height}`);
-    res.gSSO = await adbShell(
+    res.videoTextureSize = await adbShell(
       'settings put system font_scale 0.85 && settings put system font_scale 1.0'
     );
   }
@@ -574,28 +737,31 @@ async function startSCRCPY() {
   }
 
   const {
-    scrcpyBitrate,
-    scrcpyControl,
-    scrcpyCrop,
-    scrcpyFps,
-    scrcpyOnTop,
-    scrcpyPath,
-    scrcpySize,
-    scrcpyWindow,
+    scrcpyPath = 'scrcpy',
+    scrcpyCrop = '1600:900:2017:510',
+    scrcpyBitrate = 8000000,
+    scrcpyBitrateType = '',
+    scrcpyMaxFps = 0,
+    scrcpyMaxSize = 0,
+    scrcpyFullscreen = false,
+    scrcpyAlwaysOnTop = false,
+    scrcpyNoControl = true,
   } = global.currentConfiguration;
 
-  const scrcpyPathTxt = scrcpyPath || 'scrcpy';
-  const scrcpyCropTxt = scrcpyCrop ? `--crop ${scrcpyCrop} ` : '';
-  const scrcpyBitrateTxt = scrcpyBitrate || 1;
-  const scrcpyFpsTxt = scrcpyFps ? `--max-fps ${scrcpyFps} ` : '';
-  const scrcpySizeTxt = scrcpySize ? `--max-size ${scrcpySize} ` : '';
-  const scrcpyWindowTxt = !scrcpyWindow ? '-f ' : '';
-  const scrcpyOnTopTxt = scrcpyOnTop ? '--always-on-top ' : '';
-  const scrcpyControlTxt = !scrcpyControl ? '-n ' : '';
-  const scrcpyCmd =
-    `"${scrcpyPathTxt}" ${scrcpyCropTxt}-b ${scrcpyBitrateTxt}M ` +
-    `${scrcpyFpsTxt}${scrcpySizeTxt}${scrcpyWindowTxt}${scrcpyOnTopTxt}` +
-    `${scrcpyControlTxt} --window-title "SideNoder Stream" -s ${global.adbDevice}`;
+  const scrcpyCmd = commandBuilder(
+    `"${scrcpyPath}"`,
+    {
+      [`--crop ${scrcpyCrop}`]: !!scrcpyCrop,
+      [`--video-bit-rate ${scrcpyBitrate}${scrcpyBitrateType}`]:
+        !!scrcpyBitrate,
+      [`--max-fps ${scrcpyMaxFps}`]: !!scrcpyMaxFps,
+      [`--max-size ${scrcpyMaxSize}`]: !!scrcpyMaxSize,
+      '--fullscreen': !!scrcpyFullscreen,
+      '--always-on-top': !!scrcpyAlwaysOnTop,
+      '--no-control': !!scrcpyNoControl,
+    },
+    `--window-title "SideNoder Stream" -s ${global.adbDevice}`
+  );
 
   console.log({ scrcpyCmd });
   await wakeUp();
@@ -1710,8 +1876,8 @@ async function checkRcloneSetup() {
   }
 }
 
-async function checkStrcpySetup() {
-  console.warn('checkStrcpySetup()');
+async function checkScrcpySetup() {
+  console.warn('checkScrcpySetup()');
 
   if (!global.currentConfiguration.scrcpyPath) {
     const scrcpyPath = await which('scrcpy', { nothrow: true });
@@ -1725,13 +1891,13 @@ async function checkStrcpySetup() {
   if (!global.currentConfiguration.scrcpyPath) {
     return {
       success: false,
-      error: 'Strcpy binary not defined',
+      error: 'Scrcpy binary not defined',
     };
   }
 
   try {
-    const strcpyCmd = global.currentConfiguration.scrcpyPath;
-    const out = await execShellCommand(`"${strcpyCmd}" --version`);
+    const scrcpyCmd = global.currentConfiguration.scrcpyPath;
+    const out = await execShellCommand(`"${scrcpyCmd}" --version`);
     if (out.includes('Dependencies')) {
       return {
         success: true,
@@ -3169,7 +3335,7 @@ export default {
   checkDepsZip,
   checkMount,
   checkRcloneSetup,
-  checkStrcpySetup,
+  checkScrcpySetup,
   mount,
   killRClone,
   getDir,

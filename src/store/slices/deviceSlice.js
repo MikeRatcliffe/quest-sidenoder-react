@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   deviceInfo: {
+    manufacturer: '',
     model: '',
     batCharge: 'unknown',
     batMaxCurrent: 0,
@@ -13,6 +14,19 @@ const initialState = {
     storage: null,
     user: '',
     wifi: 'Off',
+  },
+  tweaks: {
+    chromaticAberration: '1', // gCA
+    cpuLevel: '', // CPU
+    defaultTextureSize: '1440x1584', // gSSO
+    fixedFoveatedRendering: '', // gFFR
+    fullRateCapture: '', // frc
+    gpuLevel: '', // GPU
+    guardianPause: '', // guardian_pause
+    multiplayerName: 'null', // mp_name
+    refreshRate: '', // gRR Q2 ONLY
+    screenshotSize: '1024x1024', // cres
+    videoCaptureSize: '', // vres
   },
   devicePending: false,
   deviceConnected: false,
@@ -108,6 +122,9 @@ export const deviceSlice = createSlice({
         state.wirelessConnected = false;
       }
     },
+    setManufacturer: (state, action) => {
+      state.deviceInfo.manufacturer = action.payload;
+    },
     setModel: (state, action) => {
       state.deviceInfo.model = action.payload;
     },
@@ -141,6 +158,39 @@ export const deviceSlice = createSlice({
     setWifi: (state, action) => {
       state.deviceInfo.wifi = action.payload;
     },
+    setChromaticAberration: (state, action) => {
+      state.tweaks.chromaticAberration = action.payload;
+    },
+    setCpuLevel: (state, action) => {
+      state.tweaks.wifi = action.payload;
+    },
+    setDefaultTextureSize: (state, action) => {
+      state.tweaks.defaultTextureSize = action.payload;
+    },
+    setFixedFoveatedRendering: (state, action) => {
+      state.tweaks.fixedFoveatedRendering = action.payload;
+    },
+    setFullRateCapture: (state, action) => {
+      state.tweaks.fullRateCapture = action.payload;
+    },
+    setGpuLevel: (state, action) => {
+      state.tweaks.gpuLevel = action.payload;
+    },
+    setGuardianPause: (state, action) => {
+      state.tweaks.guardianPause = action.payload;
+    },
+    setMultiplayerName: (state, action) => {
+      state.tweaks.multiplayerName = action.payload;
+    },
+    setRefreshRate: (state, action) => {
+      state.tweaks.refreshRate = action.payload;
+    },
+    setScreenshotSize: (state, action) => {
+      state.tweaks.screenshotSize = action.payload;
+    },
+    setVideoCaptureSize: (state, action) => {
+      state.tweaks.videoCaptureSize = action.payload;
+    },
   },
 });
 
@@ -157,6 +207,8 @@ export const wirelessConnectedSelector = (state) =>
   state.device.wirelessConnected;
 export const wirelessErrorSelector = (state) => state.device.wirelessError;
 
+export const manufacturerSelector = (state) =>
+  state.device.deviceInfo.manufacturer;
 export const modelSelector = (state) => state.device.deviceInfo.model;
 export const batChargeSelector = (state) => state.device.deviceInfo.batCharge;
 export const batMaxCurrentSelector = (state) =>
@@ -172,6 +224,27 @@ export const storageSelector = (state) => state.device.deviceInfo.storage;
 export const userSelector = (state) => state.device.deviceInfo.user;
 export const wifiSelector = (state) => state.device.deviceInfo.wifi;
 
+export const chromaticAberrationSelector = (state) =>
+  state.device.deviceInfo.chromaticAberration;
+export const cpuLevelSelector = (state) => state.device.deviceInfo.cpuLevel;
+export const defaultTextureSizeSelector = (state) =>
+  state.device.deviceInfo.defaultTextureSize;
+export const fixedFoveatedRenderingSelector = (state) =>
+  state.device.deviceInfo.fixedFoveatedRendering;
+export const fullRateCaptureSelector = (state) =>
+  state.device.deviceInfo.fullRateCapture;
+export const gpuLevelSelector = (state) => state.device.deviceInfo.gpuLevel;
+export const guardianPauseSelector = (state) =>
+  state.device.deviceInfo.guardianPause;
+export const multiplayerNameSelector = (state) =>
+  state.device.deviceInfo.multiplayerName;
+export const refreshRateSelector = (state) =>
+  state.device.deviceInfo.refreshRate;
+export const screenshotSizeSelector = (state) =>
+  state.device.deviceInfo.screenshotSize;
+export const videoCaptureSizeSelector = (state) =>
+  state.device.deviceInfo.videoCaptureSize;
+
 export const {
   setDevicePending,
   setDeviceConnected,
@@ -185,6 +258,7 @@ export const {
   setWirelessConnected,
   setWirelessError,
 
+  setManufacturer,
   setModel,
   setBatCharge,
   setBatMaxCurrent,
@@ -196,6 +270,18 @@ export const {
   setStorage,
   setUser,
   setWifi,
+
+  setChromaticAberration,
+  setCpuLevel,
+  setDefaultTextureSize,
+  setFixedFoveatedRendering,
+  setFullRateCapture,
+  setGpuLevel,
+  setGuardianPause,
+  setMultiplayerName,
+  setRefreshRate,
+  setScreenshotSize,
+  setVideoCaptureSize,
 } = deviceSlice.actions;
 
 export const deviceReducer = deviceSlice.reducer;

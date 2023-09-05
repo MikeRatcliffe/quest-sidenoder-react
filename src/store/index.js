@@ -3,12 +3,16 @@ import { appReducer } from './slices/appSlice';
 import { deviceReducer } from './slices/deviceSlice';
 import { welcomeReducer } from './slices/welcomeSlice';
 import { settingsReducer } from './slices/settingsSlice';
+import { scrcpyReducer } from './slices/scrcpySlice';
+import { tweaksReducer } from './slices/tweaksSlice';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
     device: deviceReducer,
+    scrcpy: scrcpyReducer,
     settings: settingsReducer,
+    tweaks: tweaksReducer,
     welcome: welcomeReducer,
   },
 });
@@ -39,6 +43,7 @@ export {
   setWirelessPending,
   setWirelessConnected,
   setWirelessError,
+  setManufacturer,
   setModel,
   setBatCharge,
   setBatMaxCurrent,
@@ -53,6 +58,7 @@ export {
   devicePendingSelector,
   deviceConnectedSelector,
   deviceErrorSelector,
+  manufacturerSelector,
   modelSelector,
   mountPendingSelector,
   mountConnectedSelector,
@@ -84,9 +90,13 @@ export {
 } from './slices/welcomeSlice';
 
 export {
-  formFieldsSelector,
+  settingsFieldsSelector,
   rcloneIsValid,
   rcloneBinaryIsInvalid,
   rcloneConfigIsInvalid,
-  setField,
+  setSettingsField,
 } from './slices/settingsSlice';
+
+export { setScrcpyField, scrcpyFieldsSelector } from './slices/scrcpySlice';
+
+export { setTweaksField, tweaksFieldsSelector } from './slices/tweaksSlice';

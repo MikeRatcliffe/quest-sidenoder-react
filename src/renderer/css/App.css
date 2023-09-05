@@ -107,6 +107,118 @@ pre {
   overflow: visible;
 }
 
+code {
+  color: #fff;
+  background: #222;
+  padding: 3px 7px;
+  border: 1px solid #666;
+  border-radius: 7px;
+}
+
+.formfield {
+  position: relative;
+  margin: 1rem;
+  margin-top: 0;
+  border: 1px solid var(--bs-card-border-color);
+  border-radius: 4px 4px 0 0;
+}
+
+.formfield-body {
+  padding: 0.4rem;
+}
+
+.formfield-body .form-switch {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+[data-bs-theme='dark'] .formfield-body .form-check-label {
+  background: inherit;
+  display: inline-block;
+  width: auto;
+}
+
+.card-header {
+  margin-bottom: 1rem;
+}
+
+.formfield label {
+  margin-bottom: 0;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  display: block;
+  font-size: 13px;
+  background: var(--bs-card-cap-bg);
+  border-radius: 4px 4px 0 0;
+  width: 100%;
+}
+
+.formfield input[type='text'] {
+  border-radius: 0;
+}
+
+.formfield select,
+[data-bs-theme='dark'] .form-select {
+  border-radius: 0;
+  border: 0 none;
+  border-top: 0;
+  --bs-form-select-bg-img: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23000%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e');
+}
+
+.formfield input[type='text'],
+.formfield input[type='number'],
+.formfield .input-group .btn-info,
+.formfield .input-group .btn-primary {
+  border: 0;
+  border-radius: 0;
+}
+
+.formfield input[type='number'] {
+  border: 1px solid #d8d8d8;
+  position: relative;
+  text-align: left;
+  font-size: 1rem;
+  background-image: url('data:image/svg+xml;utf8,%3Csvg%20version%3D%221.1%22%20viewBox%3D%220%200%2050%2067%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20stroke-width%3D%222%22%3E%3Cline%20x1%3D%221%22%20x2%3D%2250%22%20y1%3D%2233.5%22%20y2%3D%2233.5%22%20stroke%3D%22%23D8D8D8%22%2F%3E%3Cpolyline%20transform%3D%22translate(25%2020)%20rotate(45)%20translate(-25%20-20)%22%20points%3D%2219%2026%2019%2014%2032%2014%22%20stroke%3D%22%23000%22%2F%3E%3Cpolyline%20transform%3D%22translate(25%2045)%20rotate(225)%20translate(-25%20-45)%22%20points%3D%2219%2052%2019%2039%2032%2039%22%20stroke%3D%22%23000%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+  background-position: center right;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.formfield input[type='number']::-webkit-inner-spin-button {
+  background-color: transparent !important;
+  -webkit-appearance: none !important;
+  opacity: 1 !important;
+  border-width: 0px;
+  margin: 0;
+  border-left: 1px solid #d8d8d8;
+  height: 3em;
+  width: 2.2em;
+  position: relative;
+  right: -1em;
+}
+
+.tooltip-info-icon {
+  font-size: 1.1em;
+}
+
+.tooltip.show {
+  opacity: 1;
+}
+
+.tooltip p {
+  margin-bottom: 0.3rem;
+}
+
+.tooltip p:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip > .tooltip-inner {
+  max-width: 100%;
+  border: 1px solid #666;
+  border-radius: var(--bs-tooltip-border-radius);
+}
+
 .pull-left {
   float: left;
 }
@@ -369,7 +481,7 @@ span.icon-2xl {
   outline: 0;
 }
 
-[data-bs-theme='dark'] .form-switch .form-check-label {
+[data-bs-theme='dark'] .form-check-label {
   position: relative;
   top: -2px;
   font-size: 1rem !important;

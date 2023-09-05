@@ -65,9 +65,9 @@ const addIPCMainListeners = () => {
   });
 
   ipcMain.on('check_scrcpy_setup', async (event, arg) => {
-    console.log('check_strcpy_setup received', arg);
+    console.log('check_scrcpy_setup received', arg);
 
-    const res = await tools.checkStrcpySetup(arg);
+    const res = await tools.checkScrcpySetup(arg);
     event.reply('check_scrcpy_setup', res);
   });
 

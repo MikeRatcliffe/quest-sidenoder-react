@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, OverlayTrigger, Popover, Row, Table } from 'react-bootstrap';
 import { useEffect, useRef } from 'react';
 import {
+  setManufacturer,
   setModel,
   setBatCharge,
   setBatMaxCurrent,
@@ -13,6 +14,7 @@ import {
   setStorage,
   setUser,
   setWifi,
+  manufacturerSelector,
   modelSelector,
   batChargeSelector,
   batMaxCurrentSelector,
@@ -40,6 +42,7 @@ const remote = window.require('@electron/remote');
 function DeviceInfo() {
   const dispatch = useDispatch();
 
+  const manufacturer = useSelector(manufacturerSelector);
   const model = useSelector(modelSelector);
   const batCharge = useSelector(batChargeSelector);
   const batMaxCurrent = useSelector(batMaxCurrentSelector);
@@ -63,6 +66,7 @@ function DeviceInfo() {
     );
 
     const {
+      manufacturer: devManufacturer,
       model: devModel,
       storage: devStorage,
       user: devUser,
@@ -74,6 +78,7 @@ function DeviceInfo() {
 
     const dev = remote.getGlobal('adbDevice');
 
+    dispatch(setManufacturer(devManufacturer));
     dispatch(setModel(devModel || 'unknown'));
     dispatch(setBatCharge(!dev && 'unknown'));
     dispatch(setStorage(devStorage));
@@ -167,12 +172,14 @@ function DeviceInfo() {
     <div id="device_infoDiv" className="text-nowrap">
       <Row>
         <Col className="text-nowrap">
-          <Icon set="di" icon="DiHtml5DeviceAccess" /> Model: <br />
-          <span id="deviceModel">{model}</span>
-        </Col>
-        <Col className="text-nowrap">
           <Icon set="fa" icon="FaRegUserCircle" /> User: <br />
           <small id="deviceUserName">{user || <i>Unknown</i>}</small>
+        </Col>
+        <Col className="text-nowrap">
+          <Icon set="di" icon="DiHtml5DeviceAccess" /> Model: <br />
+          <span id="deviceModel">
+            {manufacturer} {model}
+          </span>
         </Col>
         <Col className="text-nowrap">
           <Icon set="go" icon="GoTag" /> FW: <br />

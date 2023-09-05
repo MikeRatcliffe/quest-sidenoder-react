@@ -12,4 +12,4 @@ export const MODAL_PROMPT = 'prompt';
 export const MODAL_SETTINGS = 'settings';
 export const MODAL_SIDELOAD = 'sideload';
 export const MODAL_SIDELOADQUEUE = 'sideloadqueue';
-export const MODAL_STRCPY = 'strcpy';
+export const MODAL_SCRCPY = 'scrcpy';

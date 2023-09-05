@@ -77,7 +77,7 @@ function ScrCpyBlock() {
         </>
       )}
       <Button
-        id="strcpy-retry"
+        id="scrcpy-retry"
         variant="link"
         size="sm"
         className="p-0 border-0 fs-inherit link-light fw-normal system-check-link position-absolute text-white end-0 me-2"

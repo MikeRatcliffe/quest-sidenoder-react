@@ -15,22 +15,22 @@ import MessageBox from '../../../../modals/MessageBox';
 import SettingsModal from '../../../../modals/SettingsModal';
 import DeviceTweaksModal from '../../../../modals/DeviceTweaksModal';
 import InstalledModal from '../../../../modals/InstalledModal';
+import ScrcpyModal from '../../../../modals/ScrcpyModal';
 import Icon from '../../../Icon';
 
 import _useIpcListener from '../../../../hooks/useIpcListener';
 const useIpcListener = _useIpcListener.bind(this, module);
 
-// import AppInfoEventsModal from '../../modals/AppInfoEventsModal';
-// import AppInfoModal from '../../modals/AppInfoModal';
-// import AppStartModal from '../../modals/AppStartModal';
-// import AppToolsModal from '../../modals/AppToolsModal';
-// import ConfirmModal from '../../modals/ConfirmModal';
-// import DonateModal from '../../modals/DonateModal';
-// import ProcessingModal from '../../modals/ProcessingModal';
-// import PromptModal from '../../modals/PromptModal';
-// import SideloadModal from '../../modals/SideloadModal';
-// import SideloadQueueModal from '../../modals/SideloadQueueModal';
-// import StrcpyModal from '../../modals/StrcpyModal';
+// import AppInfoEventsModal from '../../../../modals/AppInfoEventsModal';
+// import AppInfoModal from '../../../../modals/AppInfoModal';
+// import AppStartModal from '../../../../modals/AppStartModal';
+// import AppToolsModal from '../../../../modals/AppToolsModal';
+// import ConfirmModal from '../../../../modals/ConfirmModal';
+// import DonateModal from '../../../../modals/DonateModal';
+// import ProcessingModal from '../../../../modals/ProcessingModal';
+// import PromptModal from '../../../../modals/PromptModal';
+// import SideloadModal from '../../../../modals/SideloadModal';
+// import SideloadQueueModal from '../../../../modals/SideloadQueueModal';
 
 function NavigationButtons() {
   const dispatch = useDispatch();
@@ -98,7 +98,7 @@ function NavigationButtons() {
       {/* <SideloadQueueModal /> */}
       {/* <AppStartModal /> */}
       {/* <AppToolsModal /> */}
-      {/* <StrcpyModal /> */}
+      <ScrcpyModal />
       {/* <ProcessingModal /> */}
       {/* <DonateModal /> */}
       {/* <PromptModal /> */}

@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Card, Form, InputGroup, Modal } from 'react-bootstrap';
-import { ReactComponent as SideQuest } from '../img/sq-white.svg';
+import Tooltip from '../shared/components/Tooltip';
 import { MODAL_SETTINGS } from '../utils/constants';
 import {
+  getModalIsVisibleSelector,
   modalHide,
-  formFieldsSelector,
+  settingsFieldsSelector,
   rcloneBinaryIsInvalid,
   rcloneConfigIsInvalid,
   rcloneIsValid,
-  setField as setFieldAction,
-  getModalIsVisibleSelector,
+  setSettingsField,
 } from '../../store';
 import Icon from '../shared/Icon';
 
@@ -29,7 +29,7 @@ const platform = remote.getGlobal('platform');
 function SettingsModal() {
   const dispatch = useDispatch();
 
-  const formFields = useSelector(formFieldsSelector);
+  const formFields = useSelector(settingsFieldsSelector);
   const isShown = useSelector((state) =>
     getModalIsVisibleSelector(state, MODAL_SETTINGS)
   );
@@ -37,7 +37,7 @@ function SettingsModal() {
   const setField = (key, val, sendChangeConfig = true) => {
     const payload = { key, val };
 
-    dispatch(setFieldAction(payload));
+    dispatch(setSettingsField(payload));
 
     if (sendChangeConfig) {
       sendIPC('change_config', payload);
@@ -60,7 +60,7 @@ function SettingsModal() {
 
   useEffect(() => {
     sendIPC('check_rclone_setup', 'From useEffect');
-    sendIPC('check_scrcpy_setup', 'From strcpyConf');
+    sendIPC('check_scrcpy_setup', 'From scrcpyConf');
   }, []);
 
   async function setCustomPath({
@@ -145,7 +145,7 @@ function SettingsModal() {
         val = target.value;
 
         setField(key, val);
-        sendIPC('check_scrcpy_setup', 'From strcpyConf');
+        sendIPC('check_scrcpy_setup', 'From scrcpyConf');
         break;
 
       // File browser buttons
@@ -168,10 +168,10 @@ function SettingsModal() {
       case 'scrcpyPath':
         await setCustomPath({
           key: 'scrcpyPath',
-          title: 'Scrcpy custom binary path',
-          message: 'Browse to Scrcpy binary location',
+          title: 'scrcpy custom binary path',
+          message: 'Browse to scrcpy binary location',
         });
-        sendIPC('check_scrcpy_setup', 'From strcpyConf');
+        sendIPC('check_scrcpy_setup', 'From scrcpyConf');
         break;
       case 'tmpdir':
         await setCustomPath({
@@ -204,9 +204,15 @@ function SettingsModal() {
               Rclone configs (needed for mounting remote disks):
             </Card.Header>
 
-            <Form.Group className="m-3">
+            <Form.Group className="formfield">
               <Form.Label>
-                Select mirror (click on mount status button to remount)
+                <span>
+                  Select mirror (click on mount status button to remount):
+                </span>
+                <Tooltip style={{ float: 'right' }}>
+                  This is the rclone mirror you would like to use. It should be
+                  in your <code>rclone.config</code>
+                </Tooltip>
               </Form.Label>
               <Form.Select
                 name="cfgSection"
@@ -223,8 +229,13 @@ function SettingsModal() {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0">
-              <Form.Label>Custom Rclone binary path:</Form.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Rclone binary path:</span>
+                <Tooltip style={{ float: 'right' }}>
+                  Choose your Rclone binary path.
+                </Tooltip>
+              </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   name="rclonePath-text"
@@ -255,8 +266,13 @@ function SettingsModal() {
               </InputGroup>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0">
-              <Form.Label>Custom Rclone config path:</Form.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Custom Rclone config path:</span>
+                <Tooltip style={{ float: 'right' }}>
+                  Choose your custom Rclone config path.
+                </Tooltip>
+              </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   name="rcloneConf-text"
@@ -279,8 +295,15 @@ function SettingsModal() {
             </Form.Group>
 
             {platform === 'mac' && (
-              <Form.Group className="m-3 mt-0">
-                <Form.Label>Mount type:</Form.Label>
+              <Form.Group className="formfield">
+                <Form.Label>
+                  <span>Mount type:</span>
+                  <Tooltip style={{ float: 'right' }}>
+                    You should probably use <code>mount</code>, but if you are
+                    using older versions of OSX and it isn&apos;t working then
+                    give <code>cmount</code> a try.
+                  </Tooltip>
+                </Form.Label>
                 <Form.Select
                   name="mountCmd"
                   value={formFields.mountCmd}
@@ -294,21 +317,36 @@ function SettingsModal() {
               </Form.Group>
             )}
 
-            <Form.Group className="m-3 mt-0" controlId="autoMount">
-              <Form.Switch
-                name="autoMount"
-                className="fs-5"
-                label="Automatically mount drive on startup (if not already mounted)"
-                checked={formFields.autoMount}
-                onChange={handleFieldChange}
-              />
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Automount:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  If you have a valid <code>rclone</code> config then the drive
+                  can be automatically mounted when the app is launched.
+                </div>
+                <Form.Switch
+                  name="autoMount"
+                  className="fs-5"
+                  label="Automatically mount drive on startup (if not already mounted)"
+                  checked={formFields.autoMount}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
           </Card>
 
           <Card className="mb-2">
             <Card.Header>Main:</Card.Header>
-            <Form.Group className="m-3">
-              <Form.Label>Custom Scrcpy binary path:</Form.Label>
+
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Custom Scrcpy binary path:</span>
+                <Tooltip style={{ float: 'right' }}>
+                  Choose a custom <code>scrcpy</code> binary path.
+                </Tooltip>
+              </Form.Label>
               <InputGroup hasValidation>
                 <Form.Control
                   name="scrcpyPath-text"
@@ -341,8 +379,13 @@ function SettingsModal() {
               </InputGroup>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0">
-              <Form.Label>Custom temp directory:</Form.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Custom temp directory:</span>
+                <Tooltip style={{ float: 'right' }}>
+                  Choose a custom temporary directory.
+                </Tooltip>
+              </Form.Label>
               <InputGroup>
                 <Form.Control
                   name="tmpdir-text"
@@ -353,7 +396,7 @@ function SettingsModal() {
                 />
                 <Button
                   name="tmpdir"
-                  variant="outline-primary"
+                  variant="primary"
                   onClick={handleFieldChange}
                 >
                   Browse
@@ -361,43 +404,84 @@ function SettingsModal() {
               </InputGroup>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0 mb-0" controlId="allowOtherDevices">
-              <Form.Switch
-                name="allowOtherDevices"
-                className="fs-5"
-                label="Allow connections to non-oculus devices"
-                checked={formFields.allowOtherDevices}
-                onChange={handleFieldChange}
-              />
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Connections to non-meta devices:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <p>
+                  By default, Sidenoder only allows connections to Meta devices.
+                  This setting allows connections to non-meta devices.
+                </p>
+                <p>
+                  <strong>NOTE:</strong> Although Sidenoder will probably still
+                  be capable of installing apps on these devices, other
+                  functions may not work properly.
+                </p>
+                <Form.Switch
+                  name="allowOtherDevices"
+                  className="fs-5"
+                  label="Allow connections to non-meta devices"
+                  checked={formFields.allowOtherDevices}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0 mb-0" controlId="cacheOculusGames">
-              <Form.Switch
-                name="cacheOculusGames"
-                className="fs-5"
-                label="Cache Oculus Games when first opened (for faster reopening)"
-                checked={formFields.cacheOculusGames}
-                onChange={handleFieldChange}
-              />
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Game and app caching:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  Caching game and app information makes it unneccessary for
+                  Sidenoder to refetch the list of files in a folder when it has
+                  been previously visited.
+                </div>
+                <Form.Switch
+                  name="cacheOculusGames"
+                  className="fs-5"
+                  label="Cache Meta Games when first opened"
+                  checked={formFields.cacheOculusGames}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0" controlId="userHide">
-              <Form.Switch
-                name="userHide"
-                className="fs-5"
-                label="Hide user name"
-                checked={formFields.userHide}
-                onChange={handleFieldChange}
-              />
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Anonymity:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  This setting displays &quot;hidden&quot; in the system info
+                  section in Sidenoder&apos;s header instead of your user name.
+                </div>
+                <Form.Switch
+                  name="userHide"
+                  className="fs-5"
+                  label="Hide user name"
+                  checked={formFields.userHide}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
           </Card>
 
           <Card className="mb-2">
             <Card.Header>Proxy settings EXPERIMENTAL:</Card.Header>
-            <Form.Group className="m-3">
+
+            <Form.Group className="formfield">
               <Form.Label>
-                Socks proxy url (for example from
-                https://hideip.me/ru/proxy/socks5list):
+                <span>
+                  Socks proxy URL (for example from
+                  https://hideip.me/ru/proxy/socks5list):
+                </span>
+                <Tooltip style={{ float: 'right' }}>
+                  A SOCKS proxies allow users to change their virtual location
+                  (also known as location spoofing). A SOCKS5 proxy also lets
+                  you hide your IP address from online services.
+                </Tooltip>
               </Form.Label>
               <InputGroup>
                 <Form.Control
@@ -410,49 +494,61 @@ function SettingsModal() {
               </InputGroup>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0 mb-0" controlId="proxyOculus">
-              <Form.Check
-                name="proxyOculus"
-                type="switch"
-                className="fs-5 me-0"
-                inline
-                checked={formFields.proxyOculus}
-                onChange={handleFieldChange}
-              />
-              <Form.Check.Label>
-                <Icon set="si" icon="SiOculus" /> Enable proxy for fetching
-                Oculus information
-              </Form.Check.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Meta Proxy:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  Use your SOCKS proxy when accessing information from Meta.
+                </div>
+                <Form.Switch
+                  name="proxyOculus"
+                  className="fs-5 me-0"
+                  label="Enable proxy for Meta information"
+                  checked={formFields.proxyOculus}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0 mb-0" controlId="proxySteam">
-              <Form.Check
-                name="proxySteam"
-                type="switch"
-                className="fs-5 me-0"
-                inline
-                checked={formFields.proxySteam}
-                onChange={handleFieldChange}
-              />
-              <Form.Check.Label>
-                <Icon set="si" icon="SiSteam" /> Enable proxy for fetching Steam
-                information
-              </Form.Check.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Steam Proxy:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  Use your SOCKS proxy when accessing information from Steam.
+                </div>
+                <Form.Switch
+                  name="proxySteam"
+                  type="switch"
+                  className="fs-5 me-0"
+                  label="Enable proxy for fetching Steam information"
+                  checked={formFields.proxySteam}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
 
-            <Form.Group className="m-3 mt-0 mb-0" controlId="proxySQ">
-              <Form.Check
-                name="proxySQ"
-                type="switch"
-                className="fs-5 me-0"
-                inline
-                checked={formFields.proxySQ}
-                onChange={handleFieldChange}
-              />
-              <Form.Check.Label>
-                <SideQuest width="14" height="14" alt="SideQuest Icon" /> Enable
-                proxy for fetching SideQuest information
-              </Form.Check.Label>
+            <Form.Group className="formfield">
+              <Form.Label>
+                <span>Steam Proxy:</span>
+              </Form.Label>
+              <div className="formfield-body">
+                <div>
+                  Use your SOCKS proxy when accessing information from
+                  SideQuest.
+                </div>
+                <Form.Switch
+                  name="proxySQ"
+                  type="switch"
+                  className="fs-5 me-0"
+                  label="Enable proxy for fetching SideQuest information"
+                  checked={formFields.proxySQ}
+                  onChange={handleFieldChange}
+                />
+              </div>
             </Form.Group>
           </Card>
         </Form>
