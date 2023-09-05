@@ -27,7 +27,7 @@ export const tweaksSlice = createSlice({
   name: 'tweaks',
   initialState,
   reducers: {
-    setTweaksField: (state, action) => {
+    setTweaksValue: (state, action) => {
       const { key, val } = action.payload;
 
       switch (key) {
@@ -128,5 +128,5 @@ export const tweaksSlice = createSlice({
 });
 export const tweaksFieldsSelector = (state) => state.tweaks;
 
-export const { setTweaksField } = tweaksSlice.actions;
+export const { setTweaksValue } = tweaksSlice.actions;
 export const tweaksReducer = tweaksSlice.reducer;

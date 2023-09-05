@@ -21,7 +21,7 @@ export const scrcpySlice = createSlice({
   name: 'scrcpy',
   initialState,
   reducers: {
-    setScrcpyField: (state, action) => {
+    setScrcpyValue: (state, action) => {
       const { key, val } = action.payload;
       state[key] = val;
     },
@@ -30,5 +30,5 @@ export const scrcpySlice = createSlice({
 
 export const scrcpyFieldsSelector = (state) => state.scrcpy;
 
-export const { setScrcpyField } = scrcpySlice.actions;
+export const { setScrcpyValue } = scrcpySlice.actions;
 export const scrcpyReducer = scrcpySlice.reducer;

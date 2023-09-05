@@ -94,9 +94,9 @@ export {
   rcloneIsValid,
   rcloneBinaryIsInvalid,
   rcloneConfigIsInvalid,
-  setSettingsField,
+  setSettingsValue,
 } from './slices/settingsSlice';
 
-export { setScrcpyField, scrcpyFieldsSelector } from './slices/scrcpySlice';
+export { setScrcpyValue, scrcpyFieldsSelector } from './slices/scrcpySlice';
 
-export { setTweaksField, tweaksFieldsSelector } from './slices/tweaksSlice';
+export { setTweaksValue, tweaksFieldsSelector } from './slices/tweaksSlice';

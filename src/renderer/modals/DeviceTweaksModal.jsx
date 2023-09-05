@@ -15,7 +15,7 @@ import {
   getModalIsVisibleSelector,
   modalHide,
   modalShow,
-  setTweaksField,
+  setTweaksValue,
   tweaksFieldsSelector,
 } from '../../store';
 import Tooltip from '../shared/components/Tooltip';
@@ -36,11 +36,11 @@ function DeviceTweaks() {
     getModalIsVisibleSelector(state, MODAL_DEVICETWEAKS)
   );
 
-  const setField = useCallback(
+  const setValue = useCallback(
     (key, val, sendChangeTweak = true) => {
       const payload = { key, val };
 
-      dispatch(setTweaksField(payload));
+      dispatch(setTweaksValue(payload));
 
       if (sendChangeTweak) {
         sendIPC('device_tweaks', { cmd: 'set', ...payload });
@@ -51,29 +51,29 @@ function DeviceTweaks() {
 
   useEffect(() => {
     ipcRenderer.once('device_tweaks', (event, res) => {
-      setField('bonelabMods', res.bonelabMods);
-      setField('chromaticAberration', res.chromaticAberration);
-      setField('cpuLevel', res.cpuLevel);
-      setField('experimentalMode', res.experimentalMode);
-      setField('foveationDynamic', res.foveationDynamic);
-      setField('foveationLevel', res.foveationLevel);
-      setField('gpuLevel', res.gpuLevel);
-      setField('guardianPause', res.guardianPause);
-      setField('mtpMode', res.mtpMode);
-      setField('multiplayerName', res.multiplayerName);
-      setField('optimizeFor', res.optimizeFor);
-      setField('presetTetiana', res.presetTetiana);
-      setField('videoTextureSize', res.videoTextureSize);
-      setField('videoCaptureBitrate', res.videoCaptureBitrate);
-      setField('videoCaptureFps', res.videoCaptureFps);
-      setField('videoCaptureFullRate', res.videoCaptureFullRate);
-      setField('videoCaptureIn169', res.videoCaptureIn169);
-      setField('videoCaptureSize', res.videoCaptureSize);
-      setField('videoRefreshRate', res.videoRefreshRate);
+      setValue('bonelabMods', res.bonelabMods);
+      setValue('chromaticAberration', res.chromaticAberration);
+      setValue('cpuLevel', res.cpuLevel);
+      setValue('experimentalMode', res.experimentalMode);
+      setValue('foveationDynamic', res.foveationDynamic);
+      setValue('foveationLevel', res.foveationLevel);
+      setValue('gpuLevel', res.gpuLevel);
+      setValue('guardianPause', res.guardianPause);
+      setValue('mtpMode', res.mtpMode);
+      setValue('multiplayerName', res.multiplayerName);
+      setValue('optimizeFor', res.optimizeFor);
+      setValue('presetTetiana', res.presetTetiana);
+      setValue('videoTextureSize', res.videoTextureSize);
+      setValue('videoCaptureBitrate', res.videoCaptureBitrate);
+      setValue('videoCaptureFps', res.videoCaptureFps);
+      setValue('videoCaptureFullRate', res.videoCaptureFullRate);
+      setValue('videoCaptureIn169', res.videoCaptureIn169);
+      setValue('videoCaptureSize', res.videoCaptureSize);
+      setValue('videoRefreshRate', res.videoRefreshRate);
     });
 
     sendIPC('device_tweaks', { cmd: 'get' });
-  }, [setField]);
+  }, [setValue]);
 
   async function updateFwPath() {
     const file = await dialog.showOpenDialog(null, {
@@ -92,7 +92,7 @@ function DeviceTweaks() {
     }
 
     const val = file.filePaths[0];
-    setField('updateFirmwarePath', val);
+    setValue('updateFirmwarePath', val);
   }
 
   async function handleFieldChange({ target }) {
@@ -110,7 +110,7 @@ function DeviceTweaks() {
         key = target.name;
         val = target.checked;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Textfields and dropdowns
@@ -129,12 +129,12 @@ function DeviceTweaks() {
         key = target.name;
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Textfields
       case 'updateFirmwarePathText':
-        setField('updateFirmwarePath', target.value);
+        setValue('updateFirmwarePath', target.value);
         break;
 
       // Buttons

@@ -5,7 +5,7 @@ import {
   modalShow,
   getModalIsVisibleSelector,
   scrcpySelector,
-  setScrcpyField,
+  setScrcpyValue,
   scrcpyFieldsSelector,
 } from '../../store';
 
@@ -26,10 +26,10 @@ function ScrcpyModal() {
     getModalIsVisibleSelector(state, MODAL_SCRCPY)
   );
 
-  const setField = (key, val, sendChangeConfig = true) => {
+  const setValue = (key, val, sendChangeConfig = true) => {
     const payload = { key, val };
 
-    dispatch(setScrcpyField(payload));
+    dispatch(setScrcpyValue(payload));
 
     if (sendChangeConfig) {
       sendIPC('change_config', payload);
@@ -48,7 +48,7 @@ function ScrcpyModal() {
         key = target.name;
         val = target.checked;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Textfields and dropdowns
@@ -60,15 +60,15 @@ function ScrcpyModal() {
         key = target.name;
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Buttons
       case 'scrcpyCropQuest1':
-        setField('scrcpyCrop', '1280:720:1500:350');
+        setValue('scrcpyCrop', '1280:720:1500:350');
         break;
       case 'scrcpyCropQuest2':
-        setField('scrcpyCrop', '1600:900:2017:510');
+        setValue('scrcpyCrop', '1600:900:2017:510');
         break;
       case 'scrcpyStart':
         sendIPC('scrcpy_start');

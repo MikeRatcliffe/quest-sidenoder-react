@@ -32,7 +32,7 @@ export const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setSettingsField: (state, action) => {
+    setSettingsValue: (state, action) => {
       const { key, val } = action.payload;
       state[key] = val;
     },
@@ -58,6 +58,6 @@ export const {
   rcloneIsValid,
   rcloneBinaryIsInvalid,
   rcloneConfigIsInvalid,
-  setSettingsField,
+  setSettingsValue,
 } = settingsSlice.actions;
 export const settingsReducer = settingsSlice.reducer;

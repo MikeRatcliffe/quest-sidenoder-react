@@ -10,7 +10,7 @@ import {
   rcloneBinaryIsInvalid,
   rcloneConfigIsInvalid,
   rcloneIsValid,
-  setSettingsField,
+  setSettingsValue,
 } from '../../store';
 import Icon from '../shared/Icon';
 
@@ -34,10 +34,10 @@ function SettingsModal() {
     getModalIsVisibleSelector(state, MODAL_SETTINGS)
   );
 
-  const setField = (key, val, sendChangeConfig = true) => {
+  const setValue = (key, val, sendChangeConfig = true) => {
     const payload = { key, val };
 
-    dispatch(setSettingsField(payload));
+    dispatch(setSettingsValue(payload));
 
     if (sendChangeConfig) {
       sendIPC('change_config', payload);
@@ -55,7 +55,7 @@ function SettingsModal() {
   });
 
   useIpcListener('check_scrcpy_setup', (event, res) => {
-    setField('scrcpyBinaryError', res.success ? '' : res.error, false);
+    setValue('scrcpyBinaryError', res.success ? '' : res.error, false);
   });
 
   useEffect(() => {
@@ -87,7 +87,7 @@ function SettingsModal() {
     }
 
     const val = res.filePaths[0];
-    setField(key, val);
+    setValue(key, val);
   }
 
   async function handleFieldChange({ target }) {
@@ -106,7 +106,7 @@ function SettingsModal() {
         key = target.name;
         val = target.checked;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Textfields and dropdowns
@@ -116,7 +116,7 @@ function SettingsModal() {
         key = target.name;
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         break;
 
       // Textfields for paths
@@ -124,27 +124,27 @@ function SettingsModal() {
         key = 'tmpdir';
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         break;
       case 'rclonePath-text':
         key = 'rclonePath';
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         sendIPC('check_rclone_setup', 'From rclonePath');
         break;
       case 'rcloneConf-text':
         key = 'rcloneConf';
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         sendIPC('check_rclone_setup', 'From rcloneConf');
         break;
       case 'scrcpyPath-text':
         key = 'scrcpyPath';
         val = target.value;
 
-        setField(key, val);
+        setValue(key, val);
         sendIPC('check_scrcpy_setup', 'From scrcpyConf');
         break;
 
