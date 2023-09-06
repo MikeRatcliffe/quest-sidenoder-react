@@ -28,60 +28,60 @@ export const tweaksSlice = createSlice({
   initialState,
   reducers: {
     setTweaksValue: (state, action) => {
-      const { key, val } = action.payload;
-
-      switch (key) {
-        case 'videoCaptureIn169':
-          if (val) {
-            state.videoCaptureFullRate = true;
-            state.videoCaptureSize = '1920x1080';
-            state.videoCaptureBitrate = '30000000';
-          } else {
-            state.videoCaptureFullRate = initialState.videoCaptureFullRate;
-            state.videoCaptureSize = initialState.videoCaptureSize;
-            state.videoCaptureBitrate = initialState.videoCaptureBitrate;
-          }
-          break;
-        case 'presetTetiana':
-          switch (val) {
-            case 'full-hd':
+      for (const [key, val] of Object.entries(action.payload)) {
+        switch (key) {
+          case 'videoCaptureIn169':
+            if (val) {
+              state.videoCaptureFullRate = true;
               state.videoCaptureSize = '1920x1080';
-              state.videoCaptureFps = '60';
-              state.videoCaptureBitrate = '10000000';
-              break;
-            case 'square':
-              state.videoCaptureSize = '1600x1600';
-              state.videoCaptureFps = '60';
-              state.videoCaptureBitrate = '10000000';
-              break;
-            default:
+              state.videoCaptureBitrate = '30000000';
+            } else {
+              state.videoCaptureFullRate = initialState.videoCaptureFullRate;
               state.videoCaptureSize = initialState.videoCaptureSize;
-              state.videoCaptureFps = initialState.videoCaptureFps;
               state.videoCaptureBitrate = initialState.videoCaptureBitrate;
-              break;
-          }
-          break;
-        case 'optimizeFor':
-          switch (val) {
-            case 'better-image-quality':
-              state.videoRefreshRate = '72';
-              state.videoTextureSize = '2048x2253';
-              break;
-            case '120hz':
-              state.videoRefreshRate = '120';
-              state.videoTextureSize = '1280x1408';
-              state.foveationDynamic = '0';
-              state.foveationLevel = '4';
-              break;
-            default:
-              state.videoRefreshRate = initialState.videoRefreshRate;
-              state.videoTextureSize = initialState.videoTextureSize;
-              state.foveationDynamic = initialState.foveationDynamic;
-              state.foveationLevel = initialState.foveationLevel;
-          }
-          break;
-        default:
-          state[key] = val;
+            }
+            break;
+          case 'presetTetiana':
+            switch (val) {
+              case 'full-hd':
+                state.videoCaptureSize = '1920x1080';
+                state.videoCaptureFps = '60';
+                state.videoCaptureBitrate = '10000000';
+                break;
+              case 'square':
+                state.videoCaptureSize = '1600x1600';
+                state.videoCaptureFps = '60';
+                state.videoCaptureBitrate = '10000000';
+                break;
+              default:
+                state.videoCaptureSize = initialState.videoCaptureSize;
+                state.videoCaptureFps = initialState.videoCaptureFps;
+                state.videoCaptureBitrate = initialState.videoCaptureBitrate;
+                break;
+            }
+            break;
+          case 'optimizeFor':
+            switch (val) {
+              case 'better-image-quality':
+                state.videoRefreshRate = '72';
+                state.videoTextureSize = '2048x2253';
+                break;
+              case '120hz':
+                state.videoRefreshRate = '120';
+                state.videoTextureSize = '1280x1408';
+                state.foveationDynamic = '0';
+                state.foveationLevel = '4';
+                break;
+              default:
+                state.videoRefreshRate = initialState.videoRefreshRate;
+                state.videoTextureSize = initialState.videoTextureSize;
+                state.foveationDynamic = initialState.foveationDynamic;
+                state.foveationLevel = initialState.foveationLevel;
+            }
+            break;
+          default:
+            state[key] = val;
+        }
       }
 
       // videoCaptureIn169

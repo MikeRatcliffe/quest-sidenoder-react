@@ -199,7 +199,7 @@ async function deviceTweaksGet(arg) {
   if (
     res.videoRefreshRate === '120' &&
     res.videoTextureSize === '1280x1408' &&
-    res.foveationDynamic === '0' &&
+    res.foveationDynamic === false &&
     res.foveationLevel === '4'
   ) {
     res.optimizeFor = '120hz';
@@ -211,7 +211,7 @@ async function deviceTweaksGet(arg) {
   }
 
   if (
-    res.videoCaptureFullRate === '1' &&
+    res.videoCaptureFullRate === true &&
     res.videoCaptureSize === '1920x1080' &&
     res.videoCaptureBitrate === '30000000'
   ) {
@@ -223,12 +223,12 @@ async function deviceTweaksGet(arg) {
 
 async function deviceTweaksSet(arg) {
   console.log('deviceTweaksSet()', arg);
-  const { key, val } = arg;
+
   const model = (await adbShell('getprop ro.product.model')) || 'Quest 2';
   const res = { cmd: 'set' };
 
-  if (key === 'videoCaptureIn169') {
-    if (val === true) {
+  if (typeof arg.videoCaptureIn169 !== 'undefined') {
+    if (arg.videoCaptureIn169 === true) {
       res.videoCaptureIn169 = await adbShell(
         [
           'setprop debug.oculus.fullRateCapture 1',
@@ -249,8 +249,8 @@ async function deviceTweaksSet(arg) {
     }
   }
 
-  if (key === 'presetTetiana') {
-    switch (val) {
+  if (typeof arg.presetTetiana !== 'undefined') {
+    switch (arg.videoCaptureIn169) {
       case 'full-hd':
         res.presetTetiana = await adbShell(
           [
@@ -284,8 +284,8 @@ async function deviceTweaksSet(arg) {
     }
   }
 
-  if (key === 'optimizeFor') {
-    switch (val) {
+  if (typeof arg.optimizeFor !== 'undefined') {
+    switch (arg.optimizeFor) {
       case 'better-image-quality':
         res.optimizeFor = await adbShell(
           [
@@ -323,8 +323,8 @@ async function deviceTweaksSet(arg) {
     }
   }
 
-  if (key === 'bonelabMods') {
-    if (val === true) {
+  if (typeof arg.bonelabMods !== 'undefined') {
+    if (arg.bonelabMods === true) {
       await adbShell(
         `sed -i '/https\\:\\/\\/blrepo\\.laund\\.moe\\/repository\\.json/d' /sdcard/Android/data/com.StressLevelZero.BONELAB/files/repositories.txt`
       );
@@ -338,86 +338,92 @@ async function deviceTweaksSet(arg) {
     }
   }
 
-  if (key === 'chromaticAberration') {
+  if (typeof arg.chromaticAberration !== 'undefined') {
     res.chromaticAberration = await adbShell(
-      `setprop debug.oculus.forceChroma ${val}`
+      `setprop debug.oculus.forceChroma ${arg.chromaticAberration}`
     );
   }
 
-  if (key === 'cpuLevel') {
-    res.cpuLevel = await adbShell(`setprop debug.oculus.cpuLevel ${val}`);
+  if (typeof arg.cpuLevel !== 'undefined') {
+    res.cpuLevel = await adbShell(
+      `setprop debug.oculus.cpuLevel ${arg.cpuLevel}`
+    );
   }
 
-  if (key === 'experimentalMode') {
-    const experimentalMode = val ? '1' : '0';
+  if (typeof arg.experimentalMode !== 'undefined') {
+    const experimentalMode = arg.experimentalMode ? '1' : '0';
     res.experimentalMode = await adbShell(
       `setprop debug.oculus.experimentalEnabled ${experimentalMode}`
     );
   }
 
-  if (key === 'foveationDynamic') {
-    const foveationDynamic = val ? '1' : '0';
+  if (typeof arg.foveationDynamic !== 'undefined') {
+    const foveationDynamic = arg.foveationDynamic ? '1' : '0';
     res.foveationDynamic = await adbShell(
       `setprop debug.oculus.foveation.dynamic ${foveationDynamic}`
     );
   }
 
-  if (key === 'foveationLevel') {
+  if (typeof arg.foveationLevel !== 'undefined') {
     res.foveationLevel = await adbShell(
-      `setprop debug.oculus.foveation.level ${val}`
+      `setprop debug.oculus.foveation.level ${arg.foveationLevel}`
     );
   }
 
-  if (key === 'gpuLevel') {
-    res.gpuLevel = await adbShell(`setprop debug.oculus.gpuLevel ${val}`);
+  if (typeof arg.gpuLevel !== 'undefined') {
+    res.gpuLevel = await adbShell(
+      `setprop debug.oculus.gpuLevel ${arg.gpuLevel}`
+    );
   }
 
-  if (key === 'guardianPause') {
-    const guardianPaused = val ? '1' : '0';
+  if (typeof arg.guardianPause !== 'undefined') {
+    const guardianPaused = arg.guardianPause ? '1' : '0';
     res.guardianPause = await adbShell(
       `setprop debug.oculus.guardian_pause ${guardianPaused}`
     );
   }
 
-  if (key === 'multiplayerName') {
-    res.multiplayerName = await adbShell(`settings put global username ${val}`);
+  if (typeof arg.multiplayerName !== 'undefined') {
+    res.multiplayerName = await adbShell(
+      `settings put global username ${arg.multiplayerName}`
+    );
   }
 
-  if (key === 'videoCaptureBitrate') {
+  if (typeof arg.videoCaptureBitrate !== 'undefined') {
     res.videoCaptureBitrate = await adbShell(
-      `setprop debug.oculus.capture.bitrate ${val}`
+      `setprop debug.oculus.capture.bitrate ${arg.videoCaptureBitrate}`
     );
   }
 
-  if (key === 'videoCaptureFps') {
+  if (typeof arg.videoCaptureFps !== 'undefined') {
     res.videoCaptureFps = await adbShell(
-      `setprop debug.oculus.capture.fps ${val}`
+      `setprop debug.oculus.capture.fps ${arg.videoCaptureFps}`
     );
   }
 
-  if (key === 'videoCaptureFullRate') {
-    const fullRateCapture = val ? '1' : '0';
+  if (typeof arg.videoCaptureFullRate !== 'undefined') {
+    const fullRateCapture = arg.videoCaptureFullRate ? '1' : '0';
     res.videoCaptureFullRate = await adbShell(
       `setprop debug.oculus.fullRateCapture ${fullRateCapture}`
     );
   }
 
-  if (key === 'videoCaptureSize') {
-    const [width, height] = val.split('x');
+  if (typeof arg.videoCaptureSize !== 'undefined') {
+    const [width, height] = arg.videoCaptureSize.split('x');
     await adbShell(`setprop debug.oculus.capture.width ${width}`);
     res.videoCaptureSize = await adbShell(
       `setprop debug.oculus.capture.height ${height}`
     );
   }
 
-  if (key === 'videoRefreshRate') {
+  if (typeof arg.videoRefreshRate !== 'undefined') {
     res.videoRefreshRate = await adbShell(
-      `setprop debug.oculus.refreshRate ${val}`
+      `setprop debug.oculus.refreshRate ${arg.videoRefreshRate}`
     );
   }
 
-  if (key === 'videoTextureSize') {
-    const [width, height] = val.split('x');
+  if (typeof arg.videoTextureSize !== 'undefined') {
+    const [width, height] = arg.videoTextureSize.split('x');
     await adbShell(`setprop debug.oculus.textureWidth ${width}`);
     await adbShell(`setprop debug.oculus.textureHeight ${height}`);
     res.videoTextureSize = await adbShell(
