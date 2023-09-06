@@ -136,8 +136,8 @@ async function getUserInfo() {
   return res.split(':')[1];
 }
 
-async function deviceTweaksGet(arg) {
-  console.log('deviceTweaksGet()', arg);
+async function tweaksGet(arg) {
+  console.log('tweaksGet()', arg);
 
   const model = (await adbShell('getprop ro.product.model')) || 'Quest 2';
   const videoTextureWidth =
@@ -221,8 +221,8 @@ async function deviceTweaksGet(arg) {
   return res;
 }
 
-async function deviceTweaksSet(arg) {
-  console.log('deviceTweaksSet()', arg);
+async function tweaksSet(arg) {
+  console.log('tweaksSet()', arg);
 
   const model = (await adbShell('getprop ro.product.model')) || 'Quest 2';
   const res = { cmd: 'set' };
@@ -3381,8 +3381,8 @@ export default {
   reloadConfig,
   execShellCommand,
   updateRcloneProgress,
-  deviceTweaksGet,
-  deviceTweaksSet,
+  tweaksGet,
+  tweaksSet,
   appInfo,
   appInfoEvents,
   isIdle,

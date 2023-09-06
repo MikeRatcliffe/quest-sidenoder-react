@@ -310,7 +310,7 @@ const addIPCMainListeners = () => {
     console.log('device_tweaks received', arg);
 
     if (arg.cmd === 'get') {
-      const res = await tools.deviceTweaksGet(arg);
+      const res = await tools.tweaksGet(arg);
       event.reply('device_tweaks', res);
     }
 
@@ -321,7 +321,7 @@ const addIPCMainListeners = () => {
         return;
       }
 
-      await tools.deviceTweaksSet(arg);
+      await tools.tweaksSet(arg);
       event.reply('device_tweaks', arg);
     }
   });

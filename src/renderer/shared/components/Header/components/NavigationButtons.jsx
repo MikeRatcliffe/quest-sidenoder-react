@@ -8,12 +8,12 @@ import {
 } from '../../../../../store';
 import {
   MODAL_INSTALLED,
-  MODAL_DEVICETWEAKS,
+  MODAL_TWEAKS,
   MODAL_SETTINGS,
 } from '../../../../utils/constants';
 import MessageBox from '../../../../modals/MessageBox';
 import SettingsModal from '../../../../modals/SettingsModal';
-import DeviceTweaksModal from '../../../../modals/DeviceTweaksModal';
+import TweaksModal from '../../../../modals/TweaksModal';
 import InstalledModal from '../../../../modals/InstalledModal';
 import ScrcpyModal from '../../../../modals/ScrcpyModal';
 import Icon from '../../../Icon';
@@ -75,7 +75,7 @@ function NavigationButtons() {
         id="device-tweaks"
         variant="primary"
         className="me-1 text-nowrap"
-        onClick={() => dispatch(modalShow(MODAL_DEVICETWEAKS))}
+        onClick={() => dispatch(modalShow(MODAL_TWEAKS))}
       >
         <Icon set="fa" icon="FaBug" />
       </Button>
@@ -88,7 +88,7 @@ function NavigationButtons() {
         <Icon set="fa" icon="FaCog" />
       </Button>
       <SettingsModal />
-      <DeviceTweaksModal />
+      <TweaksModal />
       <InstalledModal />
       <MessageBox />
       {/* <AppInfoModal /> */}

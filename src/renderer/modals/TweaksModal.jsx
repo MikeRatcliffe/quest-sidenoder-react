@@ -19,7 +19,7 @@ import {
   tweaksFieldsSelector,
 } from '../../store';
 import Tooltip from '../shared/components/Tooltip';
-import { MODAL_DEVICETWEAKS, MODAL_SCRCPY } from '../utils/constants';
+import { MODAL_TWEAKS, MODAL_SCRCPY } from '../utils/constants';
 import Icon from '../shared/Icon';
 import _sendIPC from '../utils/sendIPC';
 
@@ -27,13 +27,13 @@ const { dialog } = window.require('@electron/remote');
 const { ipcRenderer } = window.require('electron');
 const sendIPC = _sendIPC.bind(this, module);
 
-function DeviceTweaks() {
+function TweaksModal() {
   const dispatch = useDispatch();
 
   const formFields = useSelector(tweaksFieldsSelector);
 
   const isShown = useSelector((state) =>
-    getModalIsVisibleSelector(state, MODAL_DEVICETWEAKS)
+    getModalIsVisibleSelector(state, MODAL_TWEAKS)
   );
 
   const setStoreValue = useCallback(
@@ -49,7 +49,7 @@ function DeviceTweaks() {
 
   useEffect(() => {
     ipcRenderer.once('device_tweaks', (event, res) => {
-      console.log('DeviceTweaksModal.js ⭠ "device_tweaks" args:', res);
+      console.log('tweaksModal.js ⭠ "device_tweaks" args:', res);
       setStoreValue(
         {
           bonelabMods: res.bonelabMods,
@@ -741,4 +741,4 @@ function DeviceTweaks() {
   );
 }
 
-export default DeviceTweaks;
+export default TweaksModal;
