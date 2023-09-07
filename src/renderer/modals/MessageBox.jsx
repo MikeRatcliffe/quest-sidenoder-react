@@ -10,29 +10,16 @@ import {
   messageBoxButtonsSelector,
   messageBoxCheckboxLabelSelector,
   messageBoxCheckboxCheckedSelector,
-  setMessageBoxCheckbox,
+  messageBoxTextboxLabelSelector,
+  messageBoxTextboxValueSelector,
+  setMessageBoxCheckboxChecked,
+  setMessageBoxTextboxValue,
 } from '../../store';
 import Icon from '../shared/Icon';
 import _sendIPC from '../utils/sendIPC';
 
 const sendIPC = _sendIPC.bind(this, module);
 
-/**
- * @param messageBoxType string (optional)
- *   none, info, error, question or warning.
- * @param messageBoxTitle string (optional)
- *   Title of the message box, some platforms will not show it.
- * @param messageBoxMessage string
- *   Content of the message box.
- * @param messageBoxDetail string (optional)
- *   Extra information of the message.
- * @param messageBoxCheckboxLabel string (optional)
- *   If provided, the message box will include a checkbox with the given label.
- * @param messageBoxCheckboxChecked boolean (optional)
- *   Initial checked state of the checkbox. false by default.
- * @param messageBoxButtons string[] (optional)
- *   Array of texts for buttons. An empty array will result in one button labeled "Ok".
- */
 function MessageBox() {
   const dispatch = useDispatch();
 
@@ -45,6 +32,8 @@ function MessageBox() {
   const detail = useSelector(messageBoxDetailSelector);
   const checkboxLabel = useSelector(messageBoxCheckboxLabelSelector);
   const checkboxChecked = useSelector(messageBoxCheckboxCheckedSelector);
+  const textboxLabel = useSelector(messageBoxTextboxLabelSelector);
+  const textboxValue = useSelector(messageBoxTextboxValueSelector);
   const buttons = useSelector(messageBoxButtonsSelector);
 
   let icon = '';
@@ -71,6 +60,19 @@ function MessageBox() {
     // Do nothing
   }
 
+  function handleChange({ target }) {
+    switch (target.name) {
+      case 'checkbox':
+        dispatch(setMessageBoxCheckboxChecked(target.checked));
+        break;
+      case 'textbox':
+        dispatch(setMessageBoxTextboxValue(target.value));
+        break;
+      default:
+      // Do Nothing
+    }
+  }
+
   return (
     <Modal id="messagebox" show={isShown} centered>
       <Modal.Header>
@@ -95,16 +97,30 @@ function MessageBox() {
               </div>
             </Col>
           </Row>
+          {textboxLabel && (
+            <Row>
+              <Col xs={12}>
+                <Form.Label>
+                  <span>{textboxLabel}</span>
+                </Form.Label>
+                <Form.Control
+                  name="textbox"
+                  type="text"
+                  value={textboxValue}
+                  onChange={handleChange}
+                />
+              </Col>
+            </Row>
+          )}
           {checkboxLabel && (
             <Row>
               <Col xs={12}>
                 <Form.Check
+                  name="checkbox"
                   className="fs-6"
                   label={checkboxLabel}
                   checked={checkboxChecked}
-                  onChange={() =>
-                    dispatch(setMessageBoxCheckbox(!checkboxChecked))
-                  }
+                  onChange={handleChange}
                 />
               </Col>
             </Row>
@@ -121,6 +137,7 @@ function MessageBox() {
               sendIPC('messagebox-button-clicked', {
                 buttonIndexClicked,
                 checkboxChecked,
+                textboxValue,
               });
             }}
             key={buttonLabel}

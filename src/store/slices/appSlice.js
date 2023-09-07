@@ -8,8 +8,10 @@ const initialState = {
     title: '',
     message: '',
     detail: '',
-    checkboxLabel: false,
+    checkboxLabel: '',
     checkboxChecked: false,
+    textboxLabel: '',
+    textboxValue: '',
     buttons: [],
   },
   showScrollToTop: false,
@@ -29,8 +31,11 @@ export const appSlice = createSlice({
         state.openModals.push(modalName);
       }
     },
-    setMessageBoxCheckbox: (state, action) => {
+    setMessageBoxCheckboxChecked: (state, action) => {
       state.messageBox.checkboxChecked = action.payload;
+    },
+    setMessageBoxTextboxValue: (state, action) => {
+      state.messageBox.textboxValue = action.payload;
     },
     __showMessageBox__: (state, action) => {
       if (state.messageBox.type) {
@@ -46,6 +51,8 @@ export const appSlice = createSlice({
         detail = '',
         checkboxLabel = '',
         checkboxChecked = false,
+        textboxLabel = '',
+        textboxValue = '',
         buttons = [],
       } = action.payload;
 
@@ -55,6 +62,8 @@ export const appSlice = createSlice({
       state.messageBox.detail = detail;
       state.messageBox.checkboxLabel = checkboxLabel;
       state.messageBox.checkboxChecked = checkboxChecked;
+      state.messageBox.textboxLabel = textboxLabel;
+      state.messageBox.textboxValue = textboxValue;
       state.messageBox.buttons = buttons;
 
       const modalName = MODAL_MESSAGEBOX;
@@ -69,6 +78,8 @@ export const appSlice = createSlice({
       state.messageBox.detail = '';
       state.messageBox.checkboxLabel = '';
       state.messageBox.checkboxChecked = false;
+      state.messageBox.textboxLabel = '';
+      state.messageBox.textboxValue = '';
       state.messageBox.buttons = [];
 
       const modalName = MODAL_MESSAGEBOX;
@@ -92,6 +103,10 @@ export const messageBoxCheckboxLabelSelector = (state) =>
   state.app.messageBox.checkboxLabel;
 export const messageBoxCheckboxCheckedSelector = (state) =>
   state.app.messageBox.checkboxChecked;
+export const messageBoxTextboxLabelSelector = (state) =>
+  state.app.messageBox.textboxLabel;
+export const messageBoxTextboxValueSelector = (state) =>
+  state.app.messageBox.textboxValue;
 export const messageBoxButtonsSelector = (state) =>
   state.app.messageBox.buttons;
 
@@ -101,7 +116,8 @@ export const {
   modalHide,
   modalShow,
   setShowScrollToTop,
-  setMessageBoxCheckbox,
+  setMessageBoxCheckboxChecked,
+  setMessageBoxTextboxValue,
   __hideMessageBox__,
   __showMessageBox__,
 } = appSlice.actions;

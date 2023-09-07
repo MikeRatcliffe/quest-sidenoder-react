@@ -20,7 +20,8 @@ export const store = configureStore({
 export {
   modalHide,
   modalShow,
-  setMessageBoxCheckbox,
+  setMessageBoxCheckboxChecked,
+  setMessageBoxTextboxValue,
   setShowScrollToTop,
   getModalIsVisibleSelector,
   messageBoxTypeSelector,
@@ -30,6 +31,8 @@ export {
   messageBoxButtonsSelector,
   messageBoxCheckboxLabelSelector,
   messageBoxCheckboxCheckedSelector,
+  messageBoxTextboxLabelSelector,
+  messageBoxTextboxValueSelector,
   showScrollToTopSelector,
 } from './slices/appSlice';
 
