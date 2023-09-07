@@ -1,22 +1,37 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Col, Container, Form, Modal, Row } from 'react-bootstrap';
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Modal,
+  Row,
+} from 'react-bootstrap';
 import { MODAL_MESSAGEBOX } from '../utils/constants';
 import {
   getModalIsVisibleSelector,
-  messageBoxTypeSelector,
-  messageBoxTitleSelector,
   messageBoxMessageSelector,
   messageBoxDetailSelector,
   messageBoxButtonsSelector,
   messageBoxCheckboxLabelSelector,
   messageBoxCheckboxCheckedSelector,
+  messageBoxFileBrowseFiltersSelector,
+  messageBoxFileBrowseLabelSelector,
+  messageBoxFileBrowsePropertiesSelector,
+  messageBoxFileBrowseValueSelector,
   messageBoxTextboxLabelSelector,
   messageBoxTextboxValueSelector,
+  messageBoxTypeSelector,
+  messageBoxTitleSelector,
   setMessageBoxCheckboxChecked,
+  setMessageBoxFileBrowseValue,
   setMessageBoxTextboxValue,
 } from '../../store';
 import Icon from '../shared/Icon';
 import _sendIPC from '../utils/sendIPC';
+
+const { dialog } = window.require('@electron/remote');
 
 const sendIPC = _sendIPC.bind(this, module);
 
@@ -34,6 +49,12 @@ function MessageBox() {
   const checkboxChecked = useSelector(messageBoxCheckboxCheckedSelector);
   const textboxLabel = useSelector(messageBoxTextboxLabelSelector);
   const textboxValue = useSelector(messageBoxTextboxValueSelector);
+  const fileBrowseFilters = useSelector(messageBoxFileBrowseFiltersSelector);
+  const fileBrowseLabel = useSelector(messageBoxFileBrowseLabelSelector);
+  const fileBrowseProperties = useSelector(
+    messageBoxFileBrowsePropertiesSelector
+  );
+  const fileBrowseValue = useSelector(messageBoxFileBrowseValueSelector);
   const buttons = useSelector(messageBoxButtonsSelector);
 
   let icon = '';
@@ -60,11 +81,27 @@ function MessageBox() {
     // Do nothing
   }
 
-  function handleChange({ target }) {
+  async function handleChange({ target }) {
     switch (target.name) {
       case 'checkbox':
         dispatch(setMessageBoxCheckboxChecked(target.checked));
         break;
+      case 'fileBrowse':
+        dispatch(setMessageBoxFileBrowseValue(target.value));
+        break;
+      case 'fileBrowseButton': {
+        const result = await dialog.showOpenDialog(null, {
+          title: fileBrowseLabel,
+          message: fileBrowseLabel,
+          properties: fileBrowseProperties,
+          filters: fileBrowseFilters,
+        });
+
+        if (!result.cancelled) {
+          dispatch(setMessageBoxFileBrowseValue(result.filePaths[0]));
+        }
+        break;
+      }
       case 'textbox':
         dispatch(setMessageBoxTextboxValue(target.value));
         break;
@@ -112,6 +149,35 @@ function MessageBox() {
               </Col>
             </Row>
           )}
+          {fileBrowseLabel && (
+            <Row>
+              <Col xs={12}>
+                <Form.Label>
+                  <span>{fileBrowseLabel}</span>
+                </Form.Label>
+                <InputGroup>
+                  <Form.Control
+                    name="fileBrowse"
+                    type="text"
+                    value={fileBrowseValue}
+                    readonly
+                  />
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    name="fileBrowseButton"
+                    onClick={handleChange}
+                  >
+                    <Icon
+                      set="fa"
+                      icon="FaFolderOpen"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  </Button>
+                </InputGroup>
+              </Col>
+            </Row>
+          )}
           {checkboxLabel && (
             <Row>
               <Col xs={12}>
@@ -137,6 +203,7 @@ function MessageBox() {
               sendIPC('messagebox-button-clicked', {
                 buttonIndexClicked,
                 checkboxChecked,
+                fileBrowseValue,
                 textboxValue,
               });
             }}
@@ -154,6 +221,8 @@ function MessageBox() {
               sendIPC('messagebox-button-clicked', {
                 buttonIndexClicked: 0,
                 checkboxChecked,
+                fileBrowseValue,
+                textboxValue,
               });
             }}
           >

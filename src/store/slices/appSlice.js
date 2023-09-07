@@ -12,6 +12,15 @@ const initialState = {
     checkboxChecked: false,
     textboxLabel: '',
     textboxValue: '',
+    fileBrowseLabel: '',
+    fileBrowseValue: '',
+    fileBrowseFilters: [
+      {
+        name: 'All',
+        extensions: ['*'],
+      },
+    ],
+    fileBrowseProperties: ['openFile', 'openDirectory'],
     buttons: [],
   },
   showScrollToTop: false,
@@ -37,6 +46,9 @@ export const appSlice = createSlice({
     setMessageBoxTextboxValue: (state, action) => {
       state.messageBox.textboxValue = action.payload;
     },
+    setMessageBoxFileBrowseValue: (state, action) => {
+      state.messageBox.fileBrowseValue = action.payload;
+    },
     __showMessageBox__: (state, action) => {
       if (state.messageBox.type) {
         // We only show one messageBox at a time and one is already open, so do
@@ -45,15 +57,19 @@ export const appSlice = createSlice({
       }
 
       const {
-        type = 'error',
-        title = '',
-        message = '',
-        detail = '',
-        checkboxLabel = '',
-        checkboxChecked = false,
-        textboxLabel = '',
-        textboxValue = '',
-        buttons = [],
+        type = initialState.messageBox.type,
+        title = initialState.messageBox.title,
+        message = initialState.messageBox.message,
+        detail = initialState.messageBox.detail,
+        checkboxLabel = initialState.messageBox.checkboxLabel,
+        checkboxChecked = initialState.messageBox.checkboxChecked,
+        textboxLabel = initialState.messageBox.textboxLabel,
+        textboxValue = initialState.messageBox.textboxValue,
+        fileBrowseLabel = initialState.messageBox.fileBrowseLabel,
+        fileBrowseFilters = initialState.messageBox.fileBrowseFilters,
+        fileBrowseProperties = initialState.messageBox.fileBrowseProperties,
+        fileBrowseValue = initialState.messageBox.fileBrowseValue,
+        buttons = initialState.messageBox.buttons,
       } = action.payload;
 
       state.messageBox.type = type;
@@ -62,6 +78,10 @@ export const appSlice = createSlice({
       state.messageBox.detail = detail;
       state.messageBox.checkboxLabel = checkboxLabel;
       state.messageBox.checkboxChecked = checkboxChecked;
+      state.messageBox.fileBrowseFilters = fileBrowseFilters;
+      state.messageBox.fileBrowseLabel = fileBrowseLabel;
+      state.messageBox.fileBrowseProperties = fileBrowseProperties;
+      state.messageBox.fileBrowseValue = fileBrowseValue;
       state.messageBox.textboxLabel = textboxLabel;
       state.messageBox.textboxValue = textboxValue;
       state.messageBox.buttons = buttons;
@@ -72,15 +92,20 @@ export const appSlice = createSlice({
       }
     },
     __hideMessageBox__: (state) => {
-      state.messageBox.type = '';
-      state.messageBox.title = '';
-      state.messageBox.message = '';
-      state.messageBox.detail = '';
-      state.messageBox.checkboxLabel = '';
-      state.messageBox.checkboxChecked = false;
-      state.messageBox.textboxLabel = '';
-      state.messageBox.textboxValue = '';
-      state.messageBox.buttons = [];
+      state.messageBox.type = initialState.messageBox.type;
+      state.messageBox.title = initialState.messageBox.title;
+      state.messageBox.message = initialState.messageBox.message;
+      state.messageBox.detail = initialState.messageBox.detail;
+      state.messageBox.checkboxLabel = initialState.messageBox.checkboxLabel;
+      state.messageBox.checkboxChecked =
+        initialState.messageBox.checkboxChecked;
+      state.messageBox.fileBrowseLabel =
+        initialState.messageBox.fileBrowseLabel;
+      state.messageBox.fileBrowseValue =
+        initialState.messageBox.fileBrowseValue;
+      state.messageBox.textboxLabel = initialState.messageBox.textboxLabel;
+      state.messageBox.textboxValue = initialState.messageBox.textboxValue;
+      state.messageBox.buttons = initialState.messageBox.buttons;
 
       const modalName = MODAL_MESSAGEBOX;
       state.openModals = state.openModals.filter((name) => name !== modalName);
@@ -107,6 +132,14 @@ export const messageBoxTextboxLabelSelector = (state) =>
   state.app.messageBox.textboxLabel;
 export const messageBoxTextboxValueSelector = (state) =>
   state.app.messageBox.textboxValue;
+export const messageBoxFileBrowseLabelSelector = (state) =>
+  state.app.messageBox.fileBrowseLabel;
+export const messageBoxFileBrowsePropertiesSelector = (state) =>
+  state.app.messageBox.fileBrowseProperties;
+export const messageBoxFileBrowseValueSelector = (state) =>
+  state.app.messageBox.fileBrowseValue;
+export const messageBoxFileBrowseFiltersSelector = (state) =>
+  state.app.messageBox.fileBrowseFilters;
 export const messageBoxButtonsSelector = (state) =>
   state.app.messageBox.buttons;
 
@@ -117,6 +150,7 @@ export const {
   modalShow,
   setShowScrollToTop,
   setMessageBoxCheckboxChecked,
+  setMessageBoxFileBrowseValue,
   setMessageBoxTextboxValue,
   __hideMessageBox__,
   __showMessageBox__,
